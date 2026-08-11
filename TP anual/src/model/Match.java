@@ -80,17 +80,10 @@ import java.util.List;
             return participations;
         }
 
-        public void setParticipations(List<PlayerParticipation> participations) {
-            this.participations = participations;
-        }
-
         public List<Incidence> getIncidences() {
             return incidences;
         }
 
-        public void setIncidences(List<Incidence> incidences) {
-            this.incidences = incidences;
-        }
 
     }
 }
