@@ -1,4 +1,7 @@
-package model;
+package model.people;
+
+import model.team.Country;
+import model.team.Team;
 
 import java.time.LocalDate;
 
@@ -7,8 +10,8 @@ public class HeadCoach extends Person{
     private int titlesWon;
     private Team team;
 
-    public HeadCoach(String name, LocalDate birthday, String type, String document, Country country, int titlesWon, Team team){
-        super(name,birthday,type,document);
+    public HeadCoach(String name, LocalDate birthday, DocumentType documentType, String document, Country country, int titlesWon, Team team){
+        super(name,birthday,documentType,document);
         this.country = country;
         this.team = team;
         this.titlesWon = titlesWon;
@@ -24,5 +27,9 @@ public class HeadCoach extends Person{
 
     public Team getTeam() {
         return team;
+    }
+
+    public String getRole(){
+        return "";
     }
 }

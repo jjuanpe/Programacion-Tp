@@ -1,4 +1,4 @@
-package model;
+package model.team;
 
 public class Country {
 }

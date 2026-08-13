@@ -1,4 +1,8 @@
-package model;
+package model.match;
+
+import model.venue.Stadium;
+import model.people.Referee;
+import model.team.Team;
 
 import java.time.LocalDate;
 

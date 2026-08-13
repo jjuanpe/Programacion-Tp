@@ -1,10 +1,12 @@
-package model;
+package model.event;
+
+import model.match.Match;
 
 public abstract class Incidence {
     private int minute;
     private Match match;
 
-    public Incident(int minute, Match match) {
+    public Incidence(int minute, Match match) {
         this.minute = minute;
         this.match = match;
     }

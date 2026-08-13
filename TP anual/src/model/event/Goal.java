@@ -1,6 +1,9 @@
-package model;
+package model.event;
 
-public class Goal extends Incidence{
+import model.match.Match;
+import model.people.Player;
+
+public class Goal extends Incidence {
     private Player scorer;
     private boolean penalty;
     private boolean ownGoal;

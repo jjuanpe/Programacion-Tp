@@ -1,4 +1,4 @@
-package model;
+package model.people;
 
 import java.time.LocalDate;
 
@@ -6,8 +6,8 @@ public class Player extends Person{
     private Position position;
     private int average;
 
-    public Player (String name, LocalDate birthday, String type, String document,Position position,int average){
-        super(name,birthday,type,document);
+    public Player (String name, LocalDate birthday, DocumentType documentType, String document,Position position,int average){
+        super(name,birthday,documentType,document);
         this.position = position;
         this.average = average;
     }
@@ -18,5 +18,9 @@ public class Player extends Person{
 
     public int getAverage() {
         return average;
+    }
+
+    public String getRole(){
+        return "";
     }
 }

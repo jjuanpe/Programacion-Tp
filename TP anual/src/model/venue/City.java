@@ -1,4 +1,6 @@
-package model;
+package model.venue;
+
+import model.team.Country;
 
 public class City {
 

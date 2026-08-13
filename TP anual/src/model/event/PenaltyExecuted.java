@@ -1,12 +1,14 @@
-package model;
+package model.event;
 
-public class PenaltyExecuted extends Incidence{
+import model.match.Match;
+import model.people.Player;
+
+public class PenaltyExecuted extends Incidence {
     private Player kicker;
     private boolean scored;
 
-    public Penalty(int minute, Match match, Player kicker, boolean scored) {
+    public PenaltyExecuted(int minute, Match match,boolean scored) {
         super(minute, match);
-        this.kicker = kicker;
         this.scored = scored;
     }
 

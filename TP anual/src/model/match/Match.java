@@ -1,12 +1,13 @@
-package model;
+package model.match;
+
+import model.event.Incidence;
+import model.venue.Stadium;
+import model.people.Referee;
+import model.team.Team;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.time.LocalDate;
 import java.util.ArrayList;
-
-
-public class Match {
 
 
     public abstract class Match {
@@ -87,4 +88,4 @@ public class Match {
 
 
     }
-}
+

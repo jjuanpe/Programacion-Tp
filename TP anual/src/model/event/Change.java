@@ -1,6 +1,9 @@
-package model;
+package model.event;
 
-public class Change extends Incidence{
+import model.match.Match;
+import model.people.Player;
+
+public class Change extends Incidence {
     private Player playerOut;
     private Player playerIn;
 

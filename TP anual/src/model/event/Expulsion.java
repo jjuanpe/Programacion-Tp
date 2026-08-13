@@ -1,9 +1,13 @@
-package model;
+package model.event;
 
-public class YellowCard extends Incidence{
-     private Player player;
+import model.match.Match;
+import model.people.Player;
 
-    public YellowCard(int minute, Match match, Player player) {
+public class Expulsion extends Incidence {
+  
+    private Player player;
+
+    public Expulsion(int minute, Match match, Player player) {
         super(minute, match);
         this.player = player;
     }

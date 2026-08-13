@@ -1,4 +1,4 @@
-package model;
+package model.venue;
 
 public class Stadium {
 
