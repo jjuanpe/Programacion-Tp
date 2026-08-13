@@ -2,36 +2,89 @@ package model;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.time.LocalDate;
+import java.util.ArrayList;
+
 
 public class Match {
-    private LocalDate date;
-    private Team homeTeam;
-    private Team awayTeam;
-    private Referee referee;
-    private Stadium stadium;
-    private List<Incidence> incidents;
 
-    public LocalDate getDate() {
-        return date;
-    }
 
-    public Team getHomeTeam() {
-        return homeTeam;
-    }
+    public abstract class Match {
 
-    public Team getAwayTeam() {
-        return awayTeam;
-    }
+        private LocalDate date;
+        private Team homeTeam;
+        private Team awayTeam;
+        private Referee referee;
+        private Stadium stadium;
+        private int homeGoals;
+        private int awayGoals;
+        private Formation homeFormation;
+        private Formation awayFormation;
+        private List<PlayerParticipation> participations;
+        private List<Incidence> incidences;
 
-    public Referee getReferee() {
-        return referee;
-    }
+        public Match(LocalDate date, Team homeTeam, Team awayTeam, Referee referee, Stadium stadium) {
+            this.date = date;
+            this.homeTeam = homeTeam;
+            this.awayTeam = awayTeam;
+            this.referee = referee;
+            this.stadium = stadium;
+            this.participations = new ArrayList<>();
+            this.incidences = new ArrayList<>();
+        }
 
-    public Stadium getStadium() {
-        return stadium;
-    }
+        public LocalDate getDate() {
+            return date;
+        }
 
-    public List<Incidence> getIncidents() {
-        return incidents;
+
+        public Team getHomeTeam() {
+            return homeTeam;
+        }
+
+
+        public Team getAwayTeam() {
+            return awayTeam;
+        }
+
+
+        public Referee getReferee() {
+            return referee;
+        }
+
+
+        public Stadium getStadium() {
+            return stadium;
+        }
+
+
+        public int getHomeGoals() {
+            return homeGoals;
+        }
+
+        public int getAwayGoals() {
+            return awayGoals;
+        }
+
+
+        public Formation getHomeFormation() {
+            return homeFormation;
+        }
+
+
+        public Formation getAwayFormation() {
+            return awayFormation;
+        }
+
+
+        public List<PlayerParticipation> getParticipations() {
+            return participations;
+        }
+
+        public List<Incidence> getIncidences() {
+            return incidences;
+        }
+
+
     }
 }
