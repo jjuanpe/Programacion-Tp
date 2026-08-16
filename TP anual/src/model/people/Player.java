@@ -12,6 +12,14 @@ public class Player extends Person{
         this.average = average;
     }
 
+    protected static int computeAverage(int... values) {
+        int sum = 0;
+        for (int value : values) {
+            sum += value;
+        }
+        return sum / values.length;
+    }
+
     public Position getPosition() {
         return position;
     }

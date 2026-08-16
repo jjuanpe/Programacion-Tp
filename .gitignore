@@ -1,0 +1,10 @@
+# Build output (IntelliJ / javac)
+out/
+*.class
+
+# IntelliJ IDEA project files
+.idea/
+*.iml
+
+# OS / Dropbox artifacts
+desktop.ini

@@ -1,7 +1,10 @@
 package model.people;
 
 public enum DocumentType {
-    DNI,
-    PASSPORT,
-    ID_CARD;
+    DU,
+    PAS;
+
+    public static DocumentType fromFileValue(String fileValue) {
+        return DocumentType.valueOf(fileValue.trim().toUpperCase());
+    }
 }

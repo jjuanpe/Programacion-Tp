@@ -7,6 +7,10 @@ public class Country {
         this.countryName = countryName;
     }
 
+    public static Country of(String countryName) {
+        return new Country(countryName);
+    }
+
     public String getCountryName() {
         return countryName;
     }
