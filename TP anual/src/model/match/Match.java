@@ -23,7 +23,8 @@ import java.util.ArrayList;
         private Formation awayFormation;
         private List<PlayerParticipation> participations;
         private List<Incidence> incidences;
-
+        private boolean played;
+        
         public Match(LocalDate date, Team homeTeam, Team awayTeam, Referee referee, Stadium stadium) {
             this.date = date;
             this.homeTeam = homeTeam;
@@ -32,6 +33,11 @@ import java.util.ArrayList;
             this.stadium = stadium;
             this.participations = new ArrayList<>();
             this.incidences = new ArrayList<>();
+            this.played=true;
+        }
+
+        public boolean isPlayed() {
+           return played;
         }
 
         public LocalDate getDate() {
