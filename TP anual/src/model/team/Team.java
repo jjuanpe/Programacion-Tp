@@ -6,19 +6,23 @@ import model.people.Position;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 
 public class Team {
-    private String name;
-    private Country country;
-    private int ranking;
-    private List<Player> players;
+    private final String name;
+    private final Country country;
+    private final int ranking;
+    private final List<Player> players;
     private HeadCoach headCoach;
 
     public Team(String name, Country country, int ranking) {
-        this.name = name;
-        this.country = country;
+        if (ranking <= 0) {
+            throw new IllegalArgumentException("The team ranking must be positive");
+        }
+        this.name = Objects.requireNonNull(name, "The team name is required");
+        this.country = Objects.requireNonNull(country, "The team country is required");
         this.ranking = ranking;
         this.players = new ArrayList<>();
     }
@@ -36,7 +40,7 @@ public class Team {
     }
 
     public List<Player> getPlayers() {
-        return players;
+        return List.copyOf(players);
     }
 
     public HeadCoach getHeadCoach() {
@@ -44,11 +48,15 @@ public class Team {
     }
 
     public void setCoach(HeadCoach headCoach) {
-        this.headCoach = headCoach;
+        this.headCoach = Objects.requireNonNull(headCoach, "The head coach is required");
     }
 
-    public void addPlayer(Player p) {
-        players.add(p);
+    public void addPlayer(Player player) {
+        Objects.requireNonNull(player, "The player is required");
+        if (players.contains(player)) {
+            throw new IllegalArgumentException("A player cannot be added twice to a team");
+        }
+        players.add(player);
     }
 
     public int countByPosition(Position position) {

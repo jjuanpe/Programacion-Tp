@@ -3,12 +3,15 @@ package model.event;
 import model.match.Match;
 import model.people.Player;
 
-public class PenaltyExecuted extends Incidence {
-    private Player kicker;
-    private boolean scored;
+import java.util.Objects;
 
-    public PenaltyExecuted(int minute, Match match,boolean scored) {
+public class PenaltyExecuted extends Incidence {
+    private final Player kicker;
+    private final boolean scored;
+
+    public PenaltyExecuted(int minute, Match match, Player kicker, boolean scored) {
         super(minute, match);
+        this.kicker = Objects.requireNonNull(kicker, "The penalty kicker is required");
         this.scored = scored;
     }
 
@@ -16,15 +19,13 @@ public class PenaltyExecuted extends Incidence {
         return kicker;
     }
 
-    public void setKicker(Player kicker) {
-        this.kicker = kicker;
-    }
-
     public boolean isScored() {
         return scored;
     }
 
-    public void setScored(boolean scored) {
-        this.scored = scored;
+    @Override
+    public String getDescription() {
+        return getMinute() + "' Penalty: " + kicker.getName()
+                + (scored ? " scored" : " missed");
     }
 }

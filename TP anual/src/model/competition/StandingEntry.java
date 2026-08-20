@@ -11,6 +11,7 @@ public class StandingEntry {
     private int lost;
     private int goalsFor;
     private int goalsAgainst;
+    private int fairPlayPoints;
 
     public StandingEntry(Team team) {
         this.team = team;
@@ -28,6 +29,13 @@ public class StandingEntry {
         played++; lost++; goalsFor += gf; goalsAgainst += ga;
     }
 
+    void setFairPlayPoints(int fairPlayPoints) {
+        if (fairPlayPoints < 0) {
+            throw new IllegalArgumentException("Fair play points cannot be negative");
+        }
+        this.fairPlayPoints = fairPlayPoints;
+    }
+
     public Team getTeam() { return team; }
     public int getPlayed() { return played; }
     public int getWon() { return won; }
@@ -37,4 +45,5 @@ public class StandingEntry {
     public int getGoalsAgainst() { return goalsAgainst; }
     public int getGoalDifference() { return goalsFor - goalsAgainst; }
     public int getPoints() { return won * 3 + drawn; }
+    public int getFairPlayPoints() { return fairPlayPoints; }
 }

@@ -13,6 +13,10 @@ public class Championship {
     private List<Referee> referees;
     private List<Stadium> stadiums;
 
+    // TODO Sprint 3: add domain methods to store the drawn zones and their generated fixtures.
+    // TODO Sprint 3: keep the assigned referees and the tournament progress in this class.
+    // TODO Future sprint: include the persistence state when the database module is introduced.
+
     public Championship() {
         this.teams = new ArrayList<>();
         this.zones = new ArrayList<>();

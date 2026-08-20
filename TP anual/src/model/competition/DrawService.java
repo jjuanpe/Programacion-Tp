@@ -32,23 +32,23 @@ public class DrawService {
                             + (teams == null ? 0 : teams.size()));
         }
 
-        List<Team> ordenados = new ArrayList<>(teams);
-        ordenados.sort(Comparator.comparingInt(Team::getRanking));
+        List<Team> sortedTeams = new ArrayList<>(teams);
+        sortedTeams.sort(Comparator.comparingInt(Team::getRanking));
 
-        List<Zone> zonas = new ArrayList<>();
-        for (String nombre : ZONE_NAMES) {
-            zonas.add(new Zone(nombre));
+        List<Zone> zones = new ArrayList<>();
+        for (String name : ZONE_NAMES) {
+            zones.add(new Zone(name));
         }
 
-        for (int bombo = 0; bombo < ZONE_COUNT; bombo++) {
-            List<Team> equiposDelBombo = new ArrayList<>(
-                    ordenados.subList(bombo * TEAMS_PER_ZONE, bombo * TEAMS_PER_ZONE + TEAMS_PER_ZONE));
-            Collections.shuffle(equiposDelBombo, random);
-            for (int zonaIndex = 0; zonaIndex < ZONE_COUNT; zonaIndex++) {
-                zonas.get(zonaIndex).getTeams().add(equiposDelBombo.get(zonaIndex));
+        for (int pot = 0; pot < ZONE_COUNT; pot++) {
+            List<Team> teamsInPot = new ArrayList<>(
+                    sortedTeams.subList(pot * TEAMS_PER_ZONE, pot * TEAMS_PER_ZONE + TEAMS_PER_ZONE));
+            Collections.shuffle(teamsInPot, random);
+            for (int zoneIndex = 0; zoneIndex < ZONE_COUNT; zoneIndex++) {
+                zones.get(zoneIndex).addTeam(teamsInPot.get(zoneIndex));
             }
         }
 
-        return zonas;
+        return zones;
     }
 }

@@ -24,7 +24,14 @@ public class Referee extends Person{
     }
 
     public boolean canOfficiate(Team home, Team away){
-        return false;
+        if (home == null || away == null || country == null
+                || home.getCountry() == null || away.getCountry() == null) {
+            return false;
+        }
+        if (home.getCountry().equals(away.getCountry())) {
+            return true;
+        }
+        return !country.equals(home.getCountry()) && !country.equals(away.getCountry());
     }
 
     public String getRole(){

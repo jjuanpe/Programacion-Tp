@@ -3,19 +3,22 @@ package model.event;
 import model.match.Match;
 import model.people.Player;
 
+import java.util.Objects;
+
 public class YellowCard extends Incidence {
-     private Player player;
+    private final Player player;
 
     public YellowCard(int minute, Match match, Player player) {
         super(minute, match);
-        this.player = player;
+        this.player = Objects.requireNonNull(player, "The cautioned player is required");
     }
 
     public Player getPlayer() {
         return player;
     }
 
-    public void setPlayer(Player player) {
-        this.player = player;
+    @Override
+    public String getDescription() {
+        return getMinute() + "' Yellow card: " + player.getName();
     }
 }
