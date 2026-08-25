@@ -163,15 +163,15 @@ public class GroupStageSimulator {
                 if (!availableReferees.remove(match.getReferee())) {
                     throw new IllegalStateException("A referee cannot officiate two matches on the same date");
                 }
-                continue;
+            } else {
+                Referee selectedReferee = refereeAssignmentService.selectReferee(
+                        match.getHomeTeam(),
+                        match.getAwayTeam(),
+                        availableReferees,
+                        random);
+                match.assignReferee(selectedReferee);
+                availableReferees.remove(selectedReferee);
             }
-            Referee selectedReferee = refereeAssignmentService.selectReferee(
-                    match.getHomeTeam(),
-                    match.getAwayTeam(),
-                    availableReferees,
-                    random);
-            match.assignReferee(selectedReferee);
-            availableReferees.remove(selectedReferee);
         }
     }
 

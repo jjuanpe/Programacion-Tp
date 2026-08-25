@@ -24,19 +24,18 @@ public class FairPlayCalculator {
 
         int fairPlayPoints = 0;
         for (GroupMatch match : zone.getGroupMatches()) {
-            if (!match.isPlayed()) {
-                continue;
-            }
-            for (Incidence incidence : match.getIncidences()) {
-                if (incidence instanceof YellowCard yellowCard
-                        && belongsToTeam(yellowCard.getPlayer(), team)) {
-                    fairPlayPoints += YELLOW_CARD_POINTS;
-                }
-                if (incidence instanceof Expulsion expulsion
-                        && belongsToTeam(expulsion.getPlayer(), team)) {
-                    fairPlayPoints += expulsion.getReason() == ExpulsionReason.SECOND_YELLOW_CARD
-                            ? SECOND_YELLOW_EXPULSION_ADDITIONAL_POINTS
-                            : DIRECT_RED_CARD_POINTS;
+            if (match.isPlayed()) {
+                for (Incidence incidence : match.getIncidences()) {
+                    if (incidence instanceof YellowCard yellowCard
+                            && belongsToTeam(yellowCard.getPlayer(), team)) {
+                        fairPlayPoints += YELLOW_CARD_POINTS;
+                    }
+                    if (incidence instanceof Expulsion expulsion
+                            && belongsToTeam(expulsion.getPlayer(), team)) {
+                        fairPlayPoints += expulsion.getReason() == ExpulsionReason.SECOND_YELLOW_CARD
+                                ? SECOND_YELLOW_EXPULSION_ADDITIONAL_POINTS
+                                : DIRECT_RED_CARD_POINTS;
+                    }
                 }
             }
         }

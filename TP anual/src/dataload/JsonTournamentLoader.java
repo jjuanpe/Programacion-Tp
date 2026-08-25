@@ -98,26 +98,28 @@ public class JsonTournamentLoader {
 
         Position position = Position.fromFileValue(node.get("posicion").getAsString());
 
+        Player player;
         if (position == Position.GOALKEEPER) {
-            return new Goalkeeper(fullName, birthDate, documentType, documentNumber,
+            player = new Goalkeeper(fullName, birthDate, documentType, documentNumber,
                     attributes.get("reflejos").getAsInt(),
                     attributes.get("seguridadManos").getAsInt(),
                     attributes.get("juegoAereo").getAsInt(),
                     attributes.get("achique").getAsInt(),
                     attributes.get("ubicacion").getAsInt(),
                     attributes.get("juegoPies").getAsInt());
+        } else {
+            player = new FieldPlayer(fullName, birthDate, documentType, documentNumber,
+                    position,
+                    attributes.get("velocidad").getAsInt(),
+                    attributes.get("resistenciaFisica").getAsInt(),
+                    attributes.get("habilidad").getAsInt(),
+                    attributes.get("definicion").getAsInt(),
+                    attributes.get("potenciaDisparo").getAsInt(),
+                    attributes.get("cabezazo").getAsInt(),
+                    attributes.get("capacidadQuite").getAsInt(),
+                    attributes.get("visionDeJuego").getAsInt());
         }
-
-        return new FieldPlayer(fullName, birthDate, documentType, documentNumber,
-                position,
-                attributes.get("velocidad").getAsInt(),
-                attributes.get("resistenciaFisica").getAsInt(),
-                attributes.get("habilidad").getAsInt(),
-                attributes.get("definicion").getAsInt(),
-                attributes.get("potenciaDisparo").getAsInt(),
-                attributes.get("cabezazo").getAsInt(),
-                attributes.get("capacidadQuite").getAsInt(),
-                attributes.get("visionDeJuego").getAsInt());
+        return player;
     }
 
     private HeadCoach readCoach(JsonObject node) {

@@ -131,6 +131,7 @@ public class KnockoutStageSimulator {
         LocalDate secondLegDate = firstLegDate.plusDays(DAYS_BETWEEN_LEGS);
         ExecutorService executor = Executors.newFixedThreadPool(pairings.size(), new KnockoutThreadFactory());
         List<Future<KnockoutTieReport>> futures = new ArrayList<>();
+        List<KnockoutTieReport> reports;
         try {
             for (Team[] pairing : pairings) {
                 KnockoutTieTask task = new KnockoutTieTask(
@@ -147,10 +148,11 @@ public class KnockoutStageSimulator {
                         seedGenerator.nextLong());
                 futures.add(executor.submit(task));
             }
-            return collectResults(futures);
+            reports = collectResults(futures);
         } finally {
             executor.shutdownNow();
         }
+        return reports;
     }
 
     private List<KnockoutTieReport> collectResults(

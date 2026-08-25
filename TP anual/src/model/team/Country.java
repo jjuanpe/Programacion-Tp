@@ -23,14 +23,16 @@ public final class Country {
 
     @Override
     public boolean equals(Object object) {
+        boolean equals;
         if (this == object) {
-            return true;
+            equals = true;
+        } else if (object == null || getClass() != object.getClass()) {
+            equals = false;
+        } else {
+            Country country = (Country) object;
+            equals = countryName.equalsIgnoreCase(country.countryName);
         }
-        if (object == null || getClass() != object.getClass()) {
-            return false;
-        }
-        Country country = (Country) object;
-        return countryName.equalsIgnoreCase(country.countryName);
+        return equals;
     }
 
     @Override

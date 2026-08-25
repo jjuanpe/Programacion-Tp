@@ -40,27 +40,8 @@ public class StandingsService {
         }
 
         for (GroupMatch match : zone.getGroupMatches()) {
-            if (!match.isPlayed()) {
-                continue;
-            }
-
-            Team homeTeam = match.getHomeTeam();
-            Team awayTeam = match.getAwayTeam();
-            int homeGoals = match.getHomeGoals();
-            int awayGoals = match.getAwayGoals();
-
-            StandingEntry homeEntry = standings.get(homeTeam);
-            StandingEntry awayEntry = standings.get(awayTeam);
-
-            if (homeGoals > awayGoals) {
-                homeEntry.registerWin(homeGoals, awayGoals);
-                awayEntry.registerLoss(awayGoals, homeGoals);
-            } else if (homeGoals < awayGoals) {
-                homeEntry.registerLoss(homeGoals, awayGoals);
-                awayEntry.registerWin(awayGoals, homeGoals);
-            } else {
-                homeEntry.registerDraw(homeGoals, awayGoals);
-                awayEntry.registerDraw(awayGoals, homeGoals);
+            if (match.isPlayed()) {
+                registerMatchResult(match, standings);
             }
         }
 
@@ -71,6 +52,27 @@ public class StandingsService {
         result.sort(PRIMARY_CRITERIA);
         applyRemainingTieBreakers(result, zone);
         return result;
+    }
+
+    private void registerMatchResult(GroupMatch match, Map<Team, StandingEntry> standings) {
+        Team homeTeam = match.getHomeTeam();
+        Team awayTeam = match.getAwayTeam();
+        int homeGoals = match.getHomeGoals();
+        int awayGoals = match.getAwayGoals();
+
+        StandingEntry homeEntry = standings.get(homeTeam);
+        StandingEntry awayEntry = standings.get(awayTeam);
+
+        if (homeGoals > awayGoals) {
+            homeEntry.registerWin(homeGoals, awayGoals);
+            awayEntry.registerLoss(awayGoals, homeGoals);
+        } else if (homeGoals < awayGoals) {
+            homeEntry.registerLoss(homeGoals, awayGoals);
+            awayEntry.registerWin(awayGoals, homeGoals);
+        } else {
+            homeEntry.registerDraw(homeGoals, awayGoals);
+            awayEntry.registerDraw(awayGoals, homeGoals);
+        }
     }
 
     private void applyRemainingTieBreakers(List<StandingEntry> standings, Zone zone) {
@@ -111,19 +113,26 @@ public class StandingsService {
             Zone zone) {
         Team firstTeam = first.getTeam();
         Team secondTeam = second.getTeam();
-        for (GroupMatch match : zone.getGroupMatches()) {
-            if (!match.isPlayed() || !isMatchBetween(match, firstTeam, secondTeam)) {
-                continue;
+        GroupMatch headToHeadMatch = null;
+        int matchIndex = 0;
+        List<GroupMatch> groupMatches = zone.getGroupMatches();
+        while (matchIndex < groupMatches.size() && headToHeadMatch == null) {
+            GroupMatch match = groupMatches.get(matchIndex);
+            if (match.isPlayed() && isMatchBetween(match, firstTeam, secondTeam)) {
+                headToHeadMatch = match;
             }
-            if (match.getHomeGoals() == match.getAwayGoals()) {
-                return 0;
-            }
-            Team winner = match.getHomeGoals() > match.getAwayGoals()
-                    ? match.getHomeTeam()
-                    : match.getAwayTeam();
-            return winner == firstTeam ? -1 : 1;
+            matchIndex++;
         }
-        return 0;
+
+        int comparison = 0;
+        if (headToHeadMatch != null
+                && headToHeadMatch.getHomeGoals() != headToHeadMatch.getAwayGoals()) {
+            Team winner = headToHeadMatch.getHomeGoals() > headToHeadMatch.getAwayGoals()
+                    ? headToHeadMatch.getHomeTeam()
+                    : headToHeadMatch.getAwayTeam();
+            comparison = winner == firstTeam ? -1 : 1;
+        }
+        return comparison;
     }
 
     private boolean isMatchBetween(GroupMatch match, Team firstTeam, Team secondTeam) {

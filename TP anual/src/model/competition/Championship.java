@@ -4,24 +4,28 @@ import model.venue.Stadium;
 import model.people.Referee;
 import model.team.Team;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Championship {
-    private List<Team> teams;
-    private List<Zone> zones;
-    private List<Referee> referees;
-    private List<Stadium> stadiums;
+    private final List<Team> teams;
+    private final List<Zone> zones;
+    private final List<Referee> referees;
+    private final List<Stadium> stadiums;
 
-    // TODO Sprint 3: add domain methods to store the drawn zones and their generated fixtures.
-    // TODO Sprint 3: keep the assigned referees and the tournament progress in this class.
-    // TODO Future sprint: include the persistence state when the database module is introduced.
-
-    public Championship() {
-        this.teams = new ArrayList<>();
-        this.zones = new ArrayList<>();
-        this.referees = new ArrayList<>();
-        this.stadiums = new ArrayList<>();
+    public Championship(
+            List<Team> teams,
+            List<Zone> zones,
+            List<Referee> referees,
+            List<Stadium> stadiums) {
+        Objects.requireNonNull(teams, "The team list is required");
+        Objects.requireNonNull(zones, "The zone list is required");
+        Objects.requireNonNull(referees, "The referee list is required");
+        Objects.requireNonNull(stadiums, "The stadium list is required");
+        this.teams = List.copyOf(teams);
+        this.zones = List.copyOf(zones);
+        this.referees = List.copyOf(referees);
+        this.stadiums = List.copyOf(stadiums);
     }
 
     public List<Team> getTeams() {

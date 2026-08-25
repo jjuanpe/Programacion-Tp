@@ -5,12 +5,18 @@ import model.team.Team;
 
 import java.time.LocalDate;
 
-public class Referee extends Person{
-    private Country country;
-    private int years;
+public class Referee extends Person {
+    private final Country country;
+    private final int years;
 
-    public Referee(String name, LocalDate birthday,DocumentType documentType,String document,Country country,int years){
-        super(name,birthday, documentType,document);
+    public Referee(
+            String name,
+            LocalDate birthday,
+            DocumentType documentType,
+            String document,
+            Country country,
+            int years) {
+        super(name, birthday, documentType, document);
         this.country = country;
         this.years = years;
     }
@@ -23,18 +29,22 @@ public class Referee extends Person{
         return country;
     }
 
-    public boolean canOfficiate(Team home, Team away){
-        if (home == null || away == null || country == null
-                || home.getCountry() == null || away.getCountry() == null) {
-            return false;
+    public boolean canOfficiate(Team home, Team away) {
+        boolean hasRequiredData = home != null
+                && away != null
+                && country != null
+                && home.getCountry() != null
+                && away.getCountry() != null;
+        boolean canOfficiate = false;
+        if (hasRequiredData) {
+            canOfficiate = !country.equals(home.getCountry())
+                    && !country.equals(away.getCountry());
         }
-        if (home.getCountry().equals(away.getCountry())) {
-            return true;
-        }
-        return !country.equals(home.getCountry()) && !country.equals(away.getCountry());
+        return canOfficiate;
     }
 
-    public String getRole(){
+    @Override
+    public String getRole() {
         return "";
     }
 }

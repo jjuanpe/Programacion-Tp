@@ -136,10 +136,10 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Grou
 
         int requestedChanges = substituteCandidates.isEmpty() ? 0 : 1 + random.nextInt(MAX_CHANGES_PER_TEAM);
         List<Change> changes = new ArrayList<>();
-        for (Player outgoingPlayer : outgoingCandidates) {
-            if (changes.size() == requestedChanges) {
-                break;
-            }
+        int candidateIndex = 0;
+        while (candidateIndex < outgoingCandidates.size()
+                && changes.size() < requestedChanges) {
+            Player outgoingPlayer = outgoingCandidates.get(candidateIndex);
             Player incomingPlayer = findSubstituteForPosition(
                     outgoingPlayer.getPosition(), substituteCandidates);
             if (incomingPlayer != null) {
@@ -147,18 +147,23 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Grou
                 changes.add(new Change(minute, match, outgoingPlayer, incomingPlayer));
                 substituteCandidates.remove(incomingPlayer);
             }
+            candidateIndex++;
         }
 
         return new TeamEventPlan(formation, changes, expulsions);
     }
 
     private Player findSubstituteForPosition(Position position, List<Player> substitutes) {
-        for (Player substitute : substitutes) {
+        Player selectedSubstitute = null;
+        int substituteIndex = 0;
+        while (substituteIndex < substitutes.size() && selectedSubstitute == null) {
+            Player substitute = substitutes.get(substituteIndex);
             if (substitute.getPosition() == position) {
-                return substitute;
+                selectedSubstitute = substitute;
             }
+            substituteIndex++;
         }
-        return null;
+        return selectedSubstitute;
     }
 
     private void addYellowCards(
@@ -241,18 +246,24 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Grou
         }
 
         private void registerExpulsion(Expulsion newExpulsion) {
-            for (int index = expulsions.size() - 1; index >= 0; index--) {
+            boolean shouldRegisterExpulsion = true;
+            int index = expulsions.size() - 1;
+            while (index >= 0 && shouldRegisterExpulsion) {
                 Expulsion currentExpulsion = expulsions.get(index);
                 if (currentExpulsion.getPlayer() == newExpulsion.getPlayer()) {
                     if (currentExpulsion.getMinute() <= newExpulsion.getMinute()) {
-                        return;
+                        shouldRegisterExpulsion = false;
+                    } else {
+                        expulsions.remove(index);
                     }
-                    expulsions.remove(index);
                 }
+                index--;
             }
-            expulsions.add(newExpulsion);
-            changes.removeIf(change -> change.getPlayerOut() == newExpulsion.getPlayer()
-                    && change.getMinute() >= newExpulsion.getMinute());
+            if (shouldRegisterExpulsion) {
+                expulsions.add(newExpulsion);
+                changes.removeIf(change -> change.getPlayerOut() == newExpulsion.getPlayer()
+                        && change.getMinute() >= newExpulsion.getMinute());
+            }
         }
 
         private List<PlayerParticipation> getParticipations() {
@@ -326,12 +337,20 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Grou
         }
 
         private Goalkeeper getGoalkeeper() {
-            for (Player player : formation.getStarters()) {
+            Goalkeeper selectedGoalkeeper = null;
+            int playerIndex = 0;
+            List<Player> starters = formation.getStarters();
+            while (playerIndex < starters.size() && selectedGoalkeeper == null) {
+                Player player = starters.get(playerIndex);
                 if (player instanceof Goalkeeper goalkeeper) {
-                    return goalkeeper;
+                    selectedGoalkeeper = goalkeeper;
                 }
+                playerIndex++;
             }
-            throw new IllegalStateException("The formation does not contain a goalkeeper");
+            if (selectedGoalkeeper == null) {
+                throw new IllegalStateException("The formation does not contain a goalkeeper");
+            }
+            return selectedGoalkeeper;
         }
     }
 }

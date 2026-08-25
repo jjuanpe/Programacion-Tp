@@ -49,13 +49,13 @@ public class FormationService {
             }
         }
 
-        for (Player player : availablePlayers) {
-            if (starters.size() == STARTER_COUNT) {
-                break;
-            }
+        int playerIndex = 0;
+        while (playerIndex < availablePlayers.size() && starters.size() < STARTER_COUNT) {
+            Player player = availablePlayers.get(playerIndex);
             if (player.getPosition() != Position.GOALKEEPER && !starters.contains(player)) {
                 starters.add(player);
             }
+            playerIndex++;
         }
         if (starters.size() != STARTER_COUNT) {
             throw new IllegalStateException(

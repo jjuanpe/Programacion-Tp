@@ -20,11 +20,19 @@ public enum Position {
     }
 
     public static Position fromFileValue(String fileValue) {
-        for (Position position : values()) {
+        Position selectedPosition = null;
+        int positionIndex = 0;
+        Position[] positions = values();
+        while (positionIndex < positions.length && selectedPosition == null) {
+            Position position = positions[positionIndex];
             if (position.fileValue.equalsIgnoreCase(fileValue)) {
-                return position;
+                selectedPosition = position;
             }
+            positionIndex++;
         }
-        throw new IllegalArgumentException("Unknown position value: " + fileValue);
+        if (selectedPosition == null) {
+            throw new IllegalArgumentException("Unknown position value: " + fileValue);
+        }
+        return selectedPosition;
     }
 }
