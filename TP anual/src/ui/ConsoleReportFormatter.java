@@ -2,7 +2,12 @@ package ui;
 
 import model.competition.StandingEntry;
 import model.event.Incidence;
+import model.match.FinalMatch;
+import model.match.FirstLegMatch;
 import model.match.GroupMatch;
+import model.match.SecondLegMatch;
+import model.simulation.FinalMatchReport;
+import model.simulation.KnockoutTieReport;
 import model.simulation.MatchSimulationReport;
 
 import java.util.List;
@@ -52,6 +57,52 @@ public class ConsoleReportFormatter {
                 .append("Final standings - Zone ").append(zoneName)
                 .append(System.lineSeparator());
         appendStandings(result, standings);
+        return result.toString();
+    }
+
+    public String formatKnockoutTie(KnockoutTieReport report) {
+        Objects.requireNonNull(report, "The knockout tie report is required");
+        FirstLegMatch firstLeg = report.getFirstLeg();
+        SecondLegMatch secondLeg = report.getSecondLeg();
+        StringBuilder result = new StringBuilder();
+
+        result.append(System.lineSeparator())
+                .append(report.getPhase())
+                .append(" | ").append(report.getWorkerThreadName())
+                .append(System.lineSeparator())
+                .append("1st leg: ")
+                .append(firstLeg.getHomeTeam().getName()).append(' ').append(firstLeg.getHomeGoals())
+                .append(" - ").append(firstLeg.getAwayGoals()).append(' ')
+                .append(firstLeg.getAwayTeam().getName())
+                .append(" (stadium: ").append(firstLeg.getStadium().getName()).append(')')
+                .append(System.lineSeparator())
+                .append("2nd leg: ")
+                .append(secondLeg.getHomeTeam().getName()).append(' ').append(secondLeg.getHomeGoals())
+                .append(" - ").append(secondLeg.getAwayGoals()).append(' ')
+                .append(secondLeg.getAwayTeam().getName())
+                .append(" (stadium: ").append(secondLeg.getStadium().getName()).append(')')
+                .append(System.lineSeparator())
+                .append("Winner: ").append(report.getWinner().getName())
+                .append(" (").append(report.getDecidingCriteria()).append(')')
+                .append(System.lineSeparator());
+        return result.toString();
+    }
+
+    public String formatFinal(FinalMatchReport report) {
+        Objects.requireNonNull(report, "The final match report is required");
+        FinalMatch finalMatch = report.getFinalMatch();
+        StringBuilder result = new StringBuilder();
+
+        result.append(System.lineSeparator())
+                .append("FINAL (stadium: ").append(finalMatch.getStadium().getName()).append(')')
+                .append(System.lineSeparator())
+                .append(finalMatch.getHomeTeam().getName()).append(' ').append(finalMatch.getHomeGoals())
+                .append(" - ").append(finalMatch.getAwayGoals()).append(' ')
+                .append(finalMatch.getAwayTeam().getName())
+                .append(System.lineSeparator())
+                .append("Champion: ").append(report.getChampion().getName())
+                .append(" (").append(report.getDecidingCriteria()).append(')')
+                .append(System.lineSeparator());
         return result.toString();
     }
 

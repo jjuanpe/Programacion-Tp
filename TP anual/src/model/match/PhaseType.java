@@ -1,4 +1,7 @@
 package model.match;
 
-public class PhaseType {
+public enum PhaseType {
+    QUARTER_FINAL,
+    SEMI_FINAL,
+    FINAL
 }
