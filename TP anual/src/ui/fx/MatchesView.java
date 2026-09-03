@@ -1,0 +1,185 @@
+package ui.fx;
+
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+
+import java.util.List;
+
+/**
+ * Pagina Matches: todos los partidos del torneo, de cualquier fase.
+ *
+ * Arriba la tabla con todos los partidos; al seleccionar uno, abajo aparece su
+ * detalle: alineaciones de los dos equipos e incidencias. La vista no calcula
+ * nada, solo muestra el partido ya armado que trae la seleccion.
+ *
+ * Es una pagina de consulta: los partidos se juegan por fase, desde Tournament.
+ * Simular un partido suelto se saltearia la designacion de arbitros y el
+ * arrastre de suspensiones entre fechas, y en la fase eliminatoria no tiene
+ * sentido porque la llave se resuelve con las dos ruedas juntas.
+ */
+public class MatchesView extends VBox {
+
+    private final Label detailTitle = new Label();
+    private final Label detailSubtitle = new Label();
+    private final Label homeTeamName = new Label();
+    private final Label awayTeamName = new Label();
+    private final TableView<LineupRow> homeLineup = new TableView<>();
+    private final TableView<LineupRow> awayLineup = new TableView<>();
+    private final TableView<IncidenceRow> incidences = new TableView<>();
+
+    public MatchesView(ObservableList<MatchDetail> matches, ObservableValue<String> emptyMessage) {
+        getStyleClass().add("page");
+
+        Label title = new Label("Matches");
+        title.getStyleClass().add("section-title");
+
+        getChildren().addAll(
+                title,
+                buildHint(),
+                buildSubtitle("All matches"),
+                buildMatchesTable(matches, emptyMessage),
+                buildSubtitle("Match detail"),
+                buildDetailPanel());
+    }
+
+    /** Donde se juegan los partidos, para quien venga a buscar ese boton aca. */
+    private Label buildHint() {
+        Label hint = new Label(
+                "Matches are played by phase from the Tournament page. This page is read-only.");
+        hint.getStyleClass().add("action-hint");
+        return hint;
+    }
+
+    private Label buildSubtitle(String text) {
+        Label subtitle = new Label(text);
+        subtitle.getStyleClass().add("subsection-title");
+        return subtitle;
+    }
+
+    private TableView<MatchDetail> buildMatchesTable(
+            ObservableList<MatchDetail> matches,
+            ObservableValue<String> emptyMessage) {
+        TableView<MatchDetail> table = new TableView<>(matches);
+        table.getStyleClass().add("data-table");
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+        table.setPrefHeight(300);
+
+        Label placeholder = new Label();
+        placeholder.getStyleClass().add("table-placeholder");
+        placeholder.textProperty().bind(emptyMessage);
+        table.setPlaceholder(placeholder);
+
+        table.getColumns().add(TableColumns.text("Phase", MatchDetail::getPhase));
+        table.getColumns().add(TableColumns.text("Date", MatchDetail::getDate));
+        table.getColumns().add(TableColumns.text("Home", MatchDetail::getHomeTeam));
+        table.getColumns().add(TableColumns.numeric("Score", MatchDetail::getScore));
+        table.getColumns().add(TableColumns.text("Away", MatchDetail::getAwayTeam));
+        table.getColumns().add(TableColumns.text("Status", MatchDetail::getStatus));
+        table.getColumns().add(TableColumns.text("Referee", MatchDetail::getReferee));
+
+        table.getSelectionModel().selectedItemProperty()
+                .addListener((observable, previous, selected) -> showDetail(selected));
+        matches.addListener((ListChangeListener<MatchDetail>) change -> selectFirst(table));
+        selectFirst(table);
+        return table;
+    }
+
+    private void selectFirst(TableView<MatchDetail> table) {
+        if (table.getItems().isEmpty()) {
+            showDetail(null);
+        } else if (table.getSelectionModel().getSelectedItem() == null) {
+            table.getSelectionModel().selectFirst();
+        }
+    }
+
+    private VBox buildDetailPanel() {
+        detailTitle.getStyleClass().add("detail-title");
+        detailSubtitle.getStyleClass().add("detail-subtitle");
+        homeTeamName.getStyleClass().add("subsection-title");
+        awayTeamName.getStyleClass().add("subsection-title");
+
+        VBox home = new VBox(homeTeamName, buildLineupTable(homeLineup));
+        VBox away = new VBox(awayTeamName, buildLineupTable(awayLineup));
+        home.getStyleClass().add("lineup");
+        away.getStyleClass().add("lineup");
+        HBox.setHgrow(home, Priority.ALWAYS);
+        HBox.setHgrow(away, Priority.ALWAYS);
+
+        HBox lineups = new HBox(home, away);
+        lineups.getStyleClass().add("split");
+
+        VBox panel = new VBox(
+                detailTitle,
+                detailSubtitle,
+                buildSubtitle("Line-ups"),
+                lineups,
+                buildSubtitle("Incidences"),
+                buildIncidencesTable());
+        panel.getStyleClass().addAll("panel", "match-detail");
+        return panel;
+    }
+
+    private TableView<LineupRow> buildLineupTable(TableView<LineupRow> table) {
+        table.getStyleClass().add("data-table");
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+        table.setPrefHeight(300);
+        table.setPlaceholder(buildPlaceholder("Not played yet"));
+
+        table.getColumns().add(TableColumns.text("Player", LineupRow::getPlayer));
+        table.getColumns().add(TableColumns.text("Position", LineupRow::getPosition));
+        table.getColumns().add(TableColumns.text("Role", LineupRow::getRole));
+        table.getColumns().add(TableColumns.numeric("Min.", LineupRow::getMinutes));
+        return table;
+    }
+
+    private TableView<IncidenceRow> buildIncidencesTable() {
+        incidences.getStyleClass().add("data-table");
+        incidences.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+        incidences.setPrefHeight(260);
+        incidences.setPlaceholder(buildPlaceholder("No incidences recorded"));
+
+        incidences.getColumns().add(TableColumns.numeric("Minute", IncidenceRow::getMinute));
+        incidences.getColumns().add(TableColumns.text("Type", IncidenceRow::getType));
+        incidences.getColumns().add(TableColumns.text("Detail", IncidenceRow::getDetail));
+        return incidences;
+    }
+
+    private Label buildPlaceholder(String text) {
+        Label placeholder = new Label(text);
+        placeholder.getStyleClass().add("table-placeholder");
+        return placeholder;
+    }
+
+    /** Muestra el partido elegido, o el detalle vacio si no hay ninguno. */
+    private void showDetail(MatchDetail match) {
+        boolean hasMatch = match != null;
+
+        detailTitle.setText(hasMatch ? match.getTitle() : "No match selected");
+        detailSubtitle.setText(hasMatch ? describe(match) : "");
+        homeTeamName.setText(hasMatch ? match.getHomeTeam() : "");
+        awayTeamName.setText(hasMatch ? match.getAwayTeam() : "");
+
+        homeLineup.getItems().setAll(hasMatch ? match.getHomeLineup() : List.of());
+        awayLineup.getItems().setAll(hasMatch ? match.getAwayLineup() : List.of());
+        incidences.getItems().setAll(hasMatch ? match.getIncidences() : List.of());
+    }
+
+    /** Linea de contexto: fase, fecha, sede, arbitro y global de la llave. */
+    private String describe(MatchDetail match) {
+        StringBuilder description = new StringBuilder();
+        description.append(match.getPhase())
+                .append("  |  ").append(match.getDate())
+                .append("  |  Stadium: ").append(match.getStadium())
+                .append("  |  Referee: ").append(match.getReferee());
+        if (!match.getAggregate().isEmpty()) {
+            description.append("  |  ").append(match.getAggregate());
+        }
+        return description.toString();
+    }
+}

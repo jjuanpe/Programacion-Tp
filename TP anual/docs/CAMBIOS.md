@@ -733,3 +733,85 @@ Las pruebas anteriores daban verde porque eran de vida corta y el recolector
 nunca llegaba a correr. Verificar que el ViewModel se completa **no** alcanza:
 hay que verificar que la vista se dibuja, y bajo condiciones parecidas a las
 reales.
+
+---
+
+## 2026-09-03 — Página Matches
+
+Todos los partidos del torneo, de cualquier fase, con alineaciones e
+incidencias.
+
+**Qué cambió**
+
+| Archivo | Estado | Rol |
+|---|---|---|
+| `src/controller/MatchesController.java` | nuevo | Traduce partidos, alineaciones e incidencias a filas de interfaz |
+| `src/ui/fx/MatchDetail.java` | nuevo | Un partido completo, listo para mostrar |
+| `src/ui/fx/LineupRow.java` | nuevo | Un jugador en la alineación |
+| `src/ui/fx/IncidenceRow.java` | nuevo | Una incidencia |
+| `src/ui/fx/MatchesViewModel.java` | nuevo | Los partidos observables |
+| `src/ui/fx/MatchesView.java` | nuevo | La página |
+| `src/ui/fx/AppWindow.java` | modificado | La página reemplaza al placeholder |
+| `src/ui/fx/styles.css` | modificado | Estilos del detalle de partido |
+
+**Decisiones**
+
+- **Un solo objeto por partido.** La tabla contiene directamente los
+  `MatchDetail`: las columnas leen su resumen y la selección ya trae el detalle.
+  Mantener dos listas paralelas (una de filas y otra de fichas) habría abierto
+  la puerta a que se desincronizaran.
+- **La fase se deduce de la clase del partido** (`GroupMatch`, `FirstLegMatch`,
+  `SecondLegMatch`, `FinalMatch`) más su `PhaseType`, así que sale bien sin
+  guardar nada nuevo en el dominio.
+- **Las incidencias se describen columna por columna** (minuto, tipo, detalle)
+  en vez de usar `getDescription()`, que ya trae el minuto adentro y habría
+  quedado repetido. Los goles distinguen penal y en contra.
+- **El global aparece sólo en los partidos de vuelta** y sólo si la ida ya se
+  jugó: antes de eso no existe.
+- **Las alineaciones salen de la formación y los minutos de las
+  participaciones**, cruzados por jugador. Antes de jugarse un partido no hay
+  formación, así que las tablas quedan vacías con el aviso correspondiente.
+- **Orden por fecha**, que es el orden real en que se juegan.
+
+**Verificación**
+
+Sobre un campeonato completo (37 partidos):
+
+| Fase | Partidos |
+|---|---|
+| Group Stage | 24 |
+| Quarter-final (ida / vuelta) | 4 / 4 |
+| Semi-final (ida / vuelta) | 2 / 2 |
+| Final | 1 |
+
+- Los goles contados por incidencias (71) coinciden con los de los marcadores.
+- Los 6 partidos de vuelta muestran el global; los otros 31 no.
+- Siempre 11 titulares por equipo. Los convocados van de 16 a 19 según
+  suspensiones y el plantel de 19 jugadores ya conocido.
+- Aparecen los seis tipos de incidencia: goles, goles de penal, goles en contra,
+  amarillas, expulsiones y cambios.
+- Se verificó el dibujado real bajo presión de memoria: 4 tablas con 37, 18, 18
+  y 6 filas.
+
+**Decisión: la simulación queda a nivel de fase**
+
+El alcance de la página incluía "simularlo". Se decidió **no** implementar la
+simulación de un partido suelto, y que Matches sea una página de consulta.
+
+Por qué:
+
+- `GroupStageSimulator` no sólo juega los partidos: designa los árbitros por
+  fecha evitando conflictos, y arrastra las suspensiones de una fecha a la
+  siguiente. Simular un partido aislado, o fuera del orden del fixture, se
+  saltearía esas reglas: un jugador expulsado en la fecha 1 podría jugar la
+  fecha 2.
+- En la fase eliminatoria no tiene sentido: la llave se resuelve con las dos
+  ruedas juntas (global, gol de visitante y, si hace falta, penales).
+
+La alternativa descartada era extraer de `GroupStageSimulator` la designación de
+árbitro y el cálculo de suspensiones, para poder jugar un partido de grupos
+respetando el orden del fixture. Es un refactor del dominio con riesgo de romper
+la simulación que hoy funciona, y el TP no pide simular partido por partido.
+
+Para que no parezca un olvido, la página lo dice: *"Matches are played by phase
+from the Tournament page. This page is read-only."*

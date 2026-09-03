@@ -596,3 +596,25 @@
     -fx-font-size: 12.5px;
     -fx-padding: 0 0 6px 0;
 }
+
+/* ---------- Pagina Matches ---------- */
+
+.match-detail {
+    -fx-spacing: 2px;
+    -fx-padding: 18px 22px 20px 22px;
+}
+
+.match-detail .data-table {
+    -fx-effect: null;
+    -fx-padding: 0;
+}
+
+.detail-subtitle {
+    -fx-text-fill: -text-muted;
+    -fx-font-size: 12.5px;
+    -fx-padding: 0 0 6px 0;
+}
+
+.lineup {
+    -fx-spacing: 4px;
+}
