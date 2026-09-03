@@ -21,12 +21,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
 
-/**
- * Single console entry point for the tournament.
- * It loads the data and coordinates the services that execute every stage.
- */
+
 public class Main {
-    private static final String DEFAULT_DATA_PATH = "TP anual/docs/torneo.json";
+    private static final String DEFAULT_DATA_PATH = "docs/torneo.json";
     private static final LocalDate GROUP_STAGE_START_DATE = LocalDate.of(2026, 9, 1);
     private static final LocalDate KNOCKOUT_STAGE_START_DATE = LocalDate.of(2026, 11, 1);
     private static final int DAYS_BETWEEN_ROUNDS = 7;

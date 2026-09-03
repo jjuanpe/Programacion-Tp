@@ -15,7 +15,8 @@ import java.util.Objects;
 public class KnockoutBracketService {
 
     private static final int EXPECTED_ZONE_COUNT = 4;
-    private static final int QUALIFIED_PER_ZONE = 2;
+    /** Cuantos equipos de cada zona pasan a cuartos. */
+    public static final int QUALIFIED_PER_ZONE = 2;
 
     private final StandingsService standingsService;
 

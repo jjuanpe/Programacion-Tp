@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Random;
 
 public class Sprint3Main {
-    private static final String DEFAULT_DATA_PATH = "TP anual/docs/torneo.json";
+    private static final String DEFAULT_DATA_PATH = "docs/torneo.json";
     private static final LocalDate FIRST_ROUND_DATE = LocalDate.of(2026, 9, 1);
     private static final int DAYS_BETWEEN_ROUNDS = 7;
     private static final Random SEED_GENERATOR = new Random();

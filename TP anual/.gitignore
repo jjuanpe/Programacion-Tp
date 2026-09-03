@@ -1,0 +1,5 @@
+# Salida de compilacion
+out/
+
+# SDK de JavaFX (se descarga aparte, no se versiona)
+lib/javafx-sdk-*/
