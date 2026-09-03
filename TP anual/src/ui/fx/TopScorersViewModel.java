@@ -18,13 +18,23 @@ public class TopScorersViewModel {
 
     private final ObservableList<ScorerRow> rows = FXCollections.observableArrayList();
 
+    /*
+     * El envoltorio de solo lectura se guarda en un campo a proposito.
+     * FXCollections.unmodifiableObservableList engancha un listener DEBIL a la
+     * lista original: si nadie sostiene el envoltorio, el recolector se lo
+     * lleva y la vista deja de enterarse de los cambios, en silencio y para
+     * siempre. Devolver uno nuevo en cada llamada provocaba justamente eso.
+     */
+    private final ObservableList<ScorerRow> readOnlyRows =
+            FXCollections.unmodifiableObservableList(rows);
+
     /** Mensaje que se muestra cuando la tabla esta vacia. */
     private final StringProperty status =
             new SimpleStringProperty(this, "status", "No report generated yet");
 
     /** Solo lectura: la vista muestra las filas, no las modifica. */
     public ObservableList<ScorerRow> getRows() {
-        return FXCollections.unmodifiableObservableList(rows);
+        return readOnlyRows;
     }
 
     public void setRows(List<ScorerRow> newRows) {

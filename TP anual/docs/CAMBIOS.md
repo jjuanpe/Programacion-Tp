@@ -636,3 +636,100 @@ Controles sobre las tablas ya jugadas:
 - **Los 8 equipos marcados como clasificados son exactamente los 8 que
   `KnockoutBracketService` pone en el cuadro de cuartos.** La página no muestra
   una clasificación paralela: es la misma que juega la fase eliminatoria.
+
+---
+
+## 2026-09-03 — Group Stage: equipos asignados, árbitro y estados vacíos
+
+Repaso de la página contra el alcance definido. Faltaban tres cosas.
+
+**Qué cambió**
+
+| Archivo | Estado | Rol |
+|---|---|---|
+| `src/ui/fx/GroupZone.java` | modificado | Nuevo campo con los equipos asignados a la zona |
+| `src/ui/fx/FixtureRow.java` | modificado | Nuevo campo con el árbitro del partido |
+| `src/controller/GroupStageController.java` | modificado | Arma ambos y explica por qué la página está vacía |
+| `src/ui/fx/GroupStageView.java` | modificado | Línea de equipos por zona y columna Referee |
+| `src/ui/fx/styles.css` | modificado | Estilo de la línea de equipos |
+
+**Qué faltaba**
+
+- **"Equipos asignados" no se veía como tal.** Los equipos aparecían dentro de
+  la tabla de posiciones, que recién después del sorteo muestra cuatro filas en
+  cero. Ahora cada zona lleva una línea `Teams: ...` con los equipos en el orden
+  del sorteo, que se lee aunque no se haya jugado nada.
+- **La página vacía no explicaba nada.** Decía "No group draw yet" con el botón
+  de sorteo deshabilitado y ninguna pista de por qué. El mensaje ahora depende
+  del estado del torneo: sin datos dice que hay que importarlos desde la página
+  Tournament; con datos importados dice que falta correr el sorteo.
+- **"Consultar partidos" mostraba poco.** Se agregó la columna `Referee`, que
+  queda en guion hasta que el partido se juega (los partidos de grupo se crean
+  sin árbitro; se designa al simular). No se agregó el estadio porque
+  `FixtureService` crea los partidos de grupo sin estadio.
+
+**Verificación**
+
+- Los tres mensajes de estado vacío salen en el momento que corresponde.
+- La línea de equipos aparece con el sorteo hecho y sin ningún partido jugado.
+- El árbitro pasa de guion a nombre al jugarse el partido, distinto en cada uno.
+- Se confirmó que la página realmente dibuja los datos, no sólo que el
+  ViewModel se completa: 4 paneles de zona, 8 tablas y 40 filas.
+
+---
+
+## 2026-09-03 — Corrección: las páginas dejaban de actualizarse
+
+La página Group Stage podía quedar vacía aunque el torneo estuviera sorteado y
+jugado. También afectaba a Teams y a Top Scorers.
+
+**Qué cambió**
+
+| Archivo | Estado | Rol |
+|---|---|---|
+| `src/ui/fx/GroupStageViewModel.java` | modificado | Guarda el envoltorio de sólo lectura en un campo |
+| `src/ui/fx/TeamsViewModel.java` | modificado | Ídem, para las dos listas |
+| `src/ui/fx/TopScorersViewModel.java` | modificado | Ídem |
+
+**La causa**
+
+Los ViewModel exponían sus listas así:
+
+```java
+public ObservableList<GroupZone> getZones() {
+    return FXCollections.unmodifiableObservableList(zones);   // envoltorio NUEVO
+}
+```
+
+`FXCollections.unmodifiableObservableList` engancha un
+**`WeakListChangeListener`** a la lista original. El envoltorio sólo quedaba
+referenciado por el propio lambda que la vista le registraba: un ciclo sin
+ninguna raíz externa, o sea recolectable. Cuando corría el recolector, el
+envoltorio desaparecía y **la vista dejaba de recibir avisos, en silencio y
+para siempre**.
+
+Por eso aparecía justo en Group Stage: el sorteo y la simulación reservan
+bastante memoria, así que el recolector corre entre que se dibuja la página y
+que llegan los datos.
+
+**La corrección**
+
+El envoltorio se guarda en un campo del ViewModel, que vive mientras viva la
+ventana, y `getZones()` devuelve siempre la misma instancia.
+
+**Verificación**
+
+Se reprodujo el escenario exacto: dibujar las páginas, forzar 25 recolecciones
+con presión de memoria, y recién después cargar y jugar el torneo.
+
+| | Antes | Después |
+|---|---|---|
+| Group Stage | 0 paneles, 0 filas | 4 paneles, 8 tablas, 40 filas |
+| Teams | 0 filas | 2 tablas, 34 filas |
+
+**Lección**
+
+Las pruebas anteriores daban verde porque eran de vida corta y el recolector
+nunca llegaba a correr. Verificar que el ViewModel se completa **no** alcanza:
+hay que verificar que la vista se dibuja, y bajo condiciones parecidas a las
+reales.

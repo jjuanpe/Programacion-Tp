@@ -17,11 +17,21 @@ public class GroupStageViewModel {
 
     private final ObservableList<GroupZone> zones = FXCollections.observableArrayList();
 
+    /*
+     * El envoltorio de solo lectura se guarda en un campo a proposito.
+     * FXCollections.unmodifiableObservableList engancha un listener DEBIL a la
+     * lista original: si nadie sostiene el envoltorio, el recolector se lo
+     * lleva y la vista deja de enterarse de los cambios, en silencio y para
+     * siempre. Devolver uno nuevo en cada llamada provocaba justamente eso.
+     */
+    private final ObservableList<GroupZone> readOnlyZones =
+            FXCollections.unmodifiableObservableList(zones);
+
     private final StringProperty status = new SimpleStringProperty(this, "status", EMPTY_MESSAGE);
 
     /** Solo lectura: la vista muestra las zonas, no las modifica. */
     public ObservableList<GroupZone> getZones() {
-        return FXCollections.unmodifiableObservableList(zones);
+        return readOnlyZones;
     }
 
     public void setZones(List<GroupZone> newZones) {

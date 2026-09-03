@@ -5,6 +5,8 @@ import model.competition.StandingEntry;
 import model.competition.StandingsService;
 import model.competition.Zone;
 import model.match.GroupMatch;
+import model.people.Referee;
+import model.team.Team;
 import ui.fx.FixtureRow;
 import ui.fx.GroupStageViewModel;
 import ui.fx.GroupZone;
@@ -30,8 +32,11 @@ public class GroupStageController {
 
     private static final DateTimeFormatter DATE_FORMAT =
             DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.US);
-    private static final String NOT_PLAYED_SCORE = "-";
-    private static final String EMPTY_MESSAGE = "No group draw yet";
+    private static final String NOT_AVAILABLE = "-";
+    private static final String NO_DATA_MESSAGE =
+            "No tournament data imported yet. Import it from the Tournament page.";
+    private static final String NO_DRAW_MESSAGE =
+            "Data imported, but the group draw has not been run yet. Use Run group draw above.";
 
     private final TournamentSession session;
     private final GroupStageViewModel viewModel;
@@ -58,16 +63,44 @@ public class GroupStageController {
             groupZones.add(toGroupZone(zone));
         }
         viewModel.setZones(groupZones);
-        viewModel.setStatus(zones.isEmpty() ? EMPTY_MESSAGE : "");
+        viewModel.setStatus(describeEmptyState());
+    }
+
+    /**
+     * Que decir cuando no hay zonas para mostrar. El mensaje explica que falta
+     * hacer: sin esto, la pagina se veia vacia y con el boton de sorteo
+     * deshabilitado, sin ninguna pista de por que.
+     */
+    private String describeEmptyState() {
+        String message;
+        TournamentState state = session.getState();
+        if (state == TournamentState.EMPTY) {
+            message = NO_DATA_MESSAGE;
+        } else if (state == TournamentState.DATA_LOADED) {
+            message = NO_DRAW_MESSAGE;
+        } else {
+            message = "";
+        }
+        return message;
     }
 
     private GroupZone toGroupZone(Zone zone) {
         List<StandingEntry> standings = standingsService.computeStandings(zone);
         return new GroupZone(
                 zone.getName(),
+                describeTeams(zone),
                 toStandingRows(standings),
                 toFixtureRows(zone.getGroupMatches()),
                 describeQualified(standings));
+    }
+
+    /** Los equipos que el sorteo asigno a la zona, en el orden del sorteo. */
+    private String describeTeams(Zone zone) {
+        List<String> names = new ArrayList<>();
+        for (Team team : zone.getTeams()) {
+            names.add(team.getName());
+        }
+        return String.join(", ", names);
     }
 
     private List<StandingRow> toStandingRows(List<StandingEntry> standings) {
@@ -98,11 +131,16 @@ public class GroupStageController {
             rows.add(new FixtureRow(
                     match.getDate().format(DATE_FORMAT),
                     match.getHomeTeam().getName(),
-                    played ? match.getHomeGoals() + " - " + match.getAwayGoals() : NOT_PLAYED_SCORE,
+                    played ? match.getHomeGoals() + " - " + match.getAwayGoals() : NOT_AVAILABLE,
                     match.getAwayTeam().getName(),
-                    played ? "Played" : "Pending"));
+                    played ? "Played" : "Pending",
+                    refereeNameOf(match.getReferee())));
         }
         return rows;
+    }
+
+    private String refereeNameOf(Referee referee) {
+        return referee == null ? NOT_AVAILABLE : referee.getName();
     }
 
     /**

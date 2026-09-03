@@ -77,11 +77,16 @@ public class GroupStageView extends VBox {
         Label name = new Label(zone.getName());
         name.getStyleClass().add("detail-title");
 
+        Label teams = new Label("Teams: " + zone.getTeams());
+        teams.getStyleClass().add("zone-teams");
+        teams.setWrapText(true);
+
         Label qualified = new Label(zone.getQualifiedTeams());
         qualified.getStyleClass().add("qualified-note");
 
         VBox panel = new VBox(
                 name,
+                teams,
                 buildSubtitle("Standings"),
                 buildStandingsTable(zone),
                 qualified,
@@ -145,6 +150,7 @@ public class GroupStageView extends VBox {
         table.getColumns().add(TableColumns.numeric("Score", FixtureRow::getScore));
         table.getColumns().add(TableColumns.text("Away", FixtureRow::getAwayTeam));
         table.getColumns().add(TableColumns.text("Status", FixtureRow::getStatus));
+        table.getColumns().add(TableColumns.text("Referee", FixtureRow::getReferee));
         return table;
     }
 
