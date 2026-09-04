@@ -815,3 +815,115 @@ la simulación que hoy funciona, y el TP no pide simular partido por partido.
 
 Para que no parezca un olvido, la página lo dice: *"Matches are played by phase
 from the Tournament page. This page is read-only."*
+
+---
+
+## 2026-09-04 — Página Knockout Stage, creada y descartada a favor de un filtro en Matches
+
+Se pidió una página Knockout Stage con el resumen de los partidos jugados,
+filtrable por fase (cuartos, semis, final). Se construyó como página aparte
+y, al revisarla, resultó casi idéntica a Matches: misma tabla, mismo detalle
+de alineaciones e incidencias, sólo que recortada a las eliminatorias. Se
+sacó la página y el filtro por fase se sumó directamente a Matches.
+
+**Primer intento (revertido)**
+
+| Archivo | Estado | Rol |
+|---|---|---|
+| `src/controller/KnockoutStageController.java` | creado → eliminado | Filtraba los partidos de eliminatorias |
+| `src/controller/MatchDetailFactory.java` | creado → eliminado | Traducción `Match → MatchDetail` compartida entre Matches y Knockout Stage |
+| `src/ui/fx/KnockoutStageViewModel.java` | creado → eliminado | Los partidos de eliminatorias observables |
+| `src/ui/fx/KnockoutStageView.java` | creado → eliminado | La página, con combo de filtro por fase |
+
+**Qué quedó**
+
+| Archivo | Estado | Rol |
+|---|---|---|
+| `src/ui/fx/MatchDetail.java` | modificado | Nuevo campo `phaseCategory` (fase sin distinguir ida/vuelta), para filtrar |
+| `src/controller/MatchesController.java` | modificado | Vuelve a traducir `Match → MatchDetail` directamente, al quedar como único consumidor |
+| `src/ui/fx/MatchesView.java` | modificado | Combo "Phase" (All / Group Stage / Quarter-final / Semi-final / Final) sobre un `FilteredList` |
+| `src/ui/fx/styles.css` | modificado | Estilo `.filter-combo`, reutilizado luego por la página Players |
+| `src/ui/fx/AppWindow.java` | modificado | Knockout Stage vuelve a ser un placeholder (queda reservado para el bracket) |
+
+**Decisiones**
+
+- **No se dejaron las dos páginas.** Mantener una página aparte sólo para
+  filtrar por fase habría duplicado ~150 líneas de traducción de dominio a
+  interfaz (alineaciones, incidencias, agregado) sin agregar nada que Matches
+  no mostrara ya.
+- **`MatchDetailFactory` se replegó en `MatchesController`.** Se había
+  extraído para que la compartieran dos páginas; al quedar Matches como único
+  consumidor, mantenerla aparte era una indirección de más.
+- **El filtro es un `FilteredList` sobre la lista completa**, no una segunda
+  consulta al controlador: la vista filtra lo que ya tiene, sin recalcular
+  nada del dominio.
+- **`phaseCategory` se agregó a `MatchDetail`** en vez de parsear el texto de
+  `getPhase()` (que trae "(1st leg)" / "(2nd leg)"): filtrar por fase es un
+  dato, no algo que convenga deducir de un string armado para mostrar.
+- **Knockout Stage sigue en el sidebar, como placeholder.** El alcance real de
+  esa página (el cuadro de llaves, no un listado) queda pendiente.
+
+**Verificación**
+
+Sobre un campeonato completo (37 partidos): el filtro separa correctamente
+24 de grupos, 8 de cuartos, 4 de semis y 1 final; "All phases" muestra los 37.
+
+---
+
+## 2026-09-04 — Página People: listado de Players con filtro por posición
+
+Primera sección de la página People (se divide en Players, Coaches y
+Referees). Listado de todo el plantel de cada equipo, filtrable por posición,
+con sus estadísticas del campeonato.
+
+**Qué cambió**
+
+| Archivo | Estado | Rol |
+|---|---|---|
+| `src/model/competition/PlayerReportEntry.java` | nuevo | Fila con las estadísticas de un jugador |
+| `src/model/competition/PlayerReportService.java` | nuevo | Calcula partidos jugados, minutos, goles y goles recibidos |
+| `src/controller/PlayersController.java` | nuevo | Traduce el reporte a filas de interfaz |
+| `src/ui/fx/PlayerStatsRow.java` | nuevo | Fila lista para mostrar |
+| `src/ui/fx/PlayersViewModel.java` | nuevo | Lista observable de jugadores |
+| `src/ui/fx/PlayersView.java` | nuevo | La sección: combo de filtro por posición + tabla |
+| `src/ui/fx/PeopleView.java` | nuevo | Pestañas Players / Coaches / Referees |
+| `src/ui/fx/AppWindow.java` | modificado | La página People reemplaza al placeholder |
+| `src/ui/fx/styles.css` | modificado | Estilos de las pestañas y reutiliza `.filter-combo` |
+
+**Qué muestra**
+
+Nombre, posición, equipo, edad, rating, partidos jugados, minutos jugados,
+goles convertidos y, sólo para los arqueros, goles recibidos y su promedio
+por partido (el resto de las posiciones muestra "-" en esas dos columnas).
+Incluye a todo el plantel, jugó o no; los que no jugaron aparecen en cero.
+
+**Decisiones**
+
+- **Coaches y Referees quedan como aviso de pendiente.** Se pidió empezar por
+  Players; las otras dos pestañas ya están en la navegación para no rehacerla
+  después, pero sin contenido todavía.
+- **Los goles recibidos de un arquero NO salen de `Goal.getGoalkeeper()`.** Se
+  encontró que esa referencia sólo se completa en la fase de grupos
+  (`GroupMatchSimulationService`); en la eliminatoria
+  (`KnockoutMatchSimulationService`) el gol se crea sin arquero. Contar por esa
+  referencia habría subestimado a los arqueros que jugaron cuartos, semis o la
+  final.
+- **En cambio, se usa el resultado del partido y el lado del equipo:** si el
+  arquero juega de local, lo recibido es `awayGoals`; si juega de visitante,
+  `homeGoals`. Esto funciona porque se confirmó que el arquero titular **nunca**
+  es reemplazado ni expulsado en ninguna de las dos simulaciones (queda
+  excluido de los candidatos a cambio y expulsión en ambos servicios), así que
+  siempre juega los 90 minutos completos cuando participa.
+- **Un partido cuenta como jugado cuando la participación tiene minutos > 0.**
+  Un suplente que no entró figura en `Match.getParticipations()` con 0
+  minutos: contarlo como partido jugado habría inflado el conteo.
+- **Se reutilizó el combo `.filter-combo`** creado para el filtro de fase de
+  Matches, en vez de escribir un estilo nuevo para el filtro de posición.
+
+**Verificación**
+
+Sobre un campeonato completo: 289 jugadores listados (32 arqueros, 96
+defensores, 80 mediocampistas, 81 delanteros — 2-6-5-5 por cada uno de los 16
+equipos). Se comprobó puntualmente que los jugadores que no son arqueros
+muestran "-" en goles recibidos y su promedio, y que los valores de partidos,
+minutos, goles y goles recibidos de varios arqueros coinciden con lo jugado.
