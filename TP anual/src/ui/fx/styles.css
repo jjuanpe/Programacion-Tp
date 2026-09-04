@@ -619,7 +619,7 @@
     -fx-spacing: 4px;
 }
 
-/* Filtro por fase de la pagina Matches */
+/* Combo de filtro (fase en Matches, posicion en Players) */
 
 .filter-combo {
     -fx-background-color: -card-bg;
@@ -630,4 +630,37 @@
     -fx-padding: 2px 6px;
     -fx-font-size: 13px;
     -fx-cursor: hand;
+}
+
+/* ---------- Pagina People ---------- */
+
+/* Contenido de una pestana: mismo espaciado que .page, sin repetir el padding */
+.page-section {
+    -fx-spacing: 13px;
+}
+
+.sub-tabs {
+    -fx-spacing: 8px;
+    -fx-padding: 0 0 4px 0;
+}
+
+.sub-tab-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 10px;
+    -fx-text-fill: -text-muted;
+    -fx-font-size: 13px;
+    -fx-padding: 8px 16px;
+    -fx-cursor: hand;
+}
+
+.sub-tab-button:hover {
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: -text-strong;
+}
+
+.sub-tab-button.active,
+.sub-tab-button.active:hover {
+    -fx-background-color: -accent;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
 }
