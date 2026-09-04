@@ -2,6 +2,7 @@ package ui.fx;
 
 import controller.DashboardController;
 import controller.GroupStageController;
+import controller.KnockoutStageController;
 import controller.MatchesController;
 import controller.TeamsController;
 import controller.TournamentController;
@@ -57,6 +58,10 @@ public class AppWindow extends Application {
     private final MatchesController matchesController =
             new MatchesController(session, matchesViewModel);
 
+    private final KnockoutStageViewModel knockoutStageViewModel = new KnockoutStageViewModel();
+    private final KnockoutStageController knockoutStageController =
+            new KnockoutStageController(session, knockoutStageViewModel);
+
     private final Map<NavItem, Node> pages = new EnumMap<>(NavItem.class);
     private final ScrollPane pageArea = new ScrollPane();
 
@@ -92,6 +97,7 @@ public class AppWindow extends Application {
         teamsController.refresh();
         groupStageController.refresh();
         matchesController.refresh();
+        knockoutStageController.refresh();
     }
 
     /** Area central: encabezado fijo arriba y la pagina activa debajo. */
@@ -135,9 +141,9 @@ public class AppWindow extends Application {
         pages.put(NavItem.MATCHES, new MatchesView(
                 matchesViewModel.getMatches(),
                 matchesViewModel.statusProperty()));
-        putPlaceholder(NavItem.KNOCKOUT_STAGE,
-                "Bracket from the quarter-finals to the champion, with both legs, aggregate "
-                        + "score and qualifying criteria.");
+        pages.put(NavItem.KNOCKOUT_STAGE, new KnockoutStageView(
+                knockoutStageViewModel.getMatches(),
+                knockoutStageViewModel.statusProperty()));
         putPlaceholder(NavItem.PEOPLE,
                 "Players, coaches and referees.");
         putPlaceholder(NavItem.STADIUMS,

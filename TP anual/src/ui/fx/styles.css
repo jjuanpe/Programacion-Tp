@@ -618,3 +618,16 @@
 .lineup {
     -fx-spacing: 4px;
 }
+
+/* ---------- Pagina Knockout Stage ---------- */
+
+.filter-combo {
+    -fx-background-color: -card-bg;
+    -fx-background-radius: 10px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1px;
+    -fx-padding: 2px 6px;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+}

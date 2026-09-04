@@ -13,6 +13,7 @@ import java.util.List;
 public final class MatchDetail {
 
     private final String phase;
+    private final String phaseCategory;
     private final String date;
     private final String homeTeam;
     private final String awayTeam;
@@ -28,6 +29,7 @@ public final class MatchDetail {
 
     public MatchDetail(
             String phase,
+            String phaseCategory,
             String date,
             String homeTeam,
             String awayTeam,
@@ -41,6 +43,7 @@ public final class MatchDetail {
             List<LineupRow> awayLineup,
             List<IncidenceRow> incidences) {
         this.phase = phase;
+        this.phaseCategory = phaseCategory;
         this.date = date;
         this.homeTeam = homeTeam;
         this.awayTeam = awayTeam;
@@ -56,6 +59,9 @@ public final class MatchDetail {
     }
 
     public String getPhase() { return phase; }
+
+    /** Fase sin distinguir ida/vuelta, para filtrar (ej. "Semi-final"). */
+    public String getPhaseCategory() { return phaseCategory; }
 
     public String getDate() { return date; }
 
