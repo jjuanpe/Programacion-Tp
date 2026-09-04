@@ -619,7 +619,7 @@
     -fx-spacing: 4px;
 }
 
-/* ---------- Pagina Knockout Stage ---------- */
+/* Filtro por fase de la pagina Matches */
 
 .filter-combo {
     -fx-background-color: -card-bg;

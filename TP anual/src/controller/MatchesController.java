@@ -1,24 +1,51 @@
 package controller;
 
+import model.event.Change;
+import model.event.Expulsion;
+import model.event.Goal;
+import model.event.Incidence;
+import model.event.PenaltyExecuted;
+import model.event.YellowCard;
+import model.match.FinalMatch;
+import model.match.FirstLegMatch;
+import model.match.Formation;
+import model.match.GroupMatch;
 import model.match.Match;
+import model.match.PhaseType;
+import model.match.PlayerParticipation;
+import model.match.SecondLegMatch;
+import model.people.Player;
+import model.people.Position;
+import model.people.Referee;
+import model.venue.Stadium;
+import ui.fx.IncidenceRow;
+import ui.fx.LineupRow;
 import ui.fx.MatchDetail;
 import ui.fx.MatchesViewModel;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 /**
  * Arma la pagina Matches: todos los partidos del campeonato, de cualquier fase,
  * con sus alineaciones y sus incidencias.
  *
- * La traduccion de cada partido a fila de interfaz la hace
- * {@link MatchDetailFactory}, compartida con la pagina Knockout Stage. Los
- * partidos van ordenados por fecha, que es el orden en que se juegan.
+ * Traduce las clases del dominio (Match, Formation, Incidence) a filas de
+ * interfaz. Los partidos van ordenados por fecha, que es el orden en que se
+ * juegan. El filtro por fase lo aplica la vista sobre la lista completa.
  */
 public class MatchesController {
 
+    private static final DateTimeFormatter DATE_FORMAT =
+            DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.US);
+    private static final String NOT_AVAILABLE = "-";
+    private static final String GROUP_STAGE_CATEGORY = "Group Stage";
     private static final String NO_MATCHES_MESSAGE =
             "No matches yet. Import the data and run the group draw from the Tournament page.";
 
@@ -37,9 +64,190 @@ public class MatchesController {
 
         List<MatchDetail> details = new ArrayList<>();
         for (Match match : matches) {
-            details.add(MatchDetailFactory.toDetail(match));
+            details.add(toDetail(match));
         }
         viewModel.setMatches(details);
         viewModel.setStatus(details.isEmpty() ? NO_MATCHES_MESSAGE : "");
+    }
+
+    private MatchDetail toDetail(Match match) {
+        boolean played = match.isPlayed();
+        Map<Player, Integer> minutes = indexMinutes(match.getParticipations());
+
+        return new MatchDetail(
+                describePhase(match),
+                phaseCategory(match),
+                match.getDate().format(DATE_FORMAT),
+                match.getHomeTeam().getName(),
+                match.getAwayTeam().getName(),
+                played ? match.getHomeGoals() + " - " + match.getAwayGoals() : NOT_AVAILABLE,
+                played ? "Played" : "Pending",
+                played,
+                refereeNameOf(match.getReferee()),
+                stadiumNameOf(match.getStadium()),
+                describeAggregate(match),
+                toLineup(match.getHomeFormation(), minutes),
+                toLineup(match.getAwayFormation(), minutes),
+                toIncidences(match.getIncidences()));
+    }
+
+    /** A que instancia del torneo pertenece el partido. */
+    private String describePhase(Match match) {
+        String phase;
+        if (match instanceof GroupMatch) {
+            phase = GROUP_STAGE_CATEGORY;
+        } else if (match instanceof FirstLegMatch firstLeg) {
+            phase = labelOf(firstLeg.getPhase()) + " (1st leg)";
+        } else if (match instanceof SecondLegMatch secondLeg) {
+            phase = labelOf(secondLeg.getPhase()) + " (2nd leg)";
+        } else if (match instanceof FinalMatch) {
+            phase = "Final";
+        } else {
+            phase = NOT_AVAILABLE;
+        }
+        return phase;
+    }
+
+    /** Fase sin distinguir ida/vuelta, para que la vista filtre por ella. */
+    private String phaseCategory(Match match) {
+        String category;
+        if (match instanceof GroupMatch) {
+            category = GROUP_STAGE_CATEGORY;
+        } else if (match instanceof FirstLegMatch firstLeg) {
+            category = labelOf(firstLeg.getPhase());
+        } else if (match instanceof SecondLegMatch secondLeg) {
+            category = labelOf(secondLeg.getPhase());
+        } else if (match instanceof FinalMatch) {
+            category = "Final";
+        } else {
+            category = NOT_AVAILABLE;
+        }
+        return category;
+    }
+
+    private String labelOf(PhaseType phase) {
+        return switch (phase) {
+            case QUARTER_FINAL -> "Quarter-final";
+            case SEMI_FINAL -> "Semi-final";
+            case FINAL -> "Final";
+        };
+    }
+
+    /** El global solo tiene sentido en la vuelta, con la ida ya jugada. */
+    private String describeAggregate(Match match) {
+        String aggregate = "";
+        if (match instanceof SecondLegMatch secondLeg
+                && secondLeg.isPlayed()
+                && secondLeg.getFirstLeg().isPlayed()) {
+            aggregate = "Aggregate: "
+                    + secondLeg.getPlainAggregateForSecondLegHomeTeam() + " - "
+                    + secondLeg.getPlainAggregateForSecondLegAwayTeam();
+        }
+        return aggregate;
+    }
+
+    private Map<Player, Integer> indexMinutes(List<PlayerParticipation> participations) {
+        Map<Player, Integer> minutes = new HashMap<>();
+        for (PlayerParticipation participation : participations) {
+            minutes.put(participation.getPlayer(), participation.getMinutesPlayed());
+        }
+        return minutes;
+    }
+
+    /** La alineacion existe solo si el partido se jugo. */
+    private List<LineupRow> toLineup(Formation formation, Map<Player, Integer> minutes) {
+        List<LineupRow> lineup = new ArrayList<>();
+        if (formation != null) {
+            for (Player player : formation.getStarters()) {
+                lineup.add(toLineupRow(player, "Starter", minutes));
+            }
+            for (Player player : formation.getSubstitutes()) {
+                lineup.add(toLineupRow(player, "Substitute", minutes));
+            }
+        }
+        return lineup;
+    }
+
+    private LineupRow toLineupRow(Player player, String role, Map<Player, Integer> minutes) {
+        Integer played = minutes.get(player);
+        return new LineupRow(
+                player.getName(),
+                labelOf(player.getPosition()),
+                role,
+                played == null || played == 0 ? NOT_AVAILABLE : String.valueOf(played));
+    }
+
+    private String labelOf(Position position) {
+        return switch (position) {
+            case GOALKEEPER -> "Goalkeeper";
+            case DEFENDER -> "Defender";
+            case MIDFIELDER -> "Midfielder";
+            case FORWARD -> "Forward";
+        };
+    }
+
+    /** Las incidencias van en orden de minuto, como se vieron en la cancha. */
+    private List<IncidenceRow> toIncidences(List<Incidence> incidences) {
+        List<Incidence> ordered = new ArrayList<>(incidences);
+        ordered.sort(Comparator.comparingInt(Incidence::getMinute));
+
+        List<IncidenceRow> rows = new ArrayList<>();
+        for (Incidence incidence : ordered) {
+            rows.add(new IncidenceRow(
+                    incidence.getMinute() + "'",
+                    typeOf(incidence),
+                    detailOf(incidence)));
+        }
+        return rows;
+    }
+
+    private String typeOf(Incidence incidence) {
+        String type;
+        if (incidence instanceof Goal goal) {
+            type = goal.isOwnGoal() ? "Own goal" : goal.isPenalty() ? "Goal (penalty)" : "Goal";
+        } else if (incidence instanceof YellowCard) {
+            type = "Yellow card";
+        } else if (incidence instanceof Expulsion) {
+            type = "Expulsion";
+        } else if (incidence instanceof Change) {
+            type = "Substitution";
+        } else if (incidence instanceof PenaltyExecuted) {
+            type = "Shoot-out penalty";
+        } else {
+            type = incidence.getClass().getSimpleName();
+        }
+        return type;
+    }
+
+    private String detailOf(Incidence incidence) {
+        String detail;
+        if (incidence instanceof Goal goal) {
+            detail = goal.getScorer().getName();
+            if (goal.getGoalkeeper() != null) {
+                detail = detail + " (goalkeeper: " + goal.getGoalkeeper().getName() + ")";
+            }
+        } else if (incidence instanceof YellowCard card) {
+            detail = card.getPlayer().getName();
+        } else if (incidence instanceof Expulsion expulsion) {
+            detail = expulsion.getPlayer().getName();
+            if (expulsion.getReason() != null) {
+                detail = detail + " (" + expulsion.getReason().getDescription() + ")";
+            }
+        } else if (incidence instanceof Change change) {
+            detail = change.getPlayerOut().getName() + " -> " + change.getPlayerIn().getName();
+        } else if (incidence instanceof PenaltyExecuted penalty) {
+            detail = penalty.getKicker().getName() + (penalty.isScored() ? " scored" : " missed");
+        } else {
+            detail = incidence.getDescription();
+        }
+        return detail;
+    }
+
+    private String refereeNameOf(Referee referee) {
+        return referee == null ? NOT_AVAILABLE : referee.getName();
+    }
+
+    private String stadiumNameOf(Stadium stadium) {
+        return stadium == null ? NOT_AVAILABLE : stadium.getName();
     }
 }

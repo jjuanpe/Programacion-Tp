@@ -1,8 +1,12 @@
 package ui.fx;
 
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.geometry.Pos;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
@@ -10,13 +14,16 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
- * Pagina Matches: todos los partidos del torneo, de cualquier fase.
+ * Pagina Matches: todos los partidos del torneo, con un filtro por fase
+ * (grupos, cuartos, semis o final).
  *
- * Arriba la tabla con todos los partidos; al seleccionar uno, abajo aparece su
- * detalle: alineaciones de los dos equipos e incidencias. La vista no calcula
- * nada, solo muestra el partido ya armado que trae la seleccion.
+ * Arriba el filtro y la tabla con los partidos que le corresponden; al
+ * seleccionar uno, abajo aparece su detalle: alineaciones de los dos equipos
+ * e incidencias. La vista no calcula nada, solo muestra el partido ya armado
+ * que trae la seleccion.
  *
  * Es una pagina de consulta: los partidos se juegan por fase, desde Tournament.
  * Simular un partido suelto se saltearia la designacion de arbitros y el
@@ -24,6 +31,12 @@ import java.util.List;
  * sentido porque la llave se resuelve con las dos ruedas juntas.
  */
 public class MatchesView extends VBox {
+
+    private static final String ALL_PHASES = "All phases";
+    private static final List<String> PHASE_FILTERS =
+            List.of(ALL_PHASES, "Group Stage", "Quarter-final", "Semi-final", "Final");
+
+    private final FilteredList<MatchDetail> filteredMatches;
 
     private final Label detailTitle = new Label();
     private final Label detailSubtitle = new Label();
@@ -35,6 +48,7 @@ public class MatchesView extends VBox {
 
     public MatchesView(ObservableList<MatchDetail> matches, ObservableValue<String> emptyMessage) {
         getStyleClass().add("page");
+        this.filteredMatches = new FilteredList<>(matches, ignored -> true);
 
         Label title = new Label("Matches");
         title.getStyleClass().add("section-title");
@@ -42,8 +56,9 @@ public class MatchesView extends VBox {
         getChildren().addAll(
                 title,
                 buildHint(),
+                buildFilterRow(),
                 buildSubtitle("All matches"),
-                buildMatchesTable(matches, emptyMessage),
+                buildMatchesTable(emptyMessage),
                 buildSubtitle("Match detail"),
                 buildDetailPanel());
     }
@@ -56,16 +71,34 @@ public class MatchesView extends VBox {
         return hint;
     }
 
+    private HBox buildFilterRow() {
+        Label label = new Label("Phase:");
+        label.getStyleClass().add("action-hint");
+
+        ComboBox<String> filter = new ComboBox<>(FXCollections.observableArrayList(PHASE_FILTERS));
+        filter.getStyleClass().add("filter-combo");
+        filter.getSelectionModel().select(ALL_PHASES);
+        filter.valueProperty().addListener((observable, previous, selected) ->
+                filteredMatches.setPredicate(matchOfPhase(selected)));
+
+        HBox row = new HBox(label, filter);
+        row.getStyleClass().add("action-row");
+        row.setAlignment(Pos.CENTER_LEFT);
+        return row;
+    }
+
+    private Predicate<MatchDetail> matchOfPhase(String selected) {
+        return match -> ALL_PHASES.equals(selected) || match.getPhaseCategory().equals(selected);
+    }
+
     private Label buildSubtitle(String text) {
         Label subtitle = new Label(text);
         subtitle.getStyleClass().add("subsection-title");
         return subtitle;
     }
 
-    private TableView<MatchDetail> buildMatchesTable(
-            ObservableList<MatchDetail> matches,
-            ObservableValue<String> emptyMessage) {
-        TableView<MatchDetail> table = new TableView<>(matches);
+    private TableView<MatchDetail> buildMatchesTable(ObservableValue<String> emptyMessage) {
+        TableView<MatchDetail> table = new TableView<>(filteredMatches);
         table.getStyleClass().add("data-table");
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         table.setPrefHeight(300);
@@ -85,7 +118,7 @@ public class MatchesView extends VBox {
 
         table.getSelectionModel().selectedItemProperty()
                 .addListener((observable, previous, selected) -> showDetail(selected));
-        matches.addListener((ListChangeListener<MatchDetail>) change -> selectFirst(table));
+        filteredMatches.addListener((ListChangeListener<MatchDetail>) change -> selectFirst(table));
         selectFirst(table);
         return table;
     }
@@ -93,7 +126,7 @@ public class MatchesView extends VBox {
     private void selectFirst(TableView<MatchDetail> table) {
         if (table.getItems().isEmpty()) {
             showDetail(null);
-        } else if (table.getSelectionModel().getSelectedItem() == null) {
+        } else if (!table.getItems().contains(table.getSelectionModel().getSelectedItem())) {
             table.getSelectionModel().selectFirst();
         }
     }
