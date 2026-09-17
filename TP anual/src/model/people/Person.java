@@ -10,10 +10,22 @@ public abstract class Person {
     private String document;
 
     public Person(String name,LocalDate birthday,DocumentType documentType,String document){
-        this.name = name;
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("The person's name is required");
+        }
+        if (birthday == null || birthday.isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("A valid birth date is required");
+        }
+        if (documentType == null) {
+            throw new IllegalArgumentException("The document type is required");
+        }
+        if (document == null || document.isBlank()) {
+            throw new IllegalArgumentException("The document number is required");
+        }
+        this.name = name.trim();
         this.birthDate = birthday;
         this.documentType = documentType;
-        this.document = document;
+        this.document = document.trim();
     }
 
     public String getDocument() {

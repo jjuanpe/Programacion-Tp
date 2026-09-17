@@ -1,0 +1,666 @@
+/* ============================================================
+   Copa Internacional de Clubes - hoja de estilos principal
+   Toda la apariencia vive aca; el codigo Java solo asigna
+   clases de estilo (nunca setStyle).
+   ============================================================ */
+
+.root {
+    -fx-font-family: "Segoe UI", "Inter", "Helvetica Neue", sans-serif;
+
+    /* Paleta */
+    -sidebar-bg:      #172033;
+    -sidebar-text:    #94A3B8;
+    -sidebar-strong:  #E2E8F0;
+    -accent:          #2563EB;
+    -accent-hover:    #1D4ED8;
+    -content-bg:      #F5F7FA;
+    -text-strong:     #0F172A;
+    -text-muted:      #64748B;
+    -status-ok:       #22C55E;
+    -card-bg:         #FFFFFF;
+    -step-pending:    #CBD5E1;
+}
+
+/* ---------- Contenedor principal ---------- */
+
+.app-shell {
+    -fx-background-color: -content-bg;
+}
+
+/* ---------- Area central ---------- */
+
+.content-area {
+    -fx-background-color: -content-bg;
+}
+
+/* Encabezado del Dashboard: ocupa todo el ancho disponible */
+.dashboard-header {
+    -fx-background-color: -content-bg;
+    -fx-padding: 30px 34px 24px 34px;
+    -fx-spacing: 24px;
+}
+
+.dashboard-titles {
+    -fx-spacing: 5px;
+}
+
+.dashboard-title {
+    -fx-text-fill: -text-strong;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+
+.dashboard-subtitle {
+    -fx-text-fill: -text-muted;
+    -fx-font-size: 13px;
+}
+
+/* Estado de guardado, a la derecha */
+.status-badge {
+    -fx-spacing: 8px;
+}
+
+.status-dot {
+    -fx-background-color: -status-ok;
+    -fx-background-radius: 5px;
+    -fx-min-width: 9px;
+    -fx-pref-width: 9px;
+    -fx-max-width: 9px;
+    -fx-min-height: 9px;
+    -fx-pref-height: 9px;
+    -fx-max-height: 9px;
+}
+
+.status-label {
+    -fx-text-fill: -text-muted;
+    -fx-font-size: 12.5px;
+}
+
+/* ---------- Tarjetas de resumen ---------- */
+
+.dashboard-body {
+    -fx-padding: 0 0 28px 0;
+    -fx-spacing: 24px;
+}
+
+.summary-row {
+    -fx-padding: 0 34px;
+    -fx-spacing: 18px;
+}
+
+/*
+ * -fx-pref-width: 0 hace que las tres tarjetas partan del mismo ancho base;
+ * el espacio sobrante se reparte en partes iguales (Hgrow ALWAYS desde Java),
+ * asi quedan siempre del mismo tamano al redimensionar la ventana.
+ */
+.summary-card {
+    -fx-background-color: -card-bg;
+    -fx-background-radius: 14px;
+    -fx-padding: 18px 22px 20px 22px;
+    -fx-spacing: 7px;
+    -fx-pref-width: 0;
+    -fx-min-width: 150px;
+    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.07), 12, 0, 0, 2);
+}
+
+.summary-card-title {
+    -fx-text-fill: -text-muted;
+    -fx-font-size: 12.5px;
+}
+
+.summary-card-value {
+    -fx-text-fill: -text-strong;
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+}
+
+/* ---------- Sidebar ---------- */
+
+.sidebar {
+    -fx-background-color: -sidebar-bg;
+    -fx-min-width: 244px;
+    -fx-pref-width: 244px;
+    -fx-max-width: 244px;
+    -fx-padding: 0;
+}
+
+.sidebar-header {
+    -fx-padding: 28px 20px 22px 20px;
+    -fx-spacing: 2px;
+}
+
+.app-title {
+    -fx-text-fill: -sidebar-strong;
+    -fx-font-size: 19px;
+    -fx-font-weight: bold;
+}
+
+/* ---------- Opciones de navegacion ---------- */
+
+.sidebar-nav {
+    -fx-padding: 4px 12px 12px 12px;
+    -fx-spacing: 4px;
+}
+
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 10px;
+    -fx-text-fill: -sidebar-text;
+    -fx-font-size: 14px;
+    -fx-padding: 11px 16px;
+    -fx-alignment: center-left;
+    -fx-content-display: left;
+    -fx-cursor: hand;
+}
+
+.nav-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.06);
+    -fx-text-fill: -sidebar-strong;
+}
+
+.nav-button:pressed {
+    -fx-background-color: rgba(255, 255, 255, 0.10);
+}
+
+/* Opcion activa */
+.nav-button.active,
+.nav-button.active:hover {
+    -fx-background-color: -accent;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.nav-button.active:pressed {
+    -fx-background-color: -accent-hover;
+}
+
+/* Foco por teclado: visible pero discreto */
+.nav-button:focused {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+    -fx-text-fill: -sidebar-strong;
+}
+
+.nav-button.active:focused {
+    -fx-background-color: -accent;
+    -fx-text-fill: white;
+}
+
+/* ---------- Pie del sidebar ---------- */
+
+.sidebar-footer {
+    -fx-padding: 18px 20px 22px 20px;
+    -fx-spacing: 3px;
+    -fx-border-color: rgba(255, 255, 255, 0.08) transparent transparent transparent;
+    -fx-border-width: 1px 0 0 0;
+}
+
+.footer-title {
+    -fx-text-fill: -sidebar-strong;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.footer-subtitle {
+    -fx-text-fill: -sidebar-text;
+    -fx-font-size: 11.5px;
+}
+
+/* ---------- Progreso del torneo (stepper) ---------- */
+
+.tournament-progress {
+    -fx-padding: 0 34px;
+    -fx-spacing: 13px;
+}
+
+.section-title {
+    -fx-text-fill: -text-strong;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.stepper {
+    -fx-background-color: -card-bg;
+    -fx-background-radius: 14px;
+    -fx-padding: 20px 26px;
+    -fx-spacing: 14px;
+    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.07), 12, 0, 0, 2);
+}
+
+.step {
+    -fx-spacing: 9px;
+}
+
+/*
+ * Los tres estados de una etapa se distinguen solo por CSS:
+ *   pendiente  -> circulo vacio con borde gris
+ *   completada -> circulo lleno azul
+ *   actual     -> circulo lleno azul, un poco mas grande y con destello
+ */
+.step-dot {
+    -fx-background-color: transparent;
+    -fx-border-color: -step-pending;
+    -fx-border-width: 2px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-min-width: 12px;
+    -fx-pref-width: 12px;
+    -fx-max-width: 12px;
+    -fx-min-height: 12px;
+    -fx-pref-height: 12px;
+    -fx-max-height: 12px;
+}
+
+.step.completed .step-dot {
+    -fx-background-color: -accent;
+    -fx-border-color: -accent;
+}
+
+.step.current .step-dot {
+    -fx-background-color: -accent;
+    -fx-border-color: -accent;
+    -fx-border-radius: 7px;
+    -fx-background-radius: 7px;
+    -fx-min-width: 14px;
+    -fx-pref-width: 14px;
+    -fx-max-width: 14px;
+    -fx-min-height: 14px;
+    -fx-pref-height: 14px;
+    -fx-max-height: 14px;
+    -fx-effect: dropshadow(gaussian, rgba(37, 99, 235, 0.45), 9, 0, 0, 0);
+}
+
+.step-label {
+    -fx-text-fill: -text-muted;
+    -fx-font-size: 13px;
+}
+
+.step.completed .step-label {
+    -fx-text-fill: -text-strong;
+}
+
+.step.current .step-label {
+    -fx-text-fill: -accent;
+    -fx-font-weight: bold;
+}
+
+/* Linea entre etapas: se pinta de azul cuando esa etapa ya quedo atras */
+.step-connector {
+    -fx-background-color: -step-pending;
+    -fx-background-radius: 1px;
+    -fx-min-width: 22px;
+    -fx-min-height: 2px;
+    -fx-pref-height: 2px;
+    -fx-max-height: 2px;
+}
+
+.step-connector.completed {
+    -fx-background-color: -accent;
+}
+
+/* ---------- Contenedor scrolleable del contenido ---------- */
+
+.content-scroll,
+.content-scroll > .viewport {
+    -fx-background-color: -content-bg;
+}
+
+.content-scroll {
+    -fx-padding: 0;
+    -fx-border-color: transparent;
+}
+
+/* ---------- Top Scorers ---------- */
+
+.top-scorers {
+    -fx-padding: 0 34px;
+    -fx-spacing: 13px;
+}
+
+.data-table {
+    -fx-background-color: -card-bg;
+    -fx-background-radius: 14px;
+    -fx-border-color: transparent;
+    -fx-padding: 8px;
+    -fx-pref-height: 320px;
+    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.07), 12, 0, 0, 2);
+}
+
+/* Encabezado de la tabla: sin fondo ni lineas, solo texto gris */
+.data-table .column-header-background,
+.data-table .column-header,
+.data-table .column-header-background .filler {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.data-table .column-header {
+    -fx-size: 34px;
+}
+
+.data-table .column-header .label {
+    -fx-text-fill: -text-muted;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-alignment: center-left;
+}
+
+.data-table .column-header.numeric-column .label {
+    -fx-alignment: center-right;
+}
+
+/* Filas: alternadas suaves, sin bordes */
+.data-table .table-row-cell {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-cell-size: 34px;
+}
+
+.data-table .table-row-cell:odd {
+    -fx-background-color: #F8FAFC;
+}
+
+.data-table .table-row-cell:selected {
+    -fx-background-color: rgba(37, 99, 235, 0.10);
+}
+
+.data-table .table-cell {
+    -fx-text-fill: -text-strong;
+    -fx-font-size: 13px;
+    -fx-border-color: transparent;
+    -fx-padding: 0 10px;
+}
+
+.data-table .table-row-cell:selected .table-cell {
+    -fx-text-fill: -text-strong;
+}
+
+.data-table .numeric-cell {
+    -fx-alignment: center-right;
+}
+
+.table-placeholder {
+    -fx-text-fill: -text-muted;
+    -fx-font-size: 13px;
+}
+
+/* ---------- Paginas ---------- */
+
+.page {
+    -fx-padding: 0 34px 28px 34px;
+    -fx-spacing: 13px;
+}
+
+/* Panel blanco generico, mismo lenguaje visual que las tarjetas */
+.panel {
+    -fx-background-color: -card-bg;
+    -fx-background-radius: 14px;
+    -fx-padding: 6px 22px;
+    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.07), 12, 0, 0, 2);
+}
+
+.status-row {
+    -fx-padding: 13px 0;
+    -fx-alignment: center-left;
+    -fx-border-color: transparent transparent rgba(15, 23, 42, 0.06) transparent;
+    -fx-border-width: 0 0 1px 0;
+}
+
+/* La ultima fila del panel no lleva separador */
+.status-row:last-child {
+    -fx-border-width: 0;
+}
+
+.status-row-label {
+    -fx-text-fill: -text-muted;
+    -fx-font-size: 13px;
+}
+
+.status-row-value {
+    -fx-text-fill: -text-strong;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+/* ---------- Acciones ---------- */
+
+.actions {
+    -fx-spacing: 10px;
+    -fx-padding: 6px 0 0 0;
+}
+
+.action-row {
+    -fx-spacing: 10px;
+}
+
+.action-button {
+    -fx-background-radius: 10px;
+    -fx-padding: 10px 18px;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+}
+
+.action-button:disabled {
+    -fx-opacity: 0.45;
+    -fx-cursor: default;
+}
+
+.primary-button {
+    -fx-background-color: -accent;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.primary-button:hover {
+    -fx-background-color: -accent-hover;
+}
+
+.secondary-button {
+    -fx-background-color: -card-bg;
+    -fx-text-fill: -text-strong;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1px;
+}
+
+.secondary-button:hover {
+    -fx-background-color: #F1F5F9;
+}
+
+.action-message {
+    -fx-text-fill: -text-strong;
+    -fx-font-size: 12.5px;
+}
+
+.action-hint {
+    -fx-text-fill: -text-muted;
+    -fx-font-size: 11.5px;
+}
+
+/* ---------- Paginas todavia no implementadas ---------- */
+
+.placeholder-note {
+    -fx-text-fill: -text-muted;
+    -fx-font-size: 13px;
+    -fx-padding: 14px 0;
+}
+
+/* ---------- Pagina Teams ---------- */
+
+.subsection-title {
+    -fx-text-fill: -text-muted;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 6px 0 0 0;
+}
+
+.split {
+    -fx-spacing: 16px;
+}
+
+.team-list {
+    -fx-background-color: -card-bg;
+    -fx-background-radius: 14px;
+    -fx-border-color: transparent;
+    -fx-padding: 8px;
+    -fx-min-width: 220px;
+    -fx-pref-width: 220px;
+    -fx-max-width: 220px;
+    -fx-pref-height: 420px;
+    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.07), 12, 0, 0, 2);
+}
+
+.team-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -text-strong;
+    -fx-font-size: 13px;
+    -fx-padding: 9px 12px;
+    -fx-background-radius: 8px;
+}
+
+.team-list .list-cell:hover {
+    -fx-background-color: #F1F5F9;
+}
+
+.team-list .list-cell:selected {
+    -fx-background-color: -accent;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.team-detail {
+    -fx-spacing: 2px;
+    -fx-padding: 18px 22px;
+}
+
+.detail-title {
+    -fx-text-fill: -text-strong;
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 8px 0;
+}
+
+/* Resultado de validar el plantel: verde si esta completo, rojo si no */
+.squad-status {
+    -fx-font-size: 12.5px;
+    -fx-padding: 14px 0 10px 0;
+}
+
+.squad-valid {
+    -fx-text-fill: #15803D;
+}
+
+.squad-invalid {
+    -fx-text-fill: #B91C1C;
+}
+
+.team-detail .data-table {
+    -fx-pref-height: 250px;
+    -fx-effect: null;
+    -fx-padding: 0;
+}
+
+/* ---------- Pagina Group Stage ---------- */
+
+.zones {
+    -fx-spacing: 18px;
+}
+
+.zone-panel {
+    -fx-spacing: 4px;
+    -fx-padding: 18px 22px 20px 22px;
+}
+
+.zone-panel .data-table {
+    -fx-effect: null;
+    -fx-padding: 0;
+}
+
+/* Puestos que clasifican a cuartos */
+.standings-table .table-row-cell.qualified-row {
+    -fx-background-color: rgba(37, 99, 235, 0.09);
+}
+
+.standings-table .table-row-cell.qualified-row .table-cell {
+    -fx-font-weight: bold;
+}
+
+.qualified-note {
+    -fx-text-fill: -accent;
+    -fx-font-size: 12.5px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 0 4px 0;
+}
+
+.zone-teams {
+    -fx-text-fill: -text-muted;
+    -fx-font-size: 12.5px;
+    -fx-padding: 0 0 6px 0;
+}
+
+/* ---------- Pagina Matches ---------- */
+
+.match-detail {
+    -fx-spacing: 2px;
+    -fx-padding: 18px 22px 20px 22px;
+}
+
+.match-detail .data-table {
+    -fx-effect: null;
+    -fx-padding: 0;
+}
+
+.detail-subtitle {
+    -fx-text-fill: -text-muted;
+    -fx-font-size: 12.5px;
+    -fx-padding: 0 0 6px 0;
+}
+
+.lineup {
+    -fx-spacing: 4px;
+}
+
+/* Combo de filtro (fase en Matches, posicion en Players) */
+
+.filter-combo {
+    -fx-background-color: -card-bg;
+    -fx-background-radius: 10px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1px;
+    -fx-padding: 2px 6px;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+}
+
+/* ---------- Pagina People ---------- */
+
+/* Contenido de una pestana: mismo espaciado que .page, sin repetir el padding */
+.page-section {
+    -fx-spacing: 13px;
+}
+
+.sub-tabs {
+    -fx-spacing: 8px;
+    -fx-padding: 0 0 4px 0;
+}
+
+.sub-tab-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 10px;
+    -fx-text-fill: -text-muted;
+    -fx-font-size: 13px;
+    -fx-padding: 8px 16px;
+    -fx-cursor: hand;
+}
+
+.sub-tab-button:hover {
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: -text-strong;
+}
+
+.sub-tab-button.active,
+.sub-tab-button.active:hover {
+    -fx-background-color: -accent;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}

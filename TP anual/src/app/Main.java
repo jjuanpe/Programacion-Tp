@@ -1,7 +1,7 @@
 package app;
 
 import dataload.JsonTournamentLoader;
-import dataload.SampleStadiumFactory;
+import dao.StadiumDAO;
 import dataload.TournamentData;
 import model.competition.Championship;
 import model.competition.DrawService;
@@ -14,9 +14,11 @@ import model.simulation.KnockoutStageSimulator;
 import model.simulation.KnockoutTieReport;
 import model.simulation.MatchSimulationReport;
 import model.team.Team;
+import model.venue.Stadium;
 import ui.ConsoleReportFormatter;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
@@ -38,12 +40,12 @@ public class Main {
         } catch (InterruptedException exception) {
             Thread.currentThread().interrupt();
             System.err.println("The tournament simulation was interrupted.");
-        } catch (IOException | IllegalArgumentException | IllegalStateException exception) {
+        } catch (IOException | SQLException | IllegalArgumentException | IllegalStateException exception) {
             System.err.println("The tournament could not be completed: " + exception.getMessage());
         }
     }
 
-    private static void runTournament(String[] args) throws IOException, InterruptedException {
+    private static void runTournament(String[] args) throws IOException, SQLException, InterruptedException {
         String dataPath = args.length == 0 ? DEFAULT_DATA_PATH : args[0];
         long drawSeed = readSeed(args, DRAW_SEED_ARGUMENT_INDEX);
         long groupStageSeed = readSeed(args, GROUP_STAGE_SEED_ARGUMENT_INDEX);
@@ -52,14 +54,18 @@ public class Main {
 
         TournamentData tournamentData = new JsonTournamentLoader(dataPath).load();
         printLoadedData(tournamentData);
+        List<Stadium> stadiums = new StadiumDAO().getAllStadiums();
+        if (stadiums.size() < 13) {
+            throw new IllegalStateException("At least 13 stadiums are required for the knockout stage");
+        }
 
         List<Zone> zones = new DrawService(new Random(drawSeed)).draw(tournamentData.getTeams());
-        generateGroupStageFixtures(zones);
+        generateGroupStageFixtures(zones, stadiums, drawSeed);
         Championship championship = new Championship(
                 tournamentData.getTeams(),
                 zones,
                 tournamentData.getReferees(),
-                new SampleStadiumFactory().createStadiums());
+                stadiums);
 
         ConsoleReportFormatter formatter = new ConsoleReportFormatter();
         simulateAndPrintGroupStage(championship, groupStageSeed, formatter);
@@ -103,10 +109,12 @@ public class Main {
         }
     }
 
-    private static void generateGroupStageFixtures(List<Zone> zones) {
+    private static void generateGroupStageFixtures(List<Zone> zones, List<Stadium> stadiums, long seed) {
         FixtureService fixtureService = new FixtureService();
+        Random random = new Random(seed);
         for (Zone zone : zones) {
-            fixtureService.generateFixture(zone, GROUP_STAGE_START_DATE, DAYS_BETWEEN_ROUNDS);
+            fixtureService.generateFixture(zone, GROUP_STAGE_START_DATE, DAYS_BETWEEN_ROUNDS,
+                    stadiums, random);
         }
     }
 
@@ -147,6 +155,9 @@ public class Main {
                 championship.getReferees(),
                 KNOCKOUT_STAGE_START_DATE,
                 knockoutSeed);
+        for (model.match.Match match : knockoutResult.getMatches()) {
+            championship.consumeStadium(match.getStadium());
+        }
 
         System.out.println();
         System.out.println("========================================================");

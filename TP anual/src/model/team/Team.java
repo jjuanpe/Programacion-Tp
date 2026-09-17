@@ -18,10 +18,13 @@ public class Team {
     private HeadCoach headCoach;
 
     public Team(String name, Country country, int ranking) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("The team name is required");
+        }
         if (ranking <= 0) {
             throw new IllegalArgumentException("The team ranking must be positive");
         }
-        this.name = Objects.requireNonNull(name, "The team name is required");
+        this.name = name.trim();
         this.country = Objects.requireNonNull(country, "The team country is required");
         this.ranking = ranking;
         this.players = new ArrayList<>();

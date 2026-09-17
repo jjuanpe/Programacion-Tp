@@ -1,7 +1,9 @@
 package model.simulation;
 
 import model.team.Team;
+import model.match.Match;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,5 +36,19 @@ public final class KnockoutStageResult {
 
     public Team getChampion() {
         return finalMatchReport.getChampion();
+    }
+
+    public List<Match> getMatches() {
+        List<Match> matches = new ArrayList<>();
+        for (KnockoutTieReport tie : quarterFinals) {
+            matches.add(tie.getFirstLeg());
+            matches.add(tie.getSecondLeg());
+        }
+        for (KnockoutTieReport tie : semiFinals) {
+            matches.add(tie.getFirstLeg());
+            matches.add(tie.getSecondLeg());
+        }
+        matches.add(finalMatchReport.getFinalMatch());
+        return List.copyOf(matches);
     }
 }

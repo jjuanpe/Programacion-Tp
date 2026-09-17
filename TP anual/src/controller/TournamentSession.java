@@ -1,7 +1,7 @@
 package controller;
 
 import dataload.JsonTournamentLoader;
-import dataload.SampleStadiumFactory;
+import dao.StadiumDAO;
 import dataload.TournamentData;
 import model.competition.Championship;
 import model.competition.DrawService;
@@ -14,8 +14,10 @@ import model.simulation.KnockoutStageResult;
 import model.simulation.KnockoutStageSimulator;
 import model.simulation.KnockoutTieReport;
 import model.team.Team;
+import model.venue.Stadium;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,21 +60,28 @@ public class TournamentSession {
     }
 
     /** Sortea los grupos y genera el fixture de cada zona. */
-    public synchronized void drawGroups() {
+    public synchronized void drawGroups() throws SQLException {
         requireState(TournamentState.DATA_LOADED, "the group draw");
+
+        List<Stadium> stadiums = new StadiumDAO().getAllStadiums();
+        if (stadiums.size() < 13) {
+            throw new IllegalStateException("At least 13 stadiums are required for the knockout stage; found "
+                    + stadiums.size());
+        }
 
         List<Zone> zones = new DrawService(new Random(seedGenerator.nextLong()))
                 .draw(tournamentData.getTeams());
         FixtureService fixtureService = new FixtureService();
         for (Zone zone : zones) {
-            fixtureService.generateFixture(zone, GROUP_STAGE_START_DATE, DAYS_BETWEEN_ROUNDS);
+            fixtureService.generateFixture(zone, GROUP_STAGE_START_DATE, DAYS_BETWEEN_ROUNDS,
+                    stadiums, new Random(seedGenerator.nextLong()));
         }
 
         this.championship = new Championship(
                 tournamentData.getTeams(),
                 zones,
                 tournamentData.getReferees(),
-                new SampleStadiumFactory().createStadiums());
+                stadiums);
         this.knockoutResult = null;
     }
 
@@ -90,12 +99,16 @@ public class TournamentSession {
     public synchronized void playKnockoutStage() throws InterruptedException {
         requireState(TournamentState.GROUP_STAGE_PLAYED, "the knockout stage");
 
-        this.knockoutResult = new KnockoutStageSimulator().simulate(
+        KnockoutStageResult result = new KnockoutStageSimulator().simulate(
                 championship.getZones(),
                 championship.getStadiums(),
                 championship.getReferees(),
                 KNOCKOUT_STAGE_START_DATE,
                 seedGenerator.nextLong());
+        for (Match match : result.getMatches()) {
+            championship.consumeStadium(match.getStadium());
+        }
+        this.knockoutResult = result;
     }
 
     private void requireState(TournamentState expected, String action) {

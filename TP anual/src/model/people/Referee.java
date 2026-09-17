@@ -17,6 +17,12 @@ public class Referee extends Person {
             Country country,
             int years) {
         super(name, birthday, documentType, document);
+        if (country == null) {
+            throw new IllegalArgumentException("The referee's country is required");
+        }
+        if (years < 0) {
+            throw new IllegalArgumentException("Refereeing years cannot be negative");
+        }
         this.country = country;
         this.years = years;
     }

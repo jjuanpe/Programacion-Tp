@@ -12,6 +12,7 @@ public final class FixtureRow {
     private final String awayTeam;
     private final String status;
     private final String referee;
+    private final String stadium;
 
     public FixtureRow(
             String date,
@@ -19,13 +20,15 @@ public final class FixtureRow {
             String score,
             String awayTeam,
             String status,
-            String referee) {
+            String referee,
+            String stadium) {
         this.date = date;
         this.homeTeam = homeTeam;
         this.score = score;
         this.awayTeam = awayTeam;
         this.status = status;
         this.referee = referee;
+        this.stadium = stadium;
     }
 
     public String getDate() { return date; }
@@ -40,4 +43,6 @@ public final class FixtureRow {
 
     /** Arbitro designado, o un guion si el partido todavia no se jugo. */
     public String getReferee() { return referee; }
+
+    public String getStadium() { return stadium; }
 }

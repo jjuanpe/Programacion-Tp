@@ -1,10 +1,12 @@
 package model.competition;
 
 import model.venue.Stadium;
+import model.venue.City;
 import model.people.Referee;
 import model.team.Team;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class Championship {
@@ -12,6 +14,7 @@ public class Championship {
     private final List<Zone> zones;
     private final List<Referee> referees;
     private final List<Stadium> stadiums;
+    private final List<City> cities;
 
     public Championship(
             List<Team> teams,
@@ -26,6 +29,14 @@ public class Championship {
         this.zones = List.copyOf(zones);
         this.referees = List.copyOf(referees);
         this.stadiums = List.copyOf(stadiums);
+        this.cities = new ArrayList<>();
+        for (Stadium stadium : this.stadiums) {
+            City city = stadium.getCity();
+            if (!cities.contains(city)) {
+                cities.add(city);
+            }
+            city.add(stadium);
+        }
     }
 
     public List<Team> getTeams() {
@@ -42,5 +53,19 @@ public class Championship {
 
     public List<Stadium> getStadiums() {
         return stadiums;
+    }
+
+    public List<City> getCities() {
+        return List.copyOf(cities);
+    }
+
+    public void consumeStadium(Stadium stadium) {
+        City city = Objects.requireNonNull(stadium, "The stadium is required").getCity();
+        if (!city.remove(stadium)) {
+            throw new IllegalStateException("The stadium is not available in its city");
+        }
+        if (city.getStadiums().isEmpty()) {
+            cities.remove(city);
+        }
     }
 }

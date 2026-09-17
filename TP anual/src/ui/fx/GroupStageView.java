@@ -151,6 +151,7 @@ public class GroupStageView extends VBox {
         table.getColumns().add(TableColumns.text("Away", FixtureRow::getAwayTeam));
         table.getColumns().add(TableColumns.text("Status", FixtureRow::getStatus));
         table.getColumns().add(TableColumns.text("Referee", FixtureRow::getReferee));
+        table.getColumns().add(TableColumns.text("Stadium", FixtureRow::getStadium));
         return table;
     }
 

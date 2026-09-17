@@ -248,6 +248,6 @@ public class MatchesController {
     }
 
     private String stadiumNameOf(Stadium stadium) {
-        return stadium == null ? NOT_AVAILABLE : stadium.getName();
+        return stadium == null ? NOT_AVAILABLE : stadium.getName() + " (" + stadium.getCity().getName() + ")";
     }
 }

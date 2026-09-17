@@ -2,17 +2,24 @@ package model.competition;
 
 import model.match.GroupMatch;
 import model.team.Team;
+import model.venue.Stadium;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public class FixtureService {
 
     private static final int ROUNDS = 3;
 
     public List<GroupMatch> generateFixture(Zone zone, LocalDate firstDate, int daysBetweenRounds) {
+        return generateFixture(zone, firstDate, daysBetweenRounds, List.of(), new Random());
+    }
+
+    public List<GroupMatch> generateFixture(Zone zone, LocalDate firstDate, int daysBetweenRounds,
+                                            List<Stadium> stadiums, Random random) {
         List<Team> teams = zone.getTeams();
         if (teams.size() != 4) {
             throw new IllegalArgumentException("La zona debe tener 4 equipos, tiene: " + teams.size());
@@ -37,8 +44,8 @@ public class FixtureService {
                 awayTeam1 = temporaryTeam;
             }
 
-            fixture.add(new GroupMatch(date, homeTeam1, awayTeam1, null, null));
-            fixture.add(new GroupMatch(date, homeTeam2, awayTeam2, null, null));
+            fixture.add(new GroupMatch(date, homeTeam1, awayTeam1, null, chooseStadium(stadiums, random)));
+            fixture.add(new GroupMatch(date, homeTeam2, awayTeam2, null, chooseStadium(stadiums, random)));
 
             Collections.rotate(rotatingTeams, 1);
             date = date.plusDays(daysBetweenRounds);
@@ -46,5 +53,9 @@ public class FixtureService {
 
         zone.addGroupMatches(fixture);
         return fixture;
+    }
+
+    private Stadium chooseStadium(List<Stadium> stadiums, Random random) {
+        return stadiums.isEmpty() ? null : stadiums.get(random.nextInt(stadiums.size()));
     }
 }

@@ -13,9 +13,12 @@ public class Zone {
     private final String name;
 
     public Zone(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("The zone name is required");
+        }
         this.teams = new ArrayList<>();
         this.groupMatches = new ArrayList<>();
-        this.name = Objects.requireNonNull(name, "The zone name is required");
+        this.name = name.trim();
     }
 
     public String getName() {

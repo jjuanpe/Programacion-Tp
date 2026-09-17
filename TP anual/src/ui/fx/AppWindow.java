@@ -64,6 +64,7 @@ public class AppWindow extends Application {
 
     private final Map<NavItem, Node> pages = new EnumMap<>(NavItem.class);
     private final ScrollPane pageArea = new ScrollPane();
+    private final StadiumsView stadiumsView = new StadiumsView();
 
     @Override
     public void start(Stage stage) {
@@ -98,6 +99,7 @@ public class AppWindow extends Application {
         groupStageController.refresh();
         matchesController.refresh();
         playersController.refresh();
+        stadiumsView.refresh(session.getChampionship());
     }
 
     /** Area central: encabezado fijo arriba y la pagina activa debajo. */
@@ -147,8 +149,7 @@ public class AppWindow extends Application {
         pages.put(NavItem.PEOPLE, new PeopleView(new PlayersView(
                 playersViewModel.getPlayers(),
                 playersViewModel.statusProperty())));
-        putPlaceholder(NavItem.STADIUMS,
-                "Registered stadiums and cities.");
+        pages.put(NavItem.STADIUMS, stadiumsView);
         putPlaceholder(NavItem.STATISTICS,
                 "Tournament statistics.");
         putPlaceholder(NavItem.REPORTS,

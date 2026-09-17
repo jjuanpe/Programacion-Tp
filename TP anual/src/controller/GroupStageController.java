@@ -134,7 +134,8 @@ public class GroupStageController {
                     played ? match.getHomeGoals() + " - " + match.getAwayGoals() : NOT_AVAILABLE,
                     match.getAwayTeam().getName(),
                     played ? "Played" : "Pending",
-                    refereeNameOf(match.getReferee())));
+                    refereeNameOf(match.getReferee()),
+                    match.getStadium() == null ? NOT_AVAILABLE : match.getStadium().getName()));
         }
         return rows;
     }
