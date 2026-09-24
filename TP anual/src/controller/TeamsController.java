@@ -55,7 +55,7 @@ public class TeamsController {
         List<Team> teams = session.getTeams();
 
         List<TeamReportEntry> report =
-                teamReportService.computeReport(teams, session.getMatches(), today);
+                teamReportService.computeReport(teams, session.getGroupMatches(), today);
 
         viewModel.setRows(toRows(report));
         viewModel.setTeams(toDetails(report, today));

@@ -21,10 +21,11 @@ import java.util.Objects;
  *
  * - El orden es alfabetico por nombre de equipo, sin distinguir mayusculas.
  * - Las edades se calculan a la fecha de referencia que se recibe.
- * - Los goles a favor y en contra, y la efectividad, se cuentan sobre TODOS los
- *   partidos jugados del campeonato, de grupos y de eliminatorias. Se aplica el
- *   mismo criterio de puntos en todos: 3 por ganado, 1 por empatado, 0 por
- *   perdido; los puntos posibles son 3 por cada partido jugado.
+ * - Los goles a favor y en contra, y la efectividad, se cuentan SOLO sobre los
+ *   partidos de la fase de grupos (zona) -- la eliminatoria no suma ni resta
+ *   a estos numeros. Se aplica el mismo criterio de puntos: 3 por ganado,
+ *   1 por empatado, 0 por perdido; los puntos posibles son 3 por cada
+ *   partido jugado.
  * - Los equipos que todavia no jugaron aparecen igual, con todo en cero.
  */
 public class TeamReportService {
