@@ -18,8 +18,14 @@ public enum TournamentState {
     /** Sorteo hecho; la fase de grupos todavia no se jugo. */
     GROUPS_DRAWN("Group stage pending"),
 
-    /** Fase de grupos jugada; falta la fase eliminatoria. */
-    GROUP_STAGE_PLAYED("Knockout stage pending"),
+    /** Fase de grupos jugada; faltan cuartos de final. */
+    GROUP_STAGE_PLAYED("Quarterfinals pending"),
+
+    /** Cuartos jugados; faltan las semifinales. */
+    QUARTER_FINALS_PLAYED("Semifinals pending"),
+
+    /** Semifinales jugadas; falta la final. */
+    SEMI_FINALS_PLAYED("Final pending"),
 
     /** Campeonato terminado: hay campeon. */
     FINISHED("Tournament finished");

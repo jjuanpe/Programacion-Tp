@@ -68,7 +68,8 @@ public class DashboardController {
             case EMPTY, DATA_LOADED -> null;
             case GROUPS_DRAWN -> TournamentStage.GROUP_STAGE;
             case GROUP_STAGE_PLAYED -> TournamentStage.QUARTERFINALS;
-            case FINISHED -> TournamentStage.FINAL;
+            case QUARTER_FINALS_PLAYED -> TournamentStage.SEMIFINALS;
+            case SEMI_FINALS_PLAYED, FINISHED -> TournamentStage.FINAL;
         };
     }
 }

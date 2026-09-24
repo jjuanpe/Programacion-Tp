@@ -91,15 +91,24 @@ public class MatchesController {
                 toIncidences(match.getIncidences()));
     }
 
-    /** A que instancia del torneo pertenece el partido. */
+    /**
+     * A que instancia del torneo pertenece el partido.
+     *
+     * SecondLegMatch extiende FirstLegMatch (la vuelta reutiliza los datos
+     * de la ida para poder calcular el agregado), asi que "instanceof
+     * FirstLegMatch" tambien da true para un partido de vuelta. Por eso el
+     * chequeo de SecondLegMatch (el tipo mas especifico) tiene que ir
+     * SIEMPRE antes que el de FirstLegMatch -- si no, ningun partido de
+     * vuelta llega nunca a esa rama y todos se etiquetan como "(1st leg)".
+     */
     private String describePhase(Match match) {
         String phase;
         if (match instanceof GroupMatch) {
             phase = GROUP_STAGE_CATEGORY;
-        } else if (match instanceof FirstLegMatch firstLeg) {
-            phase = labelOf(firstLeg.getPhase()) + " (1st leg)";
         } else if (match instanceof SecondLegMatch secondLeg) {
             phase = labelOf(secondLeg.getPhase()) + " (2nd leg)";
+        } else if (match instanceof FirstLegMatch firstLeg) {
+            phase = labelOf(firstLeg.getPhase()) + " (1st leg)";
         } else if (match instanceof FinalMatch) {
             phase = "Final";
         } else {
@@ -108,15 +117,21 @@ public class MatchesController {
         return phase;
     }
 
-    /** Fase sin distinguir ida/vuelta, para que la vista filtre por ella. */
+    /**
+     * Fase sin distinguir ida/vuelta, para que la vista filtre por ella.
+     *
+     * Mismo orden que en describePhase: SecondLegMatch antes que
+     * FirstLegMatch, por la misma razon (SecondLegMatch ES-A FirstLegMatch
+     * por herencia).
+     */
     private String phaseCategory(Match match) {
         String category;
         if (match instanceof GroupMatch) {
             category = GROUP_STAGE_CATEGORY;
-        } else if (match instanceof FirstLegMatch firstLeg) {
-            category = labelOf(firstLeg.getPhase());
         } else if (match instanceof SecondLegMatch secondLeg) {
             category = labelOf(secondLeg.getPhase());
+        } else if (match instanceof FirstLegMatch firstLeg) {
+            category = labelOf(firstLeg.getPhase());
         } else if (match instanceof FinalMatch) {
             category = "Final";
         } else {

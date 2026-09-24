@@ -46,8 +46,14 @@ public class TournamentController {
         if (state == TournamentState.GROUPS_DRAWN) {
             runStep("Playing the group stage...", session::playGroupStage, "Group stage played");
         } else if (state == TournamentState.GROUP_STAGE_PLAYED) {
-            runStep("Playing the knockout stage...", session::playKnockoutStage,
-                    "Knockout stage played");
+            runStep("Playing the quarterfinals...", session::playQuarterFinals,
+                    "Quarterfinals played");
+        } else if (state == TournamentState.QUARTER_FINALS_PLAYED) {
+            runStep("Playing the semifinals...", session::playSemiFinals,
+                    "Semifinals played");
+        } else if (state == TournamentState.SEMI_FINALS_PLAYED) {
+            runStep("Playing the final...", session::playFinal,
+                    "Final played");
         }
     }
 
@@ -74,7 +80,9 @@ public class TournamentController {
         viewModel.setCanDraw(idle && state == TournamentState.DATA_LOADED);
         viewModel.setCanAdvance(idle
                 && (state == TournamentState.GROUPS_DRAWN
-                || state == TournamentState.GROUP_STAGE_PLAYED));
+                || state == TournamentState.GROUP_STAGE_PLAYED
+                || state == TournamentState.QUARTER_FINALS_PLAYED
+                || state == TournamentState.SEMI_FINALS_PLAYED));
         // Guardar el estado todavia no esta implementado.
         viewModel.setCanSave(false);
     }
@@ -83,7 +91,9 @@ public class TournamentController {
         return switch (state) {
             case EMPTY, DATA_LOADED -> "Start tournament";
             case GROUPS_DRAWN -> "Start group stage";
-            case GROUP_STAGE_PLAYED -> "Continue: knockout stage";
+            case GROUP_STAGE_PLAYED -> "Continue: quarterfinals";
+            case QUARTER_FINALS_PLAYED -> "Continue: semifinals";
+            case SEMI_FINALS_PLAYED -> "Continue: final";
             case FINISHED -> "Tournament finished";
         };
     }

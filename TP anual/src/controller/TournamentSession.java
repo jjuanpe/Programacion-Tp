@@ -9,7 +9,9 @@ import model.competition.FixtureService;
 import model.competition.Zone;
 import model.match.Match;
 import model.people.Referee;
+import model.simulation.FinalMatchReport;
 import model.simulation.GroupStageSimulator;
+import model.simulation.KnockoutStageContext;
 import model.simulation.KnockoutStageResult;
 import model.simulation.KnockoutStageSimulator;
 import model.simulation.KnockoutTieReport;
@@ -42,11 +44,15 @@ public class TournamentSession {
     private static final LocalDate GROUP_STAGE_START_DATE = LocalDate.of(2026, 9, 1);
     private static final LocalDate KNOCKOUT_STAGE_START_DATE = LocalDate.of(2026, 11, 1);
     private static final int DAYS_BETWEEN_ROUNDS = 7;
+    private static final int DAYS_BETWEEN_KNOCKOUT_STAGES = 14;
 
     private final Random seedGenerator = new Random();
 
     private TournamentData tournamentData;
     private Championship championship;
+    private KnockoutStageContext knockoutContext;
+    private List<KnockoutTieReport> quarterFinalReports;
+    private List<KnockoutTieReport> semiFinalReports;
     private KnockoutStageResult knockoutResult;
 
     /** Importa el archivo de datos. Descarta cualquier torneo anterior. */
@@ -56,7 +62,7 @@ public class TournamentSession {
 
         this.tournamentData = imported;
         this.championship = null;
-        this.knockoutResult = null;
+        resetKnockoutProgress();
     }
 
     /** Sortea los grupos y genera el fixture de cada zona. */
@@ -82,6 +88,13 @@ public class TournamentSession {
                 zones,
                 tournamentData.getReferees(),
                 stadiums);
+        resetKnockoutProgress();
+    }
+
+    private void resetKnockoutProgress() {
+        this.knockoutContext = null;
+        this.quarterFinalReports = null;
+        this.semiFinalReports = null;
         this.knockoutResult = null;
     }
 
@@ -95,20 +108,56 @@ public class TournamentSession {
                 seedGenerator.nextLong());
     }
 
-    /** Juega la fase eliminatoria completa, hasta la final. */
-    public synchronized void playKnockoutStage() throws InterruptedException {
-        requireState(TournamentState.GROUP_STAGE_PLAYED, "the knockout stage");
+    /**
+     * Juega solo los 4 cruces de cuartos de final.
+     *
+     * La eliminatoria se juega en 3 pasos separados (este, {@link
+     * #playSemiFinals()} y {@link #playFinal()}) en vez de todo junto, para
+     * que el usuario pueda ver el resultado de cada instancia antes de
+     * avanzar a la siguiente -- y para que el stepper de la interfaz tenga
+     * un estado real que mostrar en cada momento intermedio (ver {@link
+     * TournamentState#QUARTER_FINALS_PLAYED} y {@link
+     * TournamentState#SEMI_FINALS_PLAYED}).
+     */
+    public synchronized void playQuarterFinals() throws InterruptedException {
+        requireState(TournamentState.GROUP_STAGE_PLAYED, "the quarterfinals");
 
-        KnockoutStageResult result = new KnockoutStageSimulator().simulate(
-                championship.getZones(),
-                championship.getStadiums(),
-                championship.getReferees(),
-                KNOCKOUT_STAGE_START_DATE,
-                seedGenerator.nextLong());
-        for (Match match : result.getMatches()) {
+        KnockoutStageSimulator simulator = new KnockoutStageSimulator();
+        knockoutContext = simulator.startKnockoutStage(
+                championship.getStadiums(), championship.getReferees(), seedGenerator.nextLong());
+        quarterFinalReports = simulator.playQuarterFinals(
+                championship.getZones(), knockoutContext, KNOCKOUT_STAGE_START_DATE);
+        consumeStadiumsOfTies(quarterFinalReports);
+    }
+
+    /** Juega solo los 2 cruces de semifinal, con los 4 ganadores de cuartos. */
+    public synchronized void playSemiFinals() throws InterruptedException {
+        requireState(TournamentState.QUARTER_FINALS_PLAYED, "the semifinals");
+
+        LocalDate semiFinalDate = KNOCKOUT_STAGE_START_DATE.plusDays(DAYS_BETWEEN_KNOCKOUT_STAGES);
+        semiFinalReports = new KnockoutStageSimulator().playSemiFinals(
+                quarterFinalReports, knockoutContext, semiFinalDate);
+        consumeStadiumsOfTies(semiFinalReports);
+    }
+
+    /** Juega solo el partido final, con los 2 ganadores de semifinal. */
+    public synchronized void playFinal() {
+        requireState(TournamentState.SEMI_FINALS_PLAYED, "the final");
+
+        LocalDate finalDate = KNOCKOUT_STAGE_START_DATE.plusDays(2 * DAYS_BETWEEN_KNOCKOUT_STAGES);
+        FinalMatchReport finalReport = new KnockoutStageSimulator().playFinalMatch(
+                semiFinalReports, knockoutContext, finalDate);
+        championship.consumeStadium(finalReport.getFinalMatch().getStadium());
+
+        this.knockoutResult = new KnockoutStageResult(quarterFinalReports, semiFinalReports, finalReport);
+    }
+
+    private void consumeStadiumsOfTies(List<KnockoutTieReport> ties) {
+        List<Match> matches = new ArrayList<>();
+        addTieMatches(matches, ties);
+        for (Match match : matches) {
             championship.consumeStadium(match.getStadium());
         }
-        this.knockoutResult = result;
     }
 
     private void requireState(TournamentState expected, String action) {
@@ -128,8 +177,12 @@ public class TournamentSession {
             state = TournamentState.DATA_LOADED;
         } else if (!allPlayed(getGroupMatches())) {
             state = TournamentState.GROUPS_DRAWN;
-        } else if (knockoutResult == null) {
+        } else if (quarterFinalReports == null) {
             state = TournamentState.GROUP_STAGE_PLAYED;
+        } else if (semiFinalReports == null) {
+            state = TournamentState.QUARTER_FINALS_PLAYED;
+        } else if (knockoutResult == null) {
+            state = TournamentState.SEMI_FINALS_PLAYED;
         } else {
             state = TournamentState.FINISHED;
         }
@@ -181,15 +234,34 @@ public class TournamentSession {
         return groupMatches;
     }
 
-    /** Todos los partidos del campeonato, de grupos y de eliminatorias. */
+    /**
+     * Todos los partidos del campeonato jugados hasta el momento, de grupos
+     * y de eliminatorias -- incluye el progreso parcial de la eliminatoria
+     * (por ejemplo, si ya se jugaron cuartos pero todavia no las semis, esos
+     * partidos de cuartos ya aparecen aca).
+     */
     public synchronized List<Match> getMatches() {
         List<Match> matches = new ArrayList<>(getGroupMatches());
+        if (quarterFinalReports != null) {
+            addTieMatches(matches, quarterFinalReports);
+        }
+        if (semiFinalReports != null) {
+            addTieMatches(matches, semiFinalReports);
+        }
         if (knockoutResult != null) {
-            addTieMatches(matches, knockoutResult.getQuarterFinals());
-            addTieMatches(matches, knockoutResult.getSemiFinals());
             matches.add(knockoutResult.getFinalMatchReport().getFinalMatch());
         }
         return matches;
+    }
+
+    /** Cuartos de final jugados, o lista vacia si todavia no se jugaron. */
+    public synchronized List<KnockoutTieReport> getQuarterFinalReports() {
+        return quarterFinalReports == null ? List.of() : List.copyOf(quarterFinalReports);
+    }
+
+    /** Semifinales jugadas, o lista vacia si todavia no se jugaron. */
+    public synchronized List<KnockoutTieReport> getSemiFinalReports() {
+        return semiFinalReports == null ? List.of() : List.copyOf(semiFinalReports);
     }
 
     private void addTieMatches(List<Match> matches, List<KnockoutTieReport> ties) {

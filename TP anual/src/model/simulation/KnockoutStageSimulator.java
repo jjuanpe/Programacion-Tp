@@ -74,19 +74,69 @@ public class KnockoutStageSimulator {
         Objects.requireNonNull(referees, "The referee list is required");
         Objects.requireNonNull(firstMatchDate, "The first match date is required");
 
-        List<Team[]> quarterFinalPairings = bracketService.buildQuarterFinalPairings(zones);
-        StadiumDrawService stadiumDrawService = new StadiumDrawService(stadiums);
-        List<Referee> refereePool = List.copyOf(referees);
-        Random seedGenerator = new Random(seed);
+        KnockoutStageContext context = startKnockoutStage(stadiums, referees, seed);
 
-        List<KnockoutTieReport> quarterFinalReports = playRound(
+        List<KnockoutTieReport> quarterFinalReports =
+                playQuarterFinals(zones, context, firstMatchDate);
+
+        LocalDate semiFinalDate = firstMatchDate.plusDays(DAYS_BETWEEN_STAGES);
+        List<KnockoutTieReport> semiFinalReports =
+                playSemiFinals(quarterFinalReports, context, semiFinalDate);
+
+        LocalDate finalDate = semiFinalDate.plusDays(DAYS_BETWEEN_STAGES);
+        FinalMatchReport finalReport = playFinalMatch(semiFinalReports, context, finalDate);
+
+        return new KnockoutStageResult(quarterFinalReports, semiFinalReports, finalReport);
+    }
+
+    /**
+     * Arranca una eliminatoria que se va a jugar fase por fase (cuartos,
+     * semis y final en llamadas separadas, por ejemplo una por cada click
+     * del usuario en la interfaz). Devuelve un {@link KnockoutStageContext}
+     * que hay que guardar y volver a pasar en cada llamada siguiente --
+     * mantiene el sorteo de estadios y el generador de semillas compartidos
+     * entre las 3 fases, para que ningun estadio se repita en TODA la
+     * eliminatoria (no solo dentro de una fase) y la simulacion completa
+     * siga siendo reproducible con la semilla original.
+     */
+    public KnockoutStageContext startKnockoutStage(
+            List<Stadium> stadiums, List<Referee> referees, long seed) {
+        Objects.requireNonNull(stadiums, "The stadium list is required");
+        Objects.requireNonNull(referees, "The referee list is required");
+        return new KnockoutStageContext(
+                new StadiumDrawService(stadiums), List.copyOf(referees), new Random(seed));
+    }
+
+    /** Juega solo los 4 cruces de cuartos de final. */
+    public List<KnockoutTieReport> playQuarterFinals(
+            List<Zone> zones, KnockoutStageContext context, LocalDate firstMatchDate)
+            throws InterruptedException {
+        Objects.requireNonNull(zones, "The zone list is required");
+        Objects.requireNonNull(context, "The knockout stage context is required");
+        Objects.requireNonNull(firstMatchDate, "The first match date is required");
+
+        List<Team[]> quarterFinalPairings = bracketService.buildQuarterFinalPairings(zones);
+        return playRound(
                 quarterFinalPairings,
                 PhaseType.QUARTER_FINAL,
                 firstMatchDate,
-                stadiumDrawService,
-                refereePool,
-                seedGenerator,
+                context.getStadiumDrawService(),
+                context.getRefereePool(),
+                context.getSeedGenerator(),
                 QUARTER_FINAL_COUNT);
+    }
+
+    /** Juega solo los 2 cruces de semifinal, con los 4 ganadores de cuartos. */
+    public List<KnockoutTieReport> playSemiFinals(
+            List<KnockoutTieReport> quarterFinalReports,
+            KnockoutStageContext context,
+            LocalDate semiFinalDate) throws InterruptedException {
+        Objects.requireNonNull(quarterFinalReports, "The quarter-final reports are required");
+        Objects.requireNonNull(context, "The knockout stage context is required");
+        Objects.requireNonNull(semiFinalDate, "The semi-final date is required");
+        if (quarterFinalReports.size() != QUARTER_FINAL_COUNT) {
+            throw new IllegalArgumentException("Expected the four quarter-final reports");
+        }
 
         List<Team[]> semiFinalPairings = new ArrayList<>();
         semiFinalPairings.add(new Team[]{
@@ -94,26 +144,35 @@ public class KnockoutStageSimulator {
         semiFinalPairings.add(new Team[]{
                 quarterFinalReports.get(2).getWinner(), quarterFinalReports.get(3).getWinner()});
 
-        LocalDate semiFinalDate = firstMatchDate.plusDays(DAYS_BETWEEN_STAGES);
-        List<KnockoutTieReport> semiFinalReports = playRound(
+        return playRound(
                 semiFinalPairings,
                 PhaseType.SEMI_FINAL,
                 semiFinalDate,
-                stadiumDrawService,
-                refereePool,
-                seedGenerator,
+                context.getStadiumDrawService(),
+                context.getRefereePool(),
+                context.getSeedGenerator(),
                 SEMI_FINAL_COUNT);
+    }
 
-        LocalDate finalDate = semiFinalDate.plusDays(DAYS_BETWEEN_STAGES);
-        FinalMatchReport finalReport = playFinal(
+    /** Juega solo el partido final, con los 2 ganadores de semifinal. */
+    public FinalMatchReport playFinalMatch(
+            List<KnockoutTieReport> semiFinalReports,
+            KnockoutStageContext context,
+            LocalDate finalDate) {
+        Objects.requireNonNull(semiFinalReports, "The semi-final reports are required");
+        Objects.requireNonNull(context, "The knockout stage context is required");
+        Objects.requireNonNull(finalDate, "The final date is required");
+        if (semiFinalReports.size() != SEMI_FINAL_COUNT) {
+            throw new IllegalArgumentException("Expected the two semi-final reports");
+        }
+
+        return playFinal(
                 semiFinalReports.get(0).getWinner(),
                 semiFinalReports.get(1).getWinner(),
                 finalDate,
-                stadiumDrawService,
-                refereePool,
-                seedGenerator);
-
-        return new KnockoutStageResult(quarterFinalReports, semiFinalReports, finalReport);
+                context.getStadiumDrawService(),
+                context.getRefereePool(),
+                context.getSeedGenerator());
     }
 
     private List<KnockoutTieReport> playRound(
