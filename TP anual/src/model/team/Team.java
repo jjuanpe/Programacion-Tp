@@ -3,6 +3,7 @@ package model.team;
 import model.people.HeadCoach;
 import model.people.Player;
 import model.people.Position;
+import model.venue.Stadium;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ public class Team {
     private final int ranking;
     private final List<Player> players;
     private HeadCoach headCoach;
+    private Stadium stadium;
 
     public Team(String name, Country country, int ranking) {
         if (name == null || name.isBlank()) {
@@ -50,6 +52,14 @@ public class Team {
 
     public void setCoach(HeadCoach headCoach) {
         this.headCoach = Objects.requireNonNull(headCoach, "The head coach is required");
+    }
+
+    public Stadium getStadium() {
+        return stadium;
+    }
+
+    public void setStadium(Stadium stadium) {
+        this.stadium = Objects.requireNonNull(stadium, "The team stadium is required");
     }
 
     public void addPlayer(Player player) {

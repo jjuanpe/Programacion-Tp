@@ -43,8 +43,8 @@ public class FixtureService {
                 awayTeam1 = temporaryTeam;
             }
 
-            fixture.add(new GroupMatch(date, homeTeam1, awayTeam1, null, chooseStadium(stadiums, random)));
-            fixture.add(new GroupMatch(date, homeTeam2, awayTeam2, null, chooseStadium(stadiums, random)));
+            fixture.add(new GroupMatch(date, homeTeam1, awayTeam1, null, chooseStadium(homeTeam1, stadiums, random)));
+            fixture.add(new GroupMatch(date, homeTeam2, awayTeam2, null, chooseStadium(homeTeam2, stadiums, random)));
 
             Collections.rotate(rotatingTeams, 1);
             date = date.plusDays(daysBetweenRounds);
@@ -54,7 +54,11 @@ public class FixtureService {
         return fixture;
     }
 
-    private Stadium chooseStadium(List<Stadium> stadiums, Random random) {
+    private Stadium chooseStadium(Team homeTeam, List<Stadium> stadiums, Random random) {
+        Stadium homeStadium = homeTeam.getStadium();
+        if (homeStadium != null) {
+            return homeStadium;
+        }
         return stadiums.isEmpty() ? null : stadiums.get(random.nextInt(stadiums.size()));
     }
 }

@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -59,6 +60,7 @@ public class TournamentSession {
             throw new IllegalStateException("At least 13 stadiums are required for the knockout stage; found "
                     + stadiums.size());
         }
+        assignHomeStadiums(tournamentData.getTeams(), stadiums, new Random(seedGenerator.nextLong()));
 
         List<Zone> zones = new DrawService(new Random(seedGenerator.nextLong()))
                 .draw(tournamentData.getTeams());
@@ -74,6 +76,14 @@ public class TournamentSession {
                 tournamentData.getReferees(),
                 stadiums);
         resetKnockoutProgress();
+    }
+
+    private void assignHomeStadiums(List<Team> teams, List<Stadium> stadiums, Random random) {
+        List<Stadium> shuffledStadiums = new ArrayList<>(stadiums);
+        Collections.shuffle(shuffledStadiums, random);
+        for (int index = 0; index < teams.size(); index++) {
+            teams.get(index).setStadium(shuffledStadiums.get(index % shuffledStadiums.size()));
+        }
     }
 
     private void resetKnockoutProgress() {
