@@ -7,13 +7,6 @@ import ui.fx.TournamentStage;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Completa el resumen del Dashboard a partir del estado real del campeonato.
- *
- * El Dashboard muestra solo el panorama general: cuantos equipos hay cargados,
- * cuantos partidos se jugaron, cuantos goles se convirtieron y en que fase esta
- * el torneo. El detalle vive en las paginas especificas.
- */
 public class DashboardController {
 
     private final TournamentSession session;
@@ -24,7 +17,6 @@ public class DashboardController {
         this.viewModel = Objects.requireNonNull(viewModel, "The view model is required");
     }
 
-    /** Vuelve a leer el campeonato y actualiza el resumen. */
     public void refresh() {
         List<Match> matches = session.getMatches();
 
@@ -58,11 +50,6 @@ public class DashboardController {
         return goals;
     }
 
-    /**
-     * Fase que corresponde marcar en el stepper, o {@code null} cuando el
-     * torneo todavia no arranco. La traduccion al enum de la interfaz se hace
-     * aca, asi el dominio no depende de {@code ui.fx}.
-     */
     private TournamentStage stageOf(TournamentState state) {
         return switch (state) {
             case EMPTY, DATA_LOADED -> null;

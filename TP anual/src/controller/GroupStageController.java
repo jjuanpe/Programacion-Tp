@@ -18,16 +18,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-/**
- * Arma la pagina Group Stage: las cuatro zonas con sus equipos, su fixture y
- * su tabla de posiciones.
- *
- * Las posiciones las calcula {@link StandingsService}, que ya aplica todos los
- * criterios de desempate del TP. Los clasificados son los primeros
- * {@link KnockoutBracketService#QUALIFIED_PER_ZONE} de cada zona: se toma la
- * constante del servicio que arma el cuadro, para que no se puedan
- * desincronizar.
- */
 public class GroupStageController {
 
     private static final DateTimeFormatter DATE_FORMAT =
@@ -55,7 +45,6 @@ public class GroupStageController {
         this.standingsService = Objects.requireNonNull(standingsService, "The service is required");
     }
 
-    /** Vuelve a leer las zonas y rehace tablas y fixtures. */
     public void refresh() {
         List<Zone> zones = session.getZones();
         List<GroupZone> groupZones = new ArrayList<>();
@@ -66,11 +55,6 @@ public class GroupStageController {
         viewModel.setStatus(describeEmptyState());
     }
 
-    /**
-     * Que decir cuando no hay zonas para mostrar. El mensaje explica que falta
-     * hacer: sin esto, la pagina se veia vacia y con el boton de sorteo
-     * deshabilitado, sin ninguna pista de por que.
-     */
     private String describeEmptyState() {
         String message;
         TournamentState state = session.getState();
@@ -94,7 +78,6 @@ public class GroupStageController {
                 describeQualified(standings));
     }
 
-    /** Los equipos que el sorteo asigno a la zona, en el orden del sorteo. */
     private String describeTeams(Zone zone) {
         List<String> names = new ArrayList<>();
         for (Team team : zone.getTeams()) {
@@ -144,10 +127,6 @@ public class GroupStageController {
         return referee == null ? NOT_AVAILABLE : referee.getName();
     }
 
-    /**
-     * Los clasificados solo tienen sentido con la zona terminada: mientras
-     * queden partidos por jugar, las posiciones todavia pueden cambiar.
-     */
     private String describeQualified(List<StandingEntry> standings) {
         String description;
         if (!isZoneFinished(standings)) {

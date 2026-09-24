@@ -20,12 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-/**
- * Sprint 4 entry point: draws the 4 zones, generates and simulates the
- * group stage (Sprint 2 + Sprint 3), then runs the full knockout stage
- * (quarter-finals, semi-finals, final) until a champion is reached,
- * printing the criteria that decided every tie along the way.
- */
 public class Sprint4Main {
 
     private static final String DEFAULT_DATA_PATH = "TP anual/docs/torneo.json";
@@ -90,13 +84,6 @@ public class Sprint4Main {
         System.out.println("========================================================");
     }
 
-    /**
-     * Sample stadiums, since venue data does not come from the tournament
-     * file yet (that will move to the relational database in a future
-     * sprint). At least 13 are needed: 4 quarter-finals x 2 legs + 2
-     * semi-finals x 2 legs + 1 final = 13 knockout matches, each requiring
-     * a different stadium.
-     */
     private static List<Stadium> createSampleStadiums() {
         List<Stadium> stadiums = new ArrayList<>();
         String[][] cityAndStadium = {

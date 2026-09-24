@@ -1,12 +1,5 @@
 package ui.fx;
 
-/**
- * Una fila de la tabla de goleadores, ya lista para mostrar.
- *
- * Guarda solo texto y numeros: no referencia jugadores ni equipos del dominio.
- * El controlador arma estas filas a partir del ranking calculado, asi la vista
- * nunca toca el modelo.
- */
 public final class ScorerRow {
 
     private final int position;

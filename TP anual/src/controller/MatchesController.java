@@ -32,14 +32,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * Arma la pagina Matches: todos los partidos del campeonato, de cualquier fase,
- * con sus alineaciones y sus incidencias.
- *
- * Traduce las clases del dominio (Match, Formation, Incidence) a filas de
- * interfaz. Los partidos van ordenados por fecha, que es el orden en que se
- * juegan. El filtro por fase lo aplica la vista sobre la lista completa.
- */
 public class MatchesController {
 
     private static final DateTimeFormatter DATE_FORMAT =
@@ -57,7 +49,6 @@ public class MatchesController {
         this.viewModel = Objects.requireNonNull(viewModel, "The view model is required");
     }
 
-    /** Vuelve a leer los partidos del campeonato. */
     public void refresh() {
         List<Match> matches = new ArrayList<>(session.getMatches());
         matches.sort(Comparator.comparing(Match::getDate));
@@ -91,16 +82,6 @@ public class MatchesController {
                 toIncidences(match.getIncidences()));
     }
 
-    /**
-     * A que instancia del torneo pertenece el partido.
-     *
-     * SecondLegMatch extiende FirstLegMatch (la vuelta reutiliza los datos
-     * de la ida para poder calcular el agregado), asi que "instanceof
-     * FirstLegMatch" tambien da true para un partido de vuelta. Por eso el
-     * chequeo de SecondLegMatch (el tipo mas especifico) tiene que ir
-     * SIEMPRE antes que el de FirstLegMatch -- si no, ningun partido de
-     * vuelta llega nunca a esa rama y todos se etiquetan como "(1st leg)".
-     */
     private String describePhase(Match match) {
         String phase;
         if (match instanceof GroupMatch) {
@@ -117,13 +98,6 @@ public class MatchesController {
         return phase;
     }
 
-    /**
-     * Fase sin distinguir ida/vuelta, para que la vista filtre por ella.
-     *
-     * Mismo orden que en describePhase: SecondLegMatch antes que
-     * FirstLegMatch, por la misma razon (SecondLegMatch ES-A FirstLegMatch
-     * por herencia).
-     */
     private String phaseCategory(Match match) {
         String category;
         if (match instanceof GroupMatch) {
@@ -148,7 +122,6 @@ public class MatchesController {
         };
     }
 
-    /** El global solo tiene sentido en la vuelta, con la ida ya jugada. */
     private String describeAggregate(Match match) {
         String aggregate = "";
         if (match instanceof SecondLegMatch secondLeg
@@ -169,7 +142,6 @@ public class MatchesController {
         return minutes;
     }
 
-    /** La alineacion existe solo si el partido se jugo. */
     private List<LineupRow> toLineup(Formation formation, Map<Player, Integer> minutes) {
         List<LineupRow> lineup = new ArrayList<>();
         if (formation != null) {
@@ -201,7 +173,6 @@ public class MatchesController {
         };
     }
 
-    /** Las incidencias van en orden de minuto, como se vieron en la cancha. */
     private List<IncidenceRow> toIncidences(List<Incidence> incidences) {
         List<Incidence> ordered = new ArrayList<>(incidences);
         ordered.sort(Comparator.comparingInt(Incidence::getMinute));

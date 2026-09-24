@@ -14,13 +14,6 @@ import javafx.scene.layout.VBox;
 import java.util.List;
 import java.util.function.Predicate;
 
-/**
- * Pagina Players: listado de todos los jugadores del campeonato, con un
- * filtro por posicion (arquero, defensor, mediocampista o delantero).
- *
- * La vista no calcula nada: recibe las filas ya armadas, con los goles
- * recibidos y su promedio por partido resueltos solo para los arqueros.
- */
 public class PlayersView extends VBox {
 
     private static final String ALL_POSITIONS = "All positions";
@@ -37,7 +30,6 @@ public class PlayersView extends VBox {
                 buildPlayersTable(filteredPlayers, emptyMessage));
     }
 
-    /** Como se calculan las estadisticas, para quien las lea por primera vez. */
     private Label buildHint() {
         Label hint = new Label(
                 "Stats are computed over every match played so far, group stage and knockouts. "

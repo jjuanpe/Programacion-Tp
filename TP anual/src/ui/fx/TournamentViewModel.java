@@ -7,13 +7,6 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-/**
- * Estado observable de la pagina Tournament.
- *
- * Guarda tanto los datos del campeonato como que acciones estan habilitadas.
- * La vista solo ata botones y etiquetas a estas propiedades: no decide nada
- * sobre el ciclo de vida del torneo.
- */
 public class TournamentViewModel {
 
     private final StringProperty state = new SimpleStringProperty(this, "state", "");
@@ -38,12 +31,10 @@ public class TournamentViewModel {
 
     public void setState(String value) { state.set(value); }
 
-    /** Resultado de la ultima accion, o el aviso de que hay una en curso. */
     public StringProperty messageProperty() { return message; }
 
     public void setMessage(String value) { message.set(value); }
 
-    /** Texto del boton de avance: cambia segun lo que toque hacer. */
     public StringProperty advanceLabelProperty() { return advanceLabel; }
 
     public void setAdvanceLabel(String value) { advanceLabel.set(value); }

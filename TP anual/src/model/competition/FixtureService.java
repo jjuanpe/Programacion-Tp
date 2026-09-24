@@ -37,7 +37,6 @@ public class FixtureService {
             Team homeTeam2 = rotatingTeams.get(0);
             Team awayTeam2 = rotatingTeams.get(1);
 
-
             if (round % 2 == 1) {
                 Team temporaryTeam = homeTeam1;
                 homeTeam1 = awayTeam1;

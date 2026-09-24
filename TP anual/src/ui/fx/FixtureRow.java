@@ -1,9 +1,5 @@
 package ui.fx;
 
-/**
- * Un partido del fixture, listo para mostrar. El resultado llega ya armado
- * ("2 - 1" o un guion si todavia no se jugo).
- */
 public final class FixtureRow {
 
     private final String date;
@@ -41,7 +37,6 @@ public final class FixtureRow {
 
     public String getStatus() { return status; }
 
-    /** Arbitro designado, o un guion si el partido todavia no se jugo. */
     public String getReferee() { return referee; }
 
     public String getStadium() { return stadium; }

@@ -13,16 +13,6 @@ import javafx.scene.layout.VBox;
 
 import java.util.List;
 
-/**
- * Pagina Teams: los dos listados de equipos.
- *
- * Arriba, el resumen alfabetico con edad promedio del plantel, datos del DT,
- * goles y efectividad. Abajo, la lista de equipos y la ficha del seleccionado,
- * con su plantel y la validacion de que este completo.
- *
- * La vista no calcula nada: recibe las filas y las fichas ya armadas. Elegir
- * un equipo solo cambia que ficha se muestra.
- */
 public class TeamsView extends VBox {
 
     private static final String STATE_VALID = "squad-valid";
@@ -60,7 +50,6 @@ public class TeamsView extends VBox {
         return subtitle;
     }
 
-    /** Primer listado: resumen alfabetico de todos los equipos. */
     private TableView<TeamRow> buildSummaryTable(
             ObservableList<TeamRow> rows,
             ObservableValue<String> emptyMessage) {
@@ -81,7 +70,6 @@ public class TeamsView extends VBox {
         return table;
     }
 
-    /** Segundo listado: lista de equipos a la izquierda, ficha a la derecha. */
     private HBox buildDetailSplit(
             ObservableList<TeamDetail> teams,
             ObservableValue<String> emptyMessage) {
@@ -91,7 +79,6 @@ public class TeamsView extends VBox {
         teamList.getSelectionModel().selectedItemProperty()
                 .addListener((observable, previous, selected) -> showDetail(selected));
 
-        // Al cargarse los equipos, se muestra el primero sin que haya que elegirlo.
         teams.addListener((ListChangeListener<TeamDetail>) change -> selectFirst(teamList));
         selectFirst(teamList);
 
@@ -152,7 +139,6 @@ public class TeamsView extends VBox {
         return row;
     }
 
-    /** Muestra la ficha elegida, o la vacia cuando no hay ninguna. */
     private void showDetail(TeamDetail detail) {
         boolean hasDetail = detail != null;
 

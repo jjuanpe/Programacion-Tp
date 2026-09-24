@@ -1,8 +1,5 @@
 package ui.fx;
 
-/**
- * Un jugador en la alineacion de un partido, listo para mostrar.
- */
 public final class LineupRow {
 
     private final String player;
@@ -21,9 +18,7 @@ public final class LineupRow {
 
     public String getPosition() { return position; }
 
-    /** Titular o suplente. */
     public String getRole() { return role; }
 
-    /** Minutos jugados, o un guion si no entro. */
     public String getMinutes() { return minutes; }
 }

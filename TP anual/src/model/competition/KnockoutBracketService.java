@@ -6,16 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Builds the quarter-final bracket from the four zones' standings, following
- * the assignment's fixed pairing rule:
- * I. 1st Zone1 vs 2nd Zone4     III. 1st Zone3 vs 2nd Zone1
- * II. 1st Zone2 vs 2nd Zone3    IV. 1st Zone4 vs 2nd Zone2
- */
 public class KnockoutBracketService {
 
     private static final int EXPECTED_ZONE_COUNT = 4;
-    /** Cuantos equipos de cada zona pasan a cuartos. */
     public static final int QUALIFIED_PER_ZONE = 2;
 
     private final StandingsService standingsService;
@@ -40,10 +33,10 @@ public class KnockoutBracketService {
         }
 
         List<Team[]> pairings = new ArrayList<>();
-        pairings.add(new Team[]{qualifiedByZone.get(0).get(0), qualifiedByZone.get(3).get(1)}); // I
-        pairings.add(new Team[]{qualifiedByZone.get(1).get(0), qualifiedByZone.get(2).get(1)}); // II
-        pairings.add(new Team[]{qualifiedByZone.get(2).get(0), qualifiedByZone.get(0).get(1)}); // III
-        pairings.add(new Team[]{qualifiedByZone.get(3).get(0), qualifiedByZone.get(1).get(1)}); // IV
+        pairings.add(new Team[]{qualifiedByZone.get(0).get(0), qualifiedByZone.get(3).get(1)});
+        pairings.add(new Team[]{qualifiedByZone.get(1).get(0), qualifiedByZone.get(2).get(1)});
+        pairings.add(new Team[]{qualifiedByZone.get(2).get(0), qualifiedByZone.get(0).get(1)});
+        pairings.add(new Team[]{qualifiedByZone.get(3).get(0), qualifiedByZone.get(1).get(1)});
         return pairings;
     }
 

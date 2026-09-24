@@ -1,8 +1,5 @@
 package ui.fx;
 
-/**
- * Una incidencia de un partido, lista para mostrar.
- */
 public final class IncidenceRow {
 
     private final String minute;
@@ -17,7 +14,6 @@ public final class IncidenceRow {
 
     public String getMinute() { return minute; }
 
-    /** Gol, tarjeta amarilla, expulsion, cambio... */
     public String getType() { return type; }
 
     public String getDetail() { return detail; }

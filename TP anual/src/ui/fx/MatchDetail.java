@@ -2,14 +2,6 @@ package ui.fx;
 
 import java.util.List;
 
-/**
- * Un partido del campeonato, listo para mostrar.
- *
- * Lleva tanto el resumen que se ve en la tabla (fase, fecha, equipos,
- * resultado) como el detalle que aparece al seleccionarlo (alineaciones e
- * incidencias). Al elegir otro partido la vista solo muestra otro objeto de
- * estos: no vuelve a consultar el dominio.
- */
 public final class MatchDetail {
 
     private final String phase;
@@ -60,7 +52,6 @@ public final class MatchDetail {
 
     public String getPhase() { return phase; }
 
-    /** Fase sin distinguir ida/vuelta, para filtrar (ej. "Semi-final"). */
     public String getPhaseCategory() { return phaseCategory; }
 
     public String getDate() { return date; }
@@ -79,7 +70,6 @@ public final class MatchDetail {
 
     public String getStadium() { return stadium; }
 
-    /** Global de la llave, solo en los partidos de vuelta. Vacio en el resto. */
     public String getAggregate() { return aggregate; }
 
     public List<LineupRow> getHomeLineup() { return homeLineup; }
@@ -88,7 +78,6 @@ public final class MatchDetail {
 
     public List<IncidenceRow> getIncidences() { return incidences; }
 
-    /** Titulo del partido, para el encabezado del detalle. */
     public String getTitle() {
         return homeTeam + "  " + score + "  " + awayTeam;
     }

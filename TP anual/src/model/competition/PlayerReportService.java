@@ -15,23 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * Arma el listado de jugadores del campeonato con sus estadisticas: partidos
- * jugados, minutos jugados, goles convertidos y, para los arqueros, goles
- * recibidos.
- *
- * Reglas aplicadas:
- *
- * - Incluye a todos los jugadores de los planteles, jugaron o no; los que
- *   todavia no jugaron aparecen con todo en cero.
- * - Un partido cuenta como jugado por un jugador cuando su participacion
- *   registra minutos jugados mayores a cero; un suplente que no entro no
- *   suma partido ni minutos.
- * - Los goles en contra de un arquero no dependen de que el gol registre al
- *   arquero (en la fase eliminatoria esa referencia no siempre esta cargada):
- *   se toman los goles del rival en cada partido donde el arquero jugo, que
- *   siempre juega los 90 minutos completos en esta simulacion.
- */
 public class PlayerReportService {
 
     private static final Comparator<PlayerReportEntry> ALPHABETICAL =

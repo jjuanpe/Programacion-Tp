@@ -5,13 +5,6 @@ import model.team.Team;
 
 import java.util.Objects;
 
-/**
- * Una fila del listado alfabetico de equipos: promedio de edad del plantel,
- * datos del DT y rendimiento en el campeonato.
- *
- * Los mutadores son de paquete: solo {@link TeamReportService} arma estas
- * entradas.
- */
 public class TeamReportEntry {
 
     private static final int POINTS_PER_WIN = 3;
@@ -34,7 +27,6 @@ public class TeamReportEntry {
         this.coachCountry = coachCountry;
     }
 
-    /** Suma un partido jugado, con los goles a favor y en contra de este equipo. */
     void registerMatch(int scored, int conceded) {
         played++;
         goalsFor += scored;
@@ -48,27 +40,22 @@ public class TeamReportEntry {
 
     public Team getTeam() { return team; }
 
-    /** Promedio de edad de los jugadores del plantel. */
     public double getAveragePlayerAge() { return averagePlayerAge; }
 
-    /** Edad del DT, o 0 si el equipo no tiene DT cargado. */
     public int getCoachAge() { return coachAge; }
 
-    /** Nacionalidad del DT, o {@code null} si no tiene DT cargado. */
     public Country getCoachCountry() { return coachCountry; }
 
     public int getPlayed() { return played; }
 
     public int getPoints() { return points; }
 
-    /** Puntos que el equipo podria haber sumado en los partidos que jugo. */
     public int getPossiblePoints() { return played * POINTS_PER_WIN; }
 
     public int getGoalsFor() { return goalsFor; }
 
     public int getGoalsAgainst() { return goalsAgainst; }
 
-    /** Porcentaje de puntos obtenidos sobre los posibles. 0 si no jugo. */
     public double getEffectiveness() {
         double effectiveness = 0;
         if (played > 0) {

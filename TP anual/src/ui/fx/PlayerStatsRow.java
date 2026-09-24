@@ -1,11 +1,5 @@
 package ui.fx;
 
-/**
- * Un jugador del campeonato, listo para mostrar en el listado de Players.
- *
- * Los goles recibidos y su promedio por partido solo tienen sentido para los
- * arqueros; en el resto llegan como "-" ya formateados por el controlador.
- */
 public final class PlayerStatsRow {
 
     private final String name;

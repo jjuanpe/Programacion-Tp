@@ -14,14 +14,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-/**
- * Arma la pagina Players: el listado de jugadores del campeonato, ordenado
- * por equipo, con sus estadisticas (partidos jugados, minutos, goles y,
- * para los arqueros, goles recibidos y su promedio por partido).
- *
- * El filtro por posicion lo aplica la vista sobre el listado completo que
- * arma este controlador.
- */
 public class PlayersController {
 
     private static final String NOT_AVAILABLE = "-";
@@ -44,7 +36,6 @@ public class PlayersController {
         this.playerReportService = Objects.requireNonNull(playerReportService, "The service is required");
     }
 
-    /** Vuelve a leer el campeonato y rehace el listado de jugadores. */
     public void refresh() {
         LocalDate today = LocalDate.now();
         List<Team> teams = session.getTeams();

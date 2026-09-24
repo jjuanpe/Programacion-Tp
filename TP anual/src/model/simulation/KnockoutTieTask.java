@@ -19,13 +19,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-/**
- * Plays a full two-legged knockout tie: first leg, second leg, and -- if the
- * tie is still level after applying the away-goals rule -- a penalty
- * shoot-out. Implements {@link Callable} so it can be submitted to an
- * {@link java.util.concurrent.ExecutorService}, the same pattern used by
- * {@code GroupMatchSimulationTask} in Sprint 3.
- */
 public class KnockoutTieTask implements Callable<KnockoutTieReport> {
 
     private final Team teamA;

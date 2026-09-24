@@ -6,7 +6,6 @@ import javafx.scene.layout.VBox;
 import model.competition.Championship;
 import model.venue.Stadium;
 
-/** Registered venues and their availability for the knockout stage. */
 public class StadiumsView extends VBox {
     private final Label summary = new Label();
     private final TableView<Stadium> table = new TableView<>();

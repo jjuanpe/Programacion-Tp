@@ -13,13 +13,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-/**
- * Simulates a penalty shoot-out (5 rounds, then sudden death) for a
- * knockout stage match that remains tied. Written with structured
- * programming in mind: the {@code while} loop is controlled entirely by a
- * boolean flag recomputed at the end of every iteration -- no
- * {@code break} or {@code continue} is used anywhere.
- */
 public class PenaltyShootoutSimulator {
 
     private static final int MINIMUM_ROUNDS = 5;
@@ -82,7 +75,6 @@ public class PenaltyShootoutSimulator {
         } else if (awayScored > homeScored) {
             winner = match.getAwayTeam();
         } else {
-            // Extremely unlikely fallback if the safety round limit was reached still tied.
             winner = random.nextBoolean() ? match.getHomeTeam() : match.getAwayTeam();
         }
         return winner;

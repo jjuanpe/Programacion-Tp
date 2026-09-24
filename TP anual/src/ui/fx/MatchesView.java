@@ -16,20 +16,6 @@ import javafx.scene.layout.VBox;
 import java.util.List;
 import java.util.function.Predicate;
 
-/**
- * Pagina Matches: todos los partidos del torneo, con un filtro por fase
- * (grupos, cuartos, semis o final).
- *
- * Arriba el filtro y la tabla con los partidos que le corresponden; al
- * seleccionar uno, abajo aparece su detalle: alineaciones de los dos equipos
- * e incidencias. La vista no calcula nada, solo muestra el partido ya armado
- * que trae la seleccion.
- *
- * Es una pagina de consulta: los partidos se juegan por fase, desde Tournament.
- * Simular un partido suelto se saltearia la designacion de arbitros y el
- * arrastre de suspensiones entre fechas, y en la fase eliminatoria no tiene
- * sentido porque la llave se resuelve con las dos ruedas juntas.
- */
 public class MatchesView extends VBox {
 
     private static final String ALL_PHASES = "All phases";
@@ -63,7 +49,6 @@ public class MatchesView extends VBox {
                 buildDetailPanel());
     }
 
-    /** Donde se juegan los partidos, para quien venga a buscar ese boton aca. */
     private Label buildHint() {
         Label hint = new Label(
                 "Matches are played by phase from the Tournament page. This page is read-only.");
@@ -189,7 +174,6 @@ public class MatchesView extends VBox {
         return placeholder;
     }
 
-    /** Muestra el partido elegido, o el detalle vacio si no hay ninguno. */
     private void showDetail(MatchDetail match) {
         boolean hasMatch = match != null;
 
@@ -203,7 +187,6 @@ public class MatchesView extends VBox {
         incidences.getItems().setAll(hasMatch ? match.getIncidences() : List.of());
     }
 
-    /** Linea de contexto: fase, fecha, sede, arbitro y global de la llave. */
     private String describe(MatchDetail match) {
         StringBuilder description = new StringBuilder();
         description.append(match.getPhase())

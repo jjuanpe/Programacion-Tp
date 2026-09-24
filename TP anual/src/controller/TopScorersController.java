@@ -11,13 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Conecta el ranking de goleadores con la vista.
- *
- * Es la unica clase que conoce los dos lados: le pide el calculo al dominio y
- * traduce el resultado a filas ({@link ScorerRow}) que la interfaz puede
- * mostrar sin saber nada de jugadores ni equipos.
- */
 public class TopScorersController {
 
     private static final String UNKNOWN_TEAM = "-";
@@ -35,7 +28,6 @@ public class TopScorersController {
         this.topScorersService = Objects.requireNonNull(topScorersService, "The service is required");
     }
 
-    /** Completa la vista a partir de un campeonato ya armado. */
     public void show(TournamentSession session) {
         Objects.requireNonNull(session, "The tournament session is required");
         publish(computeRanking(session));

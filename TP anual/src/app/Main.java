@@ -23,7 +23,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
 
-
 public class Main {
     private static final String DEFAULT_DATA_PATH = "docs/torneo.json";
     private static final LocalDate GROUP_STAGE_START_DATE = LocalDate.of(2026, 9, 1);

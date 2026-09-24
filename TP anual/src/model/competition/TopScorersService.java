@@ -14,23 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * Calcula el ranking de goleadores del campeonato.
- *
- * Reglas aplicadas:
- *
- * - Solo cuentan las incidencias de tipo {@link Goal}, es decir los goles
- *   convertidos durante el partido.
- * - Los penales de una definicion por penales NO cuentan: la tanda se registra
- *   como {@link model.event.PenaltyExecuted}, una incidencia distinta, asi que
- *   queda afuera por construccion. {@link Match#completeMatch} refuerza esto al
- *   exigir que la cantidad de goles registrados coincida con el marcador.
- * - Un penal convertido durante el partido si cuenta, y ademas suma en la
- *   columna de penales.
- * - Los goles en contra no se le acreditan al jugador que los hizo: no son
- *   goles convertidos por el.
- * - Los jugadores sin goles no aparecen en el ranking.
- */
 public class TopScorersService {
 
     private static final Comparator<ScorerEntry> RANKING_CRITERIA =
@@ -38,11 +21,6 @@ public class TopScorersService {
                     .thenComparingInt(ScorerEntry::getPenaltyGoals)
                     .thenComparing(entry -> entry.getPlayer().getName());
 
-    /**
-     * @param teams   equipos del campeonato, usados para resolver a que equipo
-     *                pertenece cada goleador
-     * @param matches partidos a considerar; los no jugados se ignoran
-     */
     public List<ScorerEntry> computeTopScorers(List<Team> teams, List<? extends Match> matches) {
         Objects.requireNonNull(teams, "The team list is required");
         Objects.requireNonNull(matches, "The match list is required");
@@ -96,10 +74,6 @@ public class TopScorersService {
         entry.registerGoal(goal.isPenalty());
     }
 
-    /**
-     * Numera el ranking. Los jugadores empatados en goles comparten posicion y
-     * la siguiente salta (1, 2, 2, 4), como en cualquier tabla de goleadores.
-     */
     private void assignPositions(List<ScorerEntry> ranking) {
         int position = 0;
         int index = 0;

@@ -40,10 +40,6 @@ public abstract class Person {
         return birthDate;
     }
 
-    /**
-     * Age in completed years at the given date, or 0 when the birth date is
-     * not recorded.
-     */
     public int getAge(LocalDate referenceDate) {
         int age = 0;
         if (birthDate != null && referenceDate != null) {

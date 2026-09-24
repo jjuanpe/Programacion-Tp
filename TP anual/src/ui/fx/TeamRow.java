@@ -1,12 +1,5 @@
 package ui.fx;
 
-/**
- * Una fila del listado alfabetico de equipos, ya lista para mostrar.
- *
- * Guarda solo texto y numeros: no referencia equipos ni personas del dominio.
- * Los valores con decimales llegan ya formateados desde el controlador, asi la
- * vista no decide como redondear.
- */
 public final class TeamRow {
 
     private final String team;

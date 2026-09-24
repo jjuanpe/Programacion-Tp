@@ -8,13 +8,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
-/**
- * Encabezado superior del area central.
- *
- * Muestra el titulo del torneo, la fase en curso y el estado de guardado.
- * Igual que {@link Sidebar}, es un componente de interfaz puro: la fase le
- * llega como valor observable y no conoce ninguna clase del dominio.
- */
 public class DashboardHeader extends HBox {
 
     private final Label subtitle;
@@ -34,7 +27,6 @@ public class DashboardHeader extends HBox {
         getChildren().addAll(buildTitles(), buildSpacer(), buildStatus());
     }
 
-    /** Titulo principal y subtitulo, apilados a la izquierda. */
     private VBox buildTitles() {
         Label title = new Label("Copa Internacional de Clubes");
         title.getStyleClass().add("dashboard-title");
@@ -44,14 +36,12 @@ public class DashboardHeader extends HBox {
         return titles;
     }
 
-    /** Separa el bloque de titulos del estado y hace que el encabezado ocupe todo el ancho. */
     private Region buildSpacer() {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         return spacer;
     }
 
-    /** Indicador verde + texto de estado, alineado a la derecha. */
     private HBox buildStatus() {
         Region dot = new Region();
         dot.getStyleClass().add("status-dot");
@@ -63,7 +53,6 @@ public class DashboardHeader extends HBox {
         return badge;
     }
 
-    /** Texto del indicador de estado. */
     public void setStatus(String text) {
         status.setText(text);
     }

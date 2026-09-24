@@ -17,14 +17,6 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
-/**
- * Simulates the 90 minutes of a knockout stage match (first leg, second leg
- * or final). Reuses {@link FormationService} and {@link TeamStrengthCalculator}
- * from Sprint 3, applying the same non-deterministic scoring approach used
- * for the group stage, simplified to goals and (at most one) expulsion per
- * team, since knockout matches do not require the fuller substitution/card
- * report that the group stage does.
- */
 public class KnockoutMatchSimulationService implements MatchSimulationStrategy<Match> {
 
     private static final int MATCH_MINUTES = 90;

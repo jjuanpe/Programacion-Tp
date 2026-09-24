@@ -7,16 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Resultado de revisar el plantel de un equipo.
- *
- * {@link Team#validateSquad()} corta con una excepcion en el primer problema,
- * que sirve para la carga pero no para mostrar en pantalla. Esta clase revisa
- * todo y devuelve la lista completa de faltantes o sobrantes, sin lanzar nada.
- *
- * Las cantidades esperadas salen de {@link Position#getRequiredPerSquad()}:
- * 2 arqueros, 6 defensores, 5 mediocampistas y 5 delanteros.
- */
 public final class SquadValidation {
 
     private static final int REQUIRED_SQUAD_SIZE = 18;
@@ -55,7 +45,6 @@ public final class SquadValidation {
         return squadSize;
     }
 
-    /** Los problemas encontrados; vacia si el plantel esta completo. */
     public List<String> getProblems() {
         return problems;
     }

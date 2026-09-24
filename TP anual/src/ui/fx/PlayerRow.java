@@ -1,8 +1,5 @@
 package ui.fx;
 
-/**
- * Un jugador del plantel, listo para mostrar en la tabla de detalle.
- */
 public final class PlayerRow {
 
     private final String name;

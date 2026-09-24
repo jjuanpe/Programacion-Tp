@@ -23,13 +23,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Runs the whole knockout stage: builds the quarter-final bracket from the
- * zones' standings, plays every two-legged tie (quarter-finals and
- * semi-finals) concurrently -- one thread per tie, reusing the
- * {@code ExecutorService} pattern from Sprint 3 -- and finally plays the
- * single final match, until a champion is reached.
- */
 public class KnockoutStageSimulator {
 
     private static final int QUARTER_FINAL_COUNT = 4;
@@ -89,16 +82,6 @@ public class KnockoutStageSimulator {
         return new KnockoutStageResult(quarterFinalReports, semiFinalReports, finalReport);
     }
 
-    /**
-     * Arranca una eliminatoria que se va a jugar fase por fase (cuartos,
-     * semis y final en llamadas separadas, por ejemplo una por cada click
-     * del usuario en la interfaz). Devuelve un {@link KnockoutStageContext}
-     * que hay que guardar y volver a pasar en cada llamada siguiente --
-     * mantiene el sorteo de estadios y el generador de semillas compartidos
-     * entre las 3 fases, para que ningun estadio se repita en TODA la
-     * eliminatoria (no solo dentro de una fase) y la simulacion completa
-     * siga siendo reproducible con la semilla original.
-     */
     public KnockoutStageContext startKnockoutStage(
             List<Stadium> stadiums, List<Referee> referees, long seed) {
         Objects.requireNonNull(stadiums, "The stadium list is required");
@@ -107,7 +90,6 @@ public class KnockoutStageSimulator {
                 new StadiumDrawService(stadiums), List.copyOf(referees), new Random(seed));
     }
 
-    /** Juega solo los 4 cruces de cuartos de final. */
     public List<KnockoutTieReport> playQuarterFinals(
             List<Zone> zones, KnockoutStageContext context, LocalDate firstMatchDate)
             throws InterruptedException {
@@ -126,7 +108,6 @@ public class KnockoutStageSimulator {
                 QUARTER_FINAL_COUNT);
     }
 
-    /** Juega solo los 2 cruces de semifinal, con los 4 ganadores de cuartos. */
     public List<KnockoutTieReport> playSemiFinals(
             List<KnockoutTieReport> quarterFinalReports,
             KnockoutStageContext context,
@@ -154,7 +135,6 @@ public class KnockoutStageSimulator {
                 SEMI_FINAL_COUNT);
     }
 
-    /** Juega solo el partido final, con los 2 ganadores de semifinal. */
     public FinalMatchReport playFinalMatch(
             List<KnockoutTieReport> semiFinalReports,
             KnockoutStageContext context,

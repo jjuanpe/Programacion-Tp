@@ -6,17 +6,6 @@ import javafx.scene.control.TableColumn;
 
 import java.util.function.Function;
 
-/**
- * Fabrica de columnas para las tablas de la aplicacion.
- *
- * Todas las columnas guardan texto: el controlador ya entrega los valores
- * formateados, asi la vista no decide como redondear ni como mostrar un dato
- * faltante.
- *
- * Las columnas no se pueden reordenar: el orden de cada listado lo define el
- * dominio (alfabetico, por ranking, etc.) y dejar reordenar por columna lo
- * perderia.
- */
 public final class TableColumns {
 
     private static final String NUMERIC_STYLE_CLASS = "numeric-column";
@@ -31,7 +20,6 @@ public final class TableColumns {
         return column;
     }
 
-    /** Columna de numeros: misma celda, alineada a la derecha desde el CSS. */
     public static <T> TableColumn<T, String> numeric(String title, Function<T, String> value) {
         TableColumn<T, String> column = text(title, value);
         column.getStyleClass().add(NUMERIC_STYLE_CLASS);

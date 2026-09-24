@@ -10,13 +10,6 @@ import javafx.scene.layout.VBox;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * Pagina People: Players, Coaches y Referees en pestanas.
- *
- * Por ahora solo Players tiene contenido real; Coaches y Referees quedan
- * como aviso de que todavia no se desarrollaron, para que la navegacion ya
- * muestre las tres secciones previstas.
- */
 public class PeopleView extends VBox {
 
     private static final String STYLE_ACTIVE = "active";

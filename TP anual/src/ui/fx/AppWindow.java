@@ -22,16 +22,6 @@ import java.net.URL;
 import java.util.EnumMap;
 import java.util.Map;
 
-/**
- * Ventana principal de la aplicacion de escritorio.
- *
- * Oficia de punto de composicion: crea la sesion del campeonato, los ViewModel
- * y los controladores, y los ata a las vistas. Tambien resuelve la navegacion:
- * cada opcion del sidebar muestra una pagina distinta en el area central.
- *
- * Al abrirse no hay ningun campeonato cargado. El torneo arranca desde la
- * pagina Tournament, con acciones explicitas del usuario.
- */
 public class AppWindow extends Application {
 
     private static final String STYLESHEET = "/ui/fx/styles.css";
@@ -85,14 +75,12 @@ public class AppWindow extends Application {
         stage.setScene(scene);
         stage.show();
 
-        // Cada vez que el torneo avanza, las paginas que muestran datos se rehacen.
         tournamentController.setOnStateChanged(this::refreshPages);
         tournamentController.refresh();
         refreshPages();
         showPage(sidebar.getSelected());
     }
 
-    /** Vuelve a leer el campeonato en todas las paginas que muestran datos. */
     private void refreshPages() {
         dashboardController.refresh();
         teamsController.refresh();
@@ -102,7 +90,6 @@ public class AppWindow extends Application {
         stadiumsView.refresh(session.getChampionship());
     }
 
-    /** Area central: encabezado fijo arriba y la pagina activa debajo. */
     private BorderPane buildContent() {
         buildPages();
 
@@ -117,7 +104,6 @@ public class AppWindow extends Application {
         return content;
     }
 
-    /** Muestra la pagina de una opcion del sidebar. */
     private void showPage(NavItem item) {
         pageArea.setContent(pages.get(item));
         pageArea.setVvalue(0);
@@ -160,10 +146,6 @@ public class AppWindow extends Application {
         pages.put(item, new PlaceholderPage(item.getLabel(), description));
     }
 
-    /**
-     * Dashboard: solo el panorama general del campeonato. El detalle (rankings,
-     * fixtures, planteles) va en las paginas correspondientes.
-     */
     private VBox buildDashboardPage() {
         VBox body = new VBox(
                 buildSummaryRow(),
@@ -172,10 +154,6 @@ public class AppWindow extends Application {
         return body;
     }
 
-    /**
-     * Fila de tarjetas de resumen. Cada tarjeta se ata a una propiedad del
-     * ViewModel: no hay ningun valor escrito en la vista.
-     */
     private HBox buildSummaryRow() {
         HBox row = new HBox(
                 new SummaryCard("Teams", dashboardViewModel.teamsProperty().asString()),
@@ -183,17 +161,12 @@ public class AppWindow extends Application {
                 new SummaryCard("Goals", dashboardViewModel.goalsProperty().asString()));
         row.getStyleClass().add("summary-row");
 
-        // Todas crecen por igual, asi mantienen el mismo ancho al redimensionar.
         for (Node card : row.getChildren()) {
             HBox.setHgrow(card, Priority.ALWAYS);
         }
         return row;
     }
 
-    /**
-     * Busca la hoja de estilos en el classpath y, si el IDE todavia no la
-     * copio a la carpeta de salida, cae al archivo dentro de src.
-     */
     private String loadStylesheet() {
         URL fromClasspath = AppWindow.class.getResource(STYLESHEET);
         if (fromClasspath != null) {

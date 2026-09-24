@@ -7,9 +7,6 @@ import model.venue.Stadium;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Creates the temporary stadium catalog used until database persistence is implemented.
- */
 public class SampleStadiumFactory {
     private static final int SAMPLE_STADIUM_CAPACITY = 50000;
 

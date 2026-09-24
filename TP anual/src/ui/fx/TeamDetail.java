@@ -2,13 +2,6 @@ package ui.fx;
 
 import java.util.List;
 
-/**
- * Ficha de un equipo: pais, ranking, DT, plantel y el resultado de validar
- * que el plantel este completo.
- *
- * Viene armada del controlador. La vista solo la muestra; al elegir otro
- * equipo de la lista simplemente muestra otra ficha, sin recalcular nada.
- */
 public final class TeamDetail {
 
     private final String name;
@@ -54,15 +47,12 @@ public final class TeamDetail {
 
     public String getCoachNationality() { return coachNationality; }
 
-    /** Si el plantel cumple con 18 jugadores: 2-6-5-5. */
     public boolean isSquadValid() { return squadValid; }
 
-    /** Texto del resultado de la validacion, listo para mostrar. */
     public String getSquadStatus() { return squadStatus; }
 
     public List<PlayerRow> getSquad() { return squad; }
 
-    /** Lo que muestra la lista de equipos. */
     @Override
     public String toString() {
         return name;

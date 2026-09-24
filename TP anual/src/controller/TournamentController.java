@@ -7,20 +7,11 @@ import ui.fx.TournamentViewModel;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Maneja el ciclo de vida del campeonato desde la pagina Tournament.
- *
- * Traduce las acciones del usuario (importar, sortear, avanzar) en llamadas a
- * {@link TournamentSession}, y despues de cada paso vuelca el estado en el
- * ViewModel. Las operaciones largas corren en un hilo aparte para no congelar
- * la ventana; mientras tanto los botones quedan deshabilitados.
- */
 public class TournamentController {
 
     private final TournamentSession session;
     private final TournamentViewModel viewModel;
 
-    /** Aviso para el resto de la aplicacion (el Dashboard) de que algo cambio. */
     private Runnable onStateChanged = () -> { };
 
     public TournamentController(TournamentSession session, TournamentViewModel viewModel) {
@@ -40,7 +31,6 @@ public class TournamentController {
         runStep("Running the group draw...", session::drawGroups, "Group draw completed");
     }
 
-    /** Inicia o continua el torneo: juega la fase que corresponda. */
     public void advance() {
         TournamentState state = session.getState();
         if (state == TournamentState.GROUPS_DRAWN) {
@@ -57,7 +47,6 @@ public class TournamentController {
         }
     }
 
-    /** Vuelve a leer la sesion y actualiza el ViewModel. No toca el mensaje. */
     public void refresh() {
         TournamentState state = session.getState();
         List<Match> matches = session.getMatches();
@@ -83,7 +72,6 @@ public class TournamentController {
                 || state == TournamentState.GROUP_STAGE_PLAYED
                 || state == TournamentState.QUARTER_FINALS_PLAYED
                 || state == TournamentState.SEMI_FINALS_PLAYED));
-        // Guardar el estado todavia no esta implementado.
         viewModel.setCanSave(false);
     }
 
@@ -108,7 +96,6 @@ public class TournamentController {
         return played;
     }
 
-    /** Un paso del ciclo de vida, que puede tardar y puede fallar. */
     private interface Step {
         void run() throws Exception;
     }

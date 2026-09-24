@@ -32,8 +32,6 @@ public class CityDao {
         }
     }
 
-    // public void updateCity () .. Que se actualiza de las ciudades ???
-
     public List<City> getAllCities () throws SQLException{
         String query = "SELECT nombre,idciudad FROM ciudades";
         List<City> cities = new ArrayList<>();

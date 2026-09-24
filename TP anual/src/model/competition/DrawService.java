@@ -8,7 +8,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
-
 public class DrawService {
 
     private static final int ZONE_COUNT = 4;

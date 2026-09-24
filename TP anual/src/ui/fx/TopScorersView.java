@@ -6,13 +6,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
 
-/**
- * Seccion "Top Scorers": la tabla de goleadores del campeonato.
- *
- * La vista no calcula nada ni conoce el dominio: recibe la lista observable de
- * filas ya armadas y las muestra. Cuando el controlador la completa, la tabla
- * se actualiza sola.
- */
 public class TopScorersView extends VBox {
 
     public TopScorersView(ObservableList<ScorerRow> rows, ObservableValue<String> emptyMessage) {

@@ -14,19 +14,6 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Seccion "Tournament Progress": un stepper horizontal con las etapas del
- * torneo.
- *
- * Cada etapa se dibuja en uno de tres estados (completada, actual, pendiente).
- * El componente no decide cual es la etapa actual ni la tiene escrita: recibe
- * un valor observable y se redibuja solo cada vez que cambia. Los tres estados
- * se expresan como clases CSS, asi que su apariencia se ajusta desde
- * {@code styles.css} sin tocar Java.
- *
- * Cuando la etapa actual es {@code null} (todavia no arranco el campeonato)
- * todas las etapas quedan pendientes.
- */
 public class TournamentProgress extends VBox {
 
     private static final String STATE_COMPLETED = "completed";
@@ -48,7 +35,6 @@ public class TournamentProgress extends VBox {
         refresh(currentStage.getValue());
     }
 
-    /** Arma la fila: etapa, conector, etapa, conector, etapa... */
     private HBox buildStepper() {
         HBox stepper = new HBox();
         stepper.getStyleClass().add("stepper");
@@ -79,7 +65,6 @@ public class TournamentProgress extends VBox {
         return step;
     }
 
-    /** Linea entre dos etapas. Crece para repartir el ancho sobrante. */
     private Region buildConnector() {
         Region connector = new Region();
         connector.getStyleClass().add("step-connector");
@@ -88,14 +73,11 @@ public class TournamentProgress extends VBox {
         return connector;
     }
 
-    /** Recalcula el estado de cada etapa y de cada conector. */
     private void refresh(TournamentStage currentStage) {
         for (TournamentStage stage : TournamentStage.values()) {
             applyState(steps.get(stage), stateOf(stage, currentStage));
         }
         for (int index = 0; index < connectors.size(); index++) {
-            // El conector en la posicion index une la etapa index con la
-            // siguiente: se pinta cuando la etapa de su izquierda ya quedo atras.
             boolean reached = currentStage != null && index < currentStage.ordinal();
             applyState(connectors.get(index), reached ? STATE_COMPLETED : STATE_PENDING);
         }

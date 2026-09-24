@@ -19,13 +19,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-/**
- * Arma los dos listados de la pagina Teams.
- *
- * Le pide al dominio el resumen alfabetico y la validacion de cada plantel, y
- * traduce todo a filas y fichas que la interfaz puede mostrar sin conocer
- * {@code Team}, {@code Player} ni {@code HeadCoach}.
- */
 public class TeamsController {
 
     private static final String NOT_AVAILABLE = "-";
@@ -49,7 +42,6 @@ public class TeamsController {
         this.teamReportService = Objects.requireNonNull(teamReportService, "The service is required");
     }
 
-    /** Vuelve a leer el campeonato y rehace los dos listados. */
     public void refresh() {
         LocalDate today = LocalDate.now();
         List<Team> teams = session.getTeams();
@@ -77,7 +69,6 @@ public class TeamsController {
         return rows;
     }
 
-    /** Las fichas siguen el mismo orden alfabetico que el resumen. */
     private List<TeamDetail> toDetails(List<TeamReportEntry> report, LocalDate referenceDate) {
         List<TeamDetail> details = new ArrayList<>();
         for (TeamReportEntry entry : report) {
@@ -124,7 +115,6 @@ public class TeamsController {
         return squad;
     }
 
-    /** El enum del dominio no lleva textos de interfaz: se traducen aca. */
     private String labelOf(Position position) {
         return switch (position) {
             case GOALKEEPER -> "Goalkeeper";

@@ -5,13 +5,6 @@ import model.team.Team;
 
 import java.util.Objects;
 
-/**
- * Una fila del ranking de goleadores: el jugador, su equipo y los goles que
- * convirtio en el campeonato.
- *
- * Los mutadores son de paquete: solo {@link TopScorersService} arma estas
- * entradas, asi ningun otro codigo puede inventar estadisticas.
- */
 public class ScorerEntry {
 
     private final Player player;
@@ -25,7 +18,6 @@ public class ScorerEntry {
         this.team = team;
     }
 
-    /** Suma un gol convertido en un partido. */
     void registerGoal(boolean penalty) {
         goals++;
         if (penalty) {
@@ -42,13 +34,11 @@ public class ScorerEntry {
 
     public Player getPlayer() { return player; }
 
-    /** Equipo del jugador, o {@code null} si no pertenece a ninguno de los recibidos. */
     public Team getTeam() { return team; }
 
     public int getPosition() { return position; }
 
     public int getGoals() { return goals; }
 
-    /** Goles convertidos de penal durante el partido (sin contar la tanda). */
     public int getPenaltyGoals() { return penaltyGoals; }
 }

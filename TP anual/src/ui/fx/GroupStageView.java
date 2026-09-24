@@ -12,14 +12,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-/**
- * Pagina Group Stage: las cuatro zonas, cada una con su tabla de posiciones,
- * su fixture y sus clasificados.
- *
- * La vista no calcula nada: recibe las zonas ya armadas y las dibuja. Cuando
- * el controlador las rehace (por ejemplo despues del sorteo o de jugar la fase
- * de grupos), se vuelven a dibujar solas.
- */
 public class GroupStageView extends VBox {
 
     private static final String QUALIFIED_STYLE_CLASS = "qualified-row";
@@ -109,7 +101,6 @@ public class GroupStageView extends VBox {
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         table.setPrefHeight(rowsHeight(zone.getStandings().size()));
 
-        // Los puestos que clasifican se marcan con una clase CSS en la fila.
         table.setRowFactory(ignored -> buildStandingRow());
 
         table.getColumns().add(TableColumns.numeric("#", row -> String.valueOf(row.getPosition())));
@@ -155,7 +146,6 @@ public class GroupStageView extends VBox {
         return table;
     }
 
-    /** Alto justo para las filas: las tablas de zona no necesitan scroll propio. */
     private double rowsHeight(int rowCount) {
         return 34.0 * rowCount + 52.0;
     }

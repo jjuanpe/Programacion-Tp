@@ -1,8 +1,5 @@
 package ui.fx;
 
-/**
- * Una fila de la tabla de posiciones, lista para mostrar.
- */
 public final class StandingRow {
 
     private final int position;
@@ -62,6 +59,5 @@ public final class StandingRow {
 
     public int getPoints() { return points; }
 
-    /** Si el equipo entra en los puestos que clasifican a cuartos. */
     public boolean isQualified() { return qualified; }
 }

@@ -1,10 +1,5 @@
 package ui.fx;
 
-/**
- * Opciones de navegacion del sidebar.
- * Es un enum puramente de interfaz: no conoce ninguna clase del dominio,
- * asi la barra lateral queda desacoplada de la logica del campeonato.
- */
 public enum NavItem {
 
     DASHBOARD("Dashboard"),
@@ -24,7 +19,6 @@ public enum NavItem {
         this.label = label;
     }
 
-    /** Texto visible en la interfaz (siempre en ingles). */
     public String getLabel() {
         return label;
     }
