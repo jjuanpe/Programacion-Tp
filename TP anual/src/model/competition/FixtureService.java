@@ -55,10 +55,15 @@ public class FixtureService {
     }
 
     private Stadium chooseStadium(Team homeTeam, List<Stadium> stadiums, Random random) {
-        Stadium homeStadium = homeTeam.getStadium();
-        if (homeStadium != null) {
-            return homeStadium;
+        List<Stadium> eligibleStadiums = new ArrayList<>();
+        for (Stadium stadium : stadiums) {
+            if (stadium != homeTeam.getStadium()) {
+                eligibleStadiums.add(stadium);
+            }
         }
-        return stadiums.isEmpty() ? null : stadiums.get(random.nextInt(stadiums.size()));
+        if (eligibleStadiums.isEmpty()) {
+            eligibleStadiums = stadiums;
+        }
+        return eligibleStadiums.isEmpty() ? null : eligibleStadiums.get(random.nextInt(eligibleStadiums.size()));
     }
 }

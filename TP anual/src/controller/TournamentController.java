@@ -32,19 +32,27 @@ public class TournamentController {
     }
 
     public void advance() {
-        TournamentState state = session.getState();
-        if (state == TournamentState.GROUPS_DRAWN) {
-            runStep("Playing the group stage...", session::playGroupStage, "Group stage played");
-        } else if (state == TournamentState.GROUP_STAGE_PLAYED) {
-            runStep("Playing the quarterfinals...", session::playQuarterFinals,
-                    "Quarterfinals played");
-        } else if (state == TournamentState.QUARTER_FINALS_PLAYED) {
-            runStep("Playing the semifinals...", session::playSemiFinals,
-                    "Semifinals played");
-        } else if (state == TournamentState.SEMI_FINALS_PLAYED) {
-            runStep("Playing the final...", session::playFinal,
-                    "Final played");
+        ActionStep step = stepFor(session.getState());
+        if (step != null) {
+            runStep(step.progressMessage(), step.action(), step.successMessage());
         }
+    }
+
+    private record ActionStep(String progressMessage, Step action, String successMessage) {
+    }
+
+    private ActionStep stepFor(TournamentState state) {
+        return switch (state) {
+            case GROUPS_DRAWN ->
+                    new ActionStep("Playing the group stage...", session::playGroupStage, "Group stage played");
+            case GROUP_STAGE_PLAYED ->
+                    new ActionStep("Playing the quarterfinals...", session::playQuarterFinals, "Quarterfinals played");
+            case QUARTER_FINALS_PLAYED ->
+                    new ActionStep("Playing the semifinals...", session::playSemiFinals, "Semifinals played");
+            case SEMI_FINALS_PLAYED ->
+                    new ActionStep("Playing the final...", session::playFinal, "Final played");
+            case EMPTY, DATA_LOADED, FINISHED -> null;
+        };
     }
 
     public void refresh() {
