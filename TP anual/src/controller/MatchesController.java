@@ -206,27 +206,46 @@ public class MatchesController {
     }
 
     private String detailOf(Incidence incidence) {
+        Match match = incidence.getMatch();
         String detail;
         if (incidence instanceof Goal goal) {
-            detail = goal.getScorer().getName();
+            detail = withTeam(goal.getScorer(), match);
             if (goal.getGoalkeeper() != null) {
                 detail = detail + " (goalkeeper: " + goal.getGoalkeeper().getName() + ")";
             }
         } else if (incidence instanceof YellowCard card) {
-            detail = card.getPlayer().getName();
+            detail = withTeam(card.getPlayer(), match);
         } else if (incidence instanceof Expulsion expulsion) {
-            detail = expulsion.getPlayer().getName();
+            detail = withTeam(expulsion.getPlayer(), match);
             if (expulsion.getReason() != null) {
                 detail = detail + " (" + expulsion.getReason().getDescription() + ")";
             }
         } else if (incidence instanceof Change change) {
-            detail = change.getPlayerOut().getName() + " -> " + change.getPlayerIn().getName();
+            detail = withTeam(change.getPlayerOut(), match)
+                    + " -> " + change.getPlayerIn().getName();
         } else if (incidence instanceof PenaltyExecuted penalty) {
-            detail = penalty.getKicker().getName() + (penalty.isScored() ? " scored" : " missed");
+            detail = withTeam(penalty.getKicker(), match) + (penalty.isScored() ? " scored" : " missed");
         } else {
             detail = incidence.getDescription();
         }
         return detail;
+    }
+
+    private String withTeam(Player player, Match match) {
+        String teamName = teamOf(player, match);
+        return teamName.isEmpty() ? player.getName() : teamName + " - " + player.getName();
+    }
+
+    private String teamOf(Player player, Match match) {
+        String teamName;
+        if (match.getHomeTeam().getPlayers().contains(player)) {
+            teamName = match.getHomeTeam().getName();
+        } else if (match.getAwayTeam().getPlayers().contains(player)) {
+            teamName = match.getAwayTeam().getName();
+        } else {
+            teamName = "";
+        }
+        return teamName;
     }
 
     private String refereeNameOf(Referee referee) {
