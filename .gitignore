@@ -8,3 +8,6 @@ out/
 
 # OS / Dropbox artifacts
 desktop.ini
+
+# Estado guardado del torneo (se genera en tiempo de ejecucion, no es codigo fuente)
+torneo.save

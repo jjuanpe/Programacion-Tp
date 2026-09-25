@@ -1,5 +1,6 @@
 package model.simulation;
 
+import java.io.Serializable;
 import model.competition.StadiumDrawService;
 import model.people.Referee;
 
@@ -7,8 +8,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-public final class KnockoutStageContext {
-
+public final class KnockoutStageContext implements Serializable {
     private final StadiumDrawService stadiumDrawService;
     private final List<Referee> refereePool;
     private final Random seedGenerator;

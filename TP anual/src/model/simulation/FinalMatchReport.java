@@ -1,12 +1,12 @@
 package model.simulation;
 
+import java.io.Serializable;
 import model.match.FinalMatch;
 import model.team.Team;
 
 import java.util.Objects;
 
-public final class FinalMatchReport {
-
+public final class FinalMatchReport implements Serializable {
     private final FinalMatch finalMatch;
     private final Team teamA;
     private final Team teamB;

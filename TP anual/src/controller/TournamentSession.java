@@ -3,6 +3,7 @@ package controller;
 import dataload.JsonTournamentLoader;
 import dao.StadiumDAO;
 import dataload.TournamentData;
+import java.io.Serializable;
 import model.competition.Championship;
 import model.competition.DrawService;
 import model.competition.FixtureService;
@@ -18,7 +19,12 @@ import model.simulation.KnockoutTieReport;
 import model.team.Team;
 import model.venue.Stadium;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -27,12 +33,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-public class TournamentSession {
-
+public class TournamentSession implements Serializable {
     private static final LocalDate GROUP_STAGE_START_DATE = LocalDate.of(2026, 9, 1);
     private static final LocalDate KNOCKOUT_STAGE_START_DATE = LocalDate.of(2026, 11, 1);
     private static final int DAYS_BETWEEN_ROUNDS = 7;
     private static final int DAYS_BETWEEN_KNOCKOUT_STAGES = 14;
+    private static final String DEFAULT_SAVE_PATH = "torneo.save";
+    private static final long serialVersionUID = 1L;
 
     private final Random seedGenerator = new Random();
 
@@ -42,6 +49,36 @@ public class TournamentSession {
     private List<KnockoutTieReport> quarterFinalReports;
     private List<KnockoutTieReport> semiFinalReports;
     private KnockoutStageResult knockoutResult;
+
+    public static TournamentSession loadOrCreate() {
+        TournamentSession session;
+        if (hasSavedTournament()) {
+            try {
+                session = load();
+            } catch (IOException | ClassNotFoundException exception) {
+                session = new TournamentSession();
+            }
+        } else {
+            session = new TournamentSession();
+        }
+        return session;
+    }
+
+    public static boolean hasSavedTournament() {
+        return new File(DEFAULT_SAVE_PATH).exists();
+    }
+
+    public static TournamentSession load() throws IOException, ClassNotFoundException {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(DEFAULT_SAVE_PATH))) {
+            return (TournamentSession) in.readObject();
+        }
+    }
+
+    public synchronized void save() throws IOException {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(DEFAULT_SAVE_PATH))) {
+            out.writeObject(this);
+        }
+    }
 
     public synchronized void importData(String dataPath) throws IOException {
         Objects.requireNonNull(dataPath, "The data path is required");

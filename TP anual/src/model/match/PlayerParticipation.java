@@ -1,8 +1,9 @@
 package model.match;
 
+import java.io.Serializable;
 import model.people.Player;
 
-public class PlayerParticipation {
+public class PlayerParticipation implements Serializable {
     private final Player player;
     private final boolean starter;
     private final int minutesPlayed;

@@ -1,5 +1,6 @@
 package model.team;
 
+import java.io.Serializable;
 import model.people.HeadCoach;
 import model.people.Player;
 import model.people.Position;
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Team {
+public class Team implements Serializable {
     private final String name;
     private final Country country;
     private final int ranking;

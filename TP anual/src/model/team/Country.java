@@ -1,9 +1,10 @@
 package model.team;
 
+import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
 
-public final class Country {
+public final class Country implements Serializable {
     private final String countryName;
 
     public Country (String countryName){

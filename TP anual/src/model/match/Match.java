@@ -1,5 +1,6 @@
 package model.match;
 
+import java.io.Serializable;
 import model.event.Incidence;
 import model.event.Goal;
 import model.people.Referee;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class Match {
+public abstract class Match implements Serializable {
     private final LocalDate date;
     private final Team homeTeam;
     private final Team awayTeam;

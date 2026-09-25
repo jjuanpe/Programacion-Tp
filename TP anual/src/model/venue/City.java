@@ -1,12 +1,12 @@
 package model.venue;
 
+import java.io.Serializable;
 import model.team.Country;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class City {
-
+public class City implements Serializable {
     private Long id;
     private String name;
     private Country country;

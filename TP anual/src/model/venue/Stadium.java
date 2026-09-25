@@ -1,7 +1,7 @@
 package model.venue;
 
-public class Stadium {
-
+import java.io.Serializable;
+public class Stadium implements Serializable {
     private Long id;
     private String name;
     private City city;

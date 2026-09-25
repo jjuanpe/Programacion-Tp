@@ -4,6 +4,7 @@ import javafx.concurrent.Task;
 import model.match.Match;
 import ui.fx.TournamentViewModel;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,6 +37,17 @@ public class TournamentController {
         if (step != null) {
             runStep(step.progressMessage(), step.action(), step.successMessage());
         }
+    }
+
+    public void save() {
+        String message;
+        try {
+            session.save();
+            message = "Tournament saved";
+        } catch (IOException exception) {
+            message = "Could not save the tournament: " + exception.getMessage();
+        }
+        viewModel.setMessage(message);
     }
 
     private record ActionStep(String progressMessage, Step action, String successMessage) {
@@ -80,7 +92,7 @@ public class TournamentController {
                 || state == TournamentState.GROUP_STAGE_PLAYED
                 || state == TournamentState.QUARTER_FINALS_PLAYED
                 || state == TournamentState.SEMI_FINALS_PLAYED));
-        viewModel.setCanSave(false);
+        viewModel.setCanSave(idle && state != TournamentState.EMPTY);
     }
 
     private String advanceLabelFor(TournamentState state) {
@@ -130,9 +142,27 @@ public class TournamentController {
 
     private void finishStep(String successMessage, Throwable failure) {
         viewModel.setBusy(false);
+        String message;
+        if (failure != null) {
+            message = describe(failure);
+        } else {
+            message = successMessage;
+            message = message + autoSaveSuffix();
+        }
         refresh();
-        viewModel.setMessage(failure == null ? successMessage : describe(failure));
+        viewModel.setMessage(message);
         onStateChanged.run();
+    }
+
+    private String autoSaveSuffix() {
+        String suffix;
+        try {
+            session.save();
+            suffix = "";
+        } catch (IOException exception) {
+            suffix = " (could not auto-save: " + exception.getMessage() + ")";
+        }
+        return suffix;
     }
 
     private String describe(Throwable failure) {

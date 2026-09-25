@@ -24,7 +24,8 @@ public class TournamentView extends VBox {
             TournamentViewModel viewModel,
             Consumer<String> onImport,
             Runnable onDraw,
-            Runnable onAdvance) {
+            Runnable onAdvance,
+            Runnable onSave) {
         this.onImport = onImport;
         getStyleClass().add("page");
 
@@ -34,7 +35,7 @@ public class TournamentView extends VBox {
         getChildren().addAll(
                 title,
                 buildStatusPanel(viewModel),
-                buildActions(viewModel, onDraw, onAdvance));
+                buildActions(viewModel, onDraw, onAdvance, onSave));
     }
 
     private VBox buildStatusPanel(TournamentViewModel viewModel) {
@@ -68,7 +69,8 @@ public class TournamentView extends VBox {
         return row;
     }
 
-    private VBox buildActions(TournamentViewModel viewModel, Runnable onDraw, Runnable onAdvance) {
+    private VBox buildActions(
+            TournamentViewModel viewModel, Runnable onDraw, Runnable onAdvance, Runnable onSave) {
         Button importButton = buildButton("Import data", "secondary-button");
         importButton.disableProperty().bind(viewModel.canImportProperty().not());
         importButton.setOnAction(event -> chooseDataFile());
@@ -84,6 +86,7 @@ public class TournamentView extends VBox {
 
         Button saveButton = buildButton("Save state", "secondary-button");
         saveButton.disableProperty().bind(viewModel.canSaveProperty().not());
+        saveButton.setOnAction(event -> onSave.run());
 
         HBox buttons = new HBox(importButton, drawButton, advanceButton, saveButton);
         buttons.getStyleClass().add("action-row");
@@ -92,7 +95,7 @@ public class TournamentView extends VBox {
         message.getStyleClass().add("action-message");
         message.textProperty().bind(viewModel.messageProperty());
 
-        Label hint = new Label("Saving the tournament state is not implemented yet.");
+        Label hint = new Label("The tournament is saved automatically after every action.");
         hint.getStyleClass().add("action-hint");
 
         VBox actions = new VBox(buttons, message, hint);

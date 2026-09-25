@@ -26,7 +26,7 @@ public class AppWindow extends Application {
 
     private static final String STYLESHEET = "/ui/fx/styles.css";
 
-    private final TournamentSession session = new TournamentSession();
+    private final TournamentSession session = TournamentSession.loadOrCreate();
 
     private final DashboardViewModel dashboardViewModel = new DashboardViewModel();
     private final DashboardController dashboardController =
@@ -115,7 +115,8 @@ public class AppWindow extends Application {
                 tournamentViewModel,
                 tournamentController::importData,
                 tournamentController::drawGroups,
-                tournamentController::advance));
+                tournamentController::advance,
+                tournamentController::save));
 
         pages.put(NavItem.TEAMS, new TeamsView(
                 teamsViewModel.getRows(),

@@ -1,5 +1,6 @@
 package model.match;
 
+import java.io.Serializable;
 import model.people.Player;
 
 import java.util.HashSet;
@@ -7,7 +8,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public class Formation {
+public class Formation implements Serializable {
     private static final int STARTER_COUNT = 11;
 
     private final List<Player> starters;

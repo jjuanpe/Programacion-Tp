@@ -1,5 +1,6 @@
 package model.competition;
 
+import java.io.Serializable;
 import model.match.GroupMatch;
 import model.team.Team;
 
@@ -7,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Zone {
+public class Zone implements Serializable {
     private final List<Team> teams;
     private final List<GroupMatch> groupMatches;
     private final String name;

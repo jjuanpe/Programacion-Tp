@@ -1,5 +1,6 @@
 package model.competition;
 
+import java.io.Serializable;
 import model.venue.Stadium;
 import model.venue.City;
 import model.people.Referee;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class Championship {
+public class Championship implements Serializable {
     private final List<Team> teams;
     private final List<Zone> zones;
     private final List<Referee> referees;

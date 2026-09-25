@@ -1,10 +1,11 @@
 package model.event;
 
+import java.io.Serializable;
 import model.match.Match;
 
 import java.util.Objects;
 
-public abstract class Incidence {
+public abstract class Incidence implements Serializable {
     private final int minute;
     private final Match match;
 

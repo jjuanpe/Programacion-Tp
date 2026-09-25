@@ -1,5 +1,6 @@
 package model.competition;
 
+import java.io.Serializable;
 import model.venue.Stadium;
 
 import java.util.ArrayList;
@@ -7,8 +8,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-public class StadiumDrawService {
-
+public class StadiumDrawService implements Serializable {
     private final List<Stadium> remainingStadiums;
 
     public StadiumDrawService(List<Stadium> stadiums) {

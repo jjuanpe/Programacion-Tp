@@ -1,5 +1,6 @@
 package model.simulation;
 
+import java.io.Serializable;
 import model.team.Team;
 import model.match.Match;
 
@@ -7,8 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public final class KnockoutStageResult {
-
+public final class KnockoutStageResult implements Serializable {
     private final List<KnockoutTieReport> quarterFinals;
     private final List<KnockoutTieReport> semiFinals;
     private final FinalMatchReport finalMatchReport;

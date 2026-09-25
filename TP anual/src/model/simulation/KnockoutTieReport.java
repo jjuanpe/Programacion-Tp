@@ -1,5 +1,6 @@
 package model.simulation;
 
+import java.io.Serializable;
 import model.match.FirstLegMatch;
 import model.match.PhaseType;
 import model.match.SecondLegMatch;
@@ -7,8 +8,7 @@ import model.team.Team;
 
 import java.util.Objects;
 
-public final class KnockoutTieReport {
-
+public final class KnockoutTieReport implements Serializable {
     private final PhaseType phase;
     private final FirstLegMatch firstLeg;
     private final SecondLegMatch secondLeg;
