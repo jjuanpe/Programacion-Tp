@@ -10,6 +10,8 @@ import controller.TournamentSession;
 import javafx.application.Application;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -18,39 +20,35 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class AppWindow extends Application {
 
     private static final String STYLESHEET = "/ui/fx/styles.css";
 
-    private final TournamentSession session = TournamentSession.loadOrCreate();
+    private TournamentSession session;
 
     private final DashboardViewModel dashboardViewModel = new DashboardViewModel();
-    private final DashboardController dashboardController =
-            new DashboardController(session, dashboardViewModel);
+    private DashboardController dashboardController;
 
     private final TournamentViewModel tournamentViewModel = new TournamentViewModel();
-    private final TournamentController tournamentController =
-            new TournamentController(session, tournamentViewModel);
+    private TournamentController tournamentController;
 
     private final TeamsViewModel teamsViewModel = new TeamsViewModel();
-    private final TeamsController teamsController =
-            new TeamsController(session, teamsViewModel);
+    private TeamsController teamsController;
 
     private final GroupStageViewModel groupStageViewModel = new GroupStageViewModel();
-    private final GroupStageController groupStageController =
-            new GroupStageController(session, groupStageViewModel);
+    private GroupStageController groupStageController;
 
     private final MatchesViewModel matchesViewModel = new MatchesViewModel();
-    private final MatchesController matchesController =
-            new MatchesController(session, matchesViewModel);
+    private MatchesController matchesController;
 
     private final PlayersViewModel playersViewModel = new PlayersViewModel();
-    private final PlayersController playersController =
-            new PlayersController(session, playersViewModel);
+    private PlayersController playersController;
 
     private final Map<NavItem, Node> pages = new EnumMap<>(NavItem.class);
     private final ScrollPane pageArea = new ScrollPane();
@@ -58,6 +56,14 @@ public class AppWindow extends Application {
 
     @Override
     public void start(Stage stage) {
+        session = resolveSession();
+        dashboardController = new DashboardController(session, dashboardViewModel);
+        tournamentController = new TournamentController(session, tournamentViewModel);
+        teamsController = new TeamsController(session, teamsViewModel);
+        groupStageController = new GroupStageController(session, groupStageViewModel);
+        matchesController = new MatchesController(session, matchesViewModel);
+        playersController = new PlayersController(session, playersViewModel);
+
         Sidebar sidebar = new Sidebar();
         sidebar.setOnSelect(this::showPage);
 
@@ -79,6 +85,41 @@ public class AppWindow extends Application {
         tournamentController.refresh();
         refreshPages();
         showPage(sidebar.getSelected());
+    }
+
+    private TournamentSession resolveSession() {
+        TournamentSession resolved;
+        if (TournamentSession.hasSavedTournament() && userWantsToContinue()) {
+            resolved = loadSavedSession();
+        } else {
+            TournamentSession.discardSavedTournament();
+            resolved = new TournamentSession();
+        }
+        return resolved;
+    }
+
+    private boolean userWantsToContinue() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Copa Internacional de Clubes");
+        alert.setHeaderText("A previous tournament was found.");
+        alert.setContentText("Do you want to continue it, or start a new one?");
+
+        ButtonType continueButton = new ButtonType("Continue previous");
+        ButtonType newButton = new ButtonType("Start new");
+        alert.getButtonTypes().setAll(continueButton, newButton);
+
+        Optional<ButtonType> choice = alert.showAndWait();
+        return choice.isPresent() && choice.get() == continueButton;
+    }
+
+    private TournamentSession loadSavedSession() {
+        TournamentSession loaded;
+        try {
+            loaded = TournamentSession.load();
+        } catch (IOException | ClassNotFoundException exception) {
+            loaded = new TournamentSession();
+        }
+        return loaded;
     }
 
     private void refreshPages() {

@@ -50,22 +50,15 @@ public class TournamentSession implements Serializable {
     private List<KnockoutTieReport> semiFinalReports;
     private KnockoutStageResult knockoutResult;
 
-    public static TournamentSession loadOrCreate() {
-        TournamentSession session;
-        if (hasSavedTournament()) {
-            try {
-                session = load();
-            } catch (IOException | ClassNotFoundException exception) {
-                session = new TournamentSession();
-            }
-        } else {
-            session = new TournamentSession();
-        }
-        return session;
-    }
-
     public static boolean hasSavedTournament() {
         return new File(DEFAULT_SAVE_PATH).exists();
+    }
+
+    public static void discardSavedTournament() {
+        File saveFile = new File(DEFAULT_SAVE_PATH);
+        if (saveFile.exists()) {
+            saveFile.delete();
+        }
     }
 
     public static TournamentSession load() throws IOException, ClassNotFoundException {
