@@ -1,5 +1,10 @@
 # Salida de compilacion
 out/
+target/
 
-# SDK de JavaFX (se descarga aparte, no se versiona)
-lib/javafx-sdk-*/
+# IntelliJ (si se abre "TP anual" como proyecto propio, en vez de la raiz)
+.idea/
+*.iml
+
+# Dependencias manuales, ya no hacen falta desde que el proyecto usa Maven
+lib/
