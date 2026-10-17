@@ -23,6 +23,15 @@ public class PenaltyShootoutSimulator {
     private static final double MINIMUM_SCORE_PROBABILITY = 0.50;
     private static final double MAXIMUM_SCORE_PROBABILITY = 0.95;
 
+    private boolean isShootoutOver(int homeScored, int awayScored, int homeTaken, int awayTaken) {
+        int homeKicksLeft = Math.max(0, Math.max(MINIMUM_ROUNDS, awayTaken) - homeTaken);
+        int awayKicksLeft = Math.max(0, Math.max(MINIMUM_ROUNDS, homeTaken) - awayTaken);
+        boolean outOfReach = homeScored > awayScored + awayKicksLeft
+                || awayScored > homeScored + homeKicksLeft;
+        boolean safetyLimitReached = awayTaken >= MAXIMUM_ROUNDS;
+        return outOfReach || safetyLimitReached;
+    }
+
     public PenaltyShootoutResult simulate(
             Match match,
             Formation homeFormation,
@@ -37,31 +46,33 @@ public class PenaltyShootoutSimulator {
         List<Player> awayKickers = buildKickerOrder(awayFormation, random);
 
         List<PenaltyExecuted> kicks = new ArrayList<>();
+
         int homeScored = 0;
         int awayScored = 0;
-        int round = 0;
         int minute = FIRST_KICK_MINUTE;
         boolean decided = false;
+        int homeTaken = 0;
+        int awayTaken = 0;
+        boolean homeTurn = true;
 
         while (!decided) {
-            round = round + 1;
-
-            Player homeKicker = homeKickers.get((round - 1) % homeKickers.size());
-            boolean homeConverted = attemptPenalty(homeKicker, random);
-            kicks.add(new PenaltyExecuted(minute, match, homeKicker, homeConverted));
+            List<Player> kickers = homeTurn ? homeKickers : awayKickers;
+            int taken = homeTurn ? homeTaken : awayTaken;
+            Player kicker = kickers.get(taken % kickers.size());
+            boolean converted = attemptPenalty(kicker, random);
+            kicks.add(new PenaltyExecuted(minute, match, kicker, converted));
             minute = minute + 1;
-            homeScored = homeConverted ? homeScored + 1 : homeScored;
 
-            Player awayKicker = awayKickers.get((round - 1) % awayKickers.size());
-            boolean awayConverted = attemptPenalty(awayKicker, random);
-            kicks.add(new PenaltyExecuted(minute, match, awayKicker, awayConverted));
-            minute = minute + 1;
-            awayScored = awayConverted ? awayScored + 1 : awayScored;
+            if (homeTurn) {
+                homeTaken = homeTaken + 1;
+                homeScored = converted ? homeScored + 1 : homeScored;
+            } else {
+                awayTaken = awayTaken + 1;
+                awayScored = converted ? awayScored + 1 : awayScored;
+            }
 
-            boolean regulationRoundsDone = round >= MINIMUM_ROUNDS;
-            boolean scoresDiffer = homeScored != awayScored;
-            boolean safetyLimitReached = round >= MAXIMUM_ROUNDS;
-            decided = (regulationRoundsDone && scoresDiffer) || safetyLimitReached;
+            decided = isShootoutOver(homeScored, awayScored, homeTaken, awayTaken);
+            homeTurn = !homeTurn;
         }
 
         Team winner = resolveWinner(match, homeScored, awayScored, random);
@@ -98,4 +109,9 @@ public class PenaltyShootoutSimulator {
         Collections.shuffle(shuffled, random);
         return shuffled;
     }
+
+    private boolean isMathematicallyDecided(int homeScored, int awayScored, int homeKicksLeft, int awayKicksLeft) {
+        return homeScored > awayScored + awayKicksLeft || awayScored > homeScored + homeKicksLeft;
+    }
+
 }

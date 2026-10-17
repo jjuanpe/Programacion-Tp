@@ -241,6 +241,7 @@ public class KnockoutStageSimulator {
         } else {
             PenaltyShootoutResult shootoutResult = penaltyShootoutSimulator.simulate(
                     finalMatch, finalMatch.getHomeFormation(), finalMatch.getAwayFormation(), random);
+            finalMatch.registerPenaltyShootout(shootoutResult.getKicks());
             champion = shootoutResult.getWinner();
             criteria = "Penalty shoot-out";
         }

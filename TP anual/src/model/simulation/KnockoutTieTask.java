@@ -99,6 +99,7 @@ public class KnockoutTieTask implements Callable<KnockoutTieReport> {
         } else {
             PenaltyShootoutResult shootoutResult = penaltyShootoutSimulator.simulate(
                     secondLeg, secondLeg.getHomeFormation(), secondLeg.getAwayFormation(), random);
+            secondLeg.registerPenaltyShootout(shootoutResult.getKicks());
             winner = shootoutResult.getWinner();
             criteria = "Penalty shoot-out";
         }

@@ -43,8 +43,8 @@ public class Referee extends Person {
                 && away.getCountry() != null;
         boolean canOfficiate = false;
         if (hasRequiredData) {
-            canOfficiate = !country.equals(home.getCountry())
-                    && !country.equals(away.getCountry());
+            boolean sameCountryTeams = home.getCountry().equals(away.getCountry());
+            canOfficiate = sameCountryTeams || (!country.equals(home.getCountry()) && !country.equals(away.getCountry()));
         }
         return canOfficiate;
     }
