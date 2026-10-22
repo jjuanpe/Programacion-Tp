@@ -7,7 +7,7 @@ import model.event.Goal;
 import model.event.Incidence;
 import model.event.YellowCard;
 import model.match.Formation;
-import model.match.GroupMatch;
+import model.match.Match;
 import model.match.PlayerParticipation;
 import model.people.Goalkeeper;
 import model.people.Player;
@@ -24,7 +24,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
-public class GroupMatchSimulationService implements MatchSimulationStrategy<GroupMatch> {
+public class GroupMatchSimulationService implements MatchSimulationStrategy<Match> {
     private static final int MATCH_MINUTES = 90;
     private static final int MAX_CHANGES_PER_TEAM = 3;
     private static final int MAX_YELLOW_CARDS_PER_TEAM = 3;
@@ -52,7 +52,7 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Grou
 
     @Override
     public MatchSimulationResult simulate(
-            GroupMatch match,
+            Match match,
             Set<Player> suspendedPlayers,
             Random random) {
         Objects.requireNonNull(match, "The match is required");
@@ -118,7 +118,7 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Grou
         return Math.max(MINIMUM_GOAL_SHARE, Math.min(MAXIMUM_GOAL_SHARE, result));
     }
 
-    private TeamEventPlan createEventPlan(GroupMatch match, Formation formation, Random random) {
+    private TeamEventPlan createEventPlan(Match match, Formation formation, Random random) {
         Player expelledPlayer = null;
         List<Expulsion> expulsions = new ArrayList<>();
         if (random.nextDouble() < EXPULSION_PROBABILITY) {
@@ -167,7 +167,7 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Grou
     }
 
     private void addYellowCards(
-            GroupMatch match,
+            Match match,
             TeamEventPlan plan,
             Random random,
             List<Incidence> incidences) {
@@ -194,7 +194,7 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Grou
     }
 
     private Goal createGoal(
-            GroupMatch match,
+            Match match,
             TeamEventPlan attackingPlan,
             TeamEventPlan defendingPlan,
             Random random) {

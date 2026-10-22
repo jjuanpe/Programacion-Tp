@@ -10,7 +10,7 @@ import java.util.Set;
 public class GroupMatchSimulationTask implements Runnable {
     private final GroupMatch match;
     private final Set<Player> suspendedPlayers;
-    private final MatchSimulationStrategy<GroupMatch> simulationStrategy;
+    private final MatchSimulationStrategy<? super GroupMatch> simulationStrategy;
     private final long seed;
     private MatchSimulationResult result;
     private String workerThreadName;
@@ -18,7 +18,7 @@ public class GroupMatchSimulationTask implements Runnable {
     public GroupMatchSimulationTask(
             GroupMatch match,
             Set<Player> suspendedPlayers,
-            MatchSimulationStrategy<GroupMatch> simulationStrategy,
+            MatchSimulationStrategy<? super GroupMatch> simulationStrategy,
             long seed) {
         this.match = Objects.requireNonNull(match, "The match is required");
         this.suspendedPlayers = suspendedPlayers == null ? Set.of() : Set.copyOf(suspendedPlayers);

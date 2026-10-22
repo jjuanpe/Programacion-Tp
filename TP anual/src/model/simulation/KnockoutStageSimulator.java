@@ -38,7 +38,7 @@ public class KnockoutStageSimulator {
     public KnockoutStageSimulator() {
         this(
                 new KnockoutBracketService(),
-                new KnockoutMatchSimulationService(),
+                new GroupMatchSimulationService(),
                 new PenaltyShootoutSimulator(),
                 new RefereeAssignmentService());
     }

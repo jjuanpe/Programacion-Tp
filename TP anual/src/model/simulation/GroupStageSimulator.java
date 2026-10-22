@@ -30,7 +30,7 @@ public class GroupStageSimulator {
     private static final int EXPECTED_MATCHES_PER_ZONE = 6;
     private static final int MAX_CONCURRENT_MATCHES = 8;
 
-    private final MatchSimulationStrategy<GroupMatch> simulationStrategy;
+    private final MatchSimulationStrategy<? super GroupMatch> simulationStrategy;
     private final StandingsService standingsService;
     private final RefereeAssignmentService refereeAssignmentService;
 
@@ -42,7 +42,7 @@ public class GroupStageSimulator {
     }
 
     public GroupStageSimulator(
-            MatchSimulationStrategy<GroupMatch> simulationStrategy,
+            MatchSimulationStrategy<? super GroupMatch> simulationStrategy,
             StandingsService standingsService,
             RefereeAssignmentService refereeAssignmentService) {
         this.simulationStrategy = Objects.requireNonNull(simulationStrategy);
