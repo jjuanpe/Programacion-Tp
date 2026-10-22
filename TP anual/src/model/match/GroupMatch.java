@@ -7,6 +7,7 @@ import model.team.Team;
 import java.time.LocalDate;
 
 public class GroupMatch extends Match {
+    private static final long serialVersionUID = 1L;
 
     public GroupMatch(LocalDate date, Team homeTeam, Team awayTeam, Referee referee, Stadium stadium) {
         super(date, homeTeam, awayTeam, referee, stadium);

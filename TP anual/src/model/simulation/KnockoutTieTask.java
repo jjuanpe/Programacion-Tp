@@ -1,5 +1,6 @@
 package model.simulation;
 
+import model.competition.StadiumDrawService;
 import model.event.Expulsion;
 import model.event.Incidence;
 import model.match.FirstLegMatch;
@@ -8,15 +9,11 @@ import model.match.PhaseType;
 import model.match.SecondLegMatch;
 import model.people.Player;
 import model.people.Referee;
-import model.competition.StadiumDrawService;
 import model.team.Team;
+import model.venue.Stadium;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 public class KnockoutTieTask implements Callable<KnockoutTieReport> {
@@ -26,11 +23,12 @@ public class KnockoutTieTask implements Callable<KnockoutTieReport> {
     private final PhaseType phase;
     private final LocalDate firstLegDate;
     private final LocalDate secondLegDate;
-    private final StadiumDrawService stadiumDrawService;
-    private final List<Referee> availableReferees;
+    private final Stadium firstLegStadium;
+    private final Stadium secondLegStadium;
+    private final Referee firstLegReferee;
+    private final Referee secondLegReferee;
     private final MatchSimulationStrategy<Match> simulationStrategy;
     private final PenaltyShootoutSimulator penaltyShootoutSimulator;
-    private final RefereeAssignmentService refereeAssignmentService;
     private final long seed;
 
     public KnockoutTieTask(
@@ -39,24 +37,25 @@ public class KnockoutTieTask implements Callable<KnockoutTieReport> {
             PhaseType phase,
             LocalDate firstLegDate,
             LocalDate secondLegDate,
-            StadiumDrawService stadiumDrawService,
-            List<Referee> availableReferees,
+            Stadium firstLegStadium,
+            Stadium secondLegStadium,
+            Referee firstLegReferee,
+            Referee secondLegReferee,
             MatchSimulationStrategy<Match> simulationStrategy,
             PenaltyShootoutSimulator penaltyShootoutSimulator,
-            RefereeAssignmentService refereeAssignmentService,
             long seed) {
         this.teamA = Objects.requireNonNull(teamA, "Team A is required");
         this.teamB = Objects.requireNonNull(teamB, "Team B is required");
         this.phase = Objects.requireNonNull(phase, "The phase is required");
         this.firstLegDate = Objects.requireNonNull(firstLegDate, "The first leg date is required");
         this.secondLegDate = Objects.requireNonNull(secondLegDate, "The second leg date is required");
-        this.stadiumDrawService = Objects.requireNonNull(stadiumDrawService, "The stadium draw service is required");
-        this.availableReferees = List.copyOf(availableReferees);
+        this.firstLegStadium = Objects.requireNonNull(firstLegStadium, "The first leg stadium is required");
+        this.secondLegStadium = Objects.requireNonNull(secondLegStadium, "The second leg stadium is required");
+        this.firstLegReferee = Objects.requireNonNull(firstLegReferee, "The first leg referee is required");
+        this.secondLegReferee = Objects.requireNonNull(secondLegReferee, "The second leg referee is required");
         this.simulationStrategy = Objects.requireNonNull(simulationStrategy, "The simulation strategy is required");
         this.penaltyShootoutSimulator =
                 Objects.requireNonNull(penaltyShootoutSimulator, "The penalty shoot-out simulator is required");
-        this.refereeAssignmentService =
-                Objects.requireNonNull(refereeAssignmentService, "The referee assignment service is required");
         this.seed = seed;
     }
 
@@ -65,9 +64,8 @@ public class KnockoutTieTask implements Callable<KnockoutTieReport> {
         String workerThreadName = Thread.currentThread().getName();
         Random random = new Random(seed);
 
-        Referee firstLegReferee = refereeAssignmentService.selectReferee(teamA, teamB, availableReferees, random);
         FirstLegMatch firstLeg = new FirstLegMatch(
-                firstLegDate, teamA, teamB, firstLegReferee, stadiumDrawService.draw(random), phase);
+                firstLegDate, teamA, teamB, firstLegReferee, firstLegStadium, phase);
         MatchSimulationResult firstLegResult = simulationStrategy.simulate(firstLeg, Set.of(), random);
         firstLeg.completeMatch(
                 firstLegResult.getHomeGoals(),
@@ -79,9 +77,8 @@ public class KnockoutTieTask implements Callable<KnockoutTieReport> {
 
         Set<Player> suspendedForSecondLeg = collectExpelledPlayers(firstLegResult.getIncidences());
 
-        Referee secondLegReferee = refereeAssignmentService.selectReferee(teamB, teamA, availableReferees, random);
         SecondLegMatch secondLeg = new SecondLegMatch(
-                secondLegDate, teamB, teamA, secondLegReferee, stadiumDrawService.draw(random), phase, firstLeg);
+                secondLegDate, teamB, teamA, secondLegReferee, secondLegStadium, phase, firstLeg);
         MatchSimulationResult secondLegResult =
                 simulationStrategy.simulate(secondLeg, suspendedForSecondLeg, random);
         secondLeg.completeMatch(

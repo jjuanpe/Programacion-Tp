@@ -160,23 +160,14 @@ public class KnockoutStageSimulator {
         }
 
         LocalDate secondLegDate = firstLegDate.plusDays(DAYS_BETWEEN_LEGS);
-        ExecutorService executor = Executors.newFixedThreadPool(pairings.size(), new KnockoutThreadFactory());
+        List<KnockoutTieTask> tasks = createTieTasks(
+                pairings, phase, firstLegDate, secondLegDate, stadiumDrawService, refereePool, seedGenerator);
+
+        ExecutorService executor = Executors.newFixedThreadPool(tasks.size(), new KnockoutThreadFactory());
         List<Future<KnockoutTieReport>> futures = new ArrayList<>();
         List<KnockoutTieReport> reports;
         try {
-            for (Team[] pairing : pairings) {
-                KnockoutTieTask task = new KnockoutTieTask(
-                        pairing[0],
-                        pairing[1],
-                        phase,
-                        firstLegDate,
-                        secondLegDate,
-                        stadiumDrawService,
-                        refereePool,
-                        simulationStrategy,
-                        penaltyShootoutSimulator,
-                        refereeAssignmentService,
-                        seedGenerator.nextLong());
+            for (KnockoutTieTask task : tasks) {
                 futures.add(executor.submit(task));
             }
             reports = collectResults(futures);
@@ -184,6 +175,44 @@ public class KnockoutStageSimulator {
             executor.shutdownNow();
         }
         return reports;
+    }
+
+    private List<KnockoutTieTask> createTieTasks(
+            List<Team[]> pairings,
+            PhaseType phase,
+            LocalDate firstLegDate,
+            LocalDate secondLegDate,
+            StadiumDrawService stadiumDrawService,
+            List<Referee> refereePool,
+            Random seedGenerator) {
+        List<Referee> firstLegReferees = new ArrayList<>(refereePool);
+        List<Referee> secondLegReferees = new ArrayList<>(refereePool);
+        List<KnockoutTieTask> tasks = new ArrayList<>();
+        for (Team[] pairing : pairings) {
+            Team teamA = pairing[0];
+            Team teamB = pairing[1];
+            Referee firstLegReferee = refereeAssignmentService.selectReferee(
+                    teamA, teamB, firstLegReferees, seedGenerator);
+            firstLegReferees.remove(firstLegReferee);
+            Referee secondLegReferee = refereeAssignmentService.selectReferee(
+                    teamB, teamA, secondLegReferees, seedGenerator);
+            secondLegReferees.remove(secondLegReferee);
+
+            tasks.add(new KnockoutTieTask(
+                    teamA,
+                    teamB,
+                    phase,
+                    firstLegDate,
+                    secondLegDate,
+                    stadiumDrawService.draw(seedGenerator),
+                    stadiumDrawService.draw(seedGenerator),
+                    firstLegReferee,
+                    secondLegReferee,
+                    simulationStrategy,
+                    penaltyShootoutSimulator,
+                    seedGenerator.nextLong()));
+        }
+        return tasks;
     }
 
     private List<KnockoutTieReport> collectResults(
