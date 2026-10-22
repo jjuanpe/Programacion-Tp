@@ -23,15 +23,6 @@ public class PenaltyShootoutSimulator {
     private static final double MINIMUM_SCORE_PROBABILITY = 0.50;
     private static final double MAXIMUM_SCORE_PROBABILITY = 0.95;
 
-    private boolean isShootoutOver(int homeScored, int awayScored, int homeTaken, int awayTaken) {
-        int homeKicksLeft = Math.max(0, Math.max(MINIMUM_ROUNDS, awayTaken) - homeTaken);
-        int awayKicksLeft = Math.max(0, Math.max(MINIMUM_ROUNDS, homeTaken) - awayTaken);
-        boolean outOfReach = homeScored > awayScored + awayKicksLeft
-                || awayScored > homeScored + homeKicksLeft;
-        boolean safetyLimitReached = awayTaken >= MAXIMUM_ROUNDS;
-        return outOfReach || safetyLimitReached;
-    }
-
     public PenaltyShootoutResult simulate(
             Match match,
             Formation homeFormation,
@@ -91,6 +82,15 @@ public class PenaltyShootoutSimulator {
         return winner;
     }
 
+    private boolean isShootoutOver(int homeScored, int awayScored, int homeTaken, int awayTaken) {
+        int homeKicksLeft = Math.max(0, Math.max(MINIMUM_ROUNDS, awayTaken) - homeTaken);
+        int awayKicksLeft = Math.max(0, Math.max(MINIMUM_ROUNDS, homeTaken) - awayTaken);
+        boolean outOfReach = homeScored > awayScored + awayKicksLeft
+                || awayScored > homeScored + homeKicksLeft;
+        boolean safetyLimitReached = awayTaken >= MAXIMUM_ROUNDS;
+        return outOfReach || safetyLimitReached;
+    }
+
     private boolean attemptPenalty(Player kicker, Random random) {
         double probability = BASE_SCORE_PROBABILITY + kicker.getAverage() / SKILL_PROBABILITY_DIVISOR;
         double clampedProbability = Math.max(
@@ -109,9 +109,4 @@ public class PenaltyShootoutSimulator {
         Collections.shuffle(shuffled, random);
         return shuffled;
     }
-
-    private boolean isMathematicallyDecided(int homeScored, int awayScored, int homeKicksLeft, int awayKicksLeft) {
-        return homeScored > awayScored + awayKicksLeft || awayScored > homeScored + homeKicksLeft;
-    }
-
 }

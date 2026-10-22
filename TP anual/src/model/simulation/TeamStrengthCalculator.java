@@ -9,6 +9,7 @@ import java.util.Objects;
 
 public class TeamStrengthCalculator {
     private static final int TOURNAMENT_TEAM_COUNT = 16;
+    private static final int MAX_RANKING = 100;
     private static final double PLAYER_AVERAGE_WEIGHT = 0.70;
     private static final double RANKING_WEIGHT = 1.50;
     private static final double COACH_TITLE_WEIGHT = 2.00;
@@ -23,7 +24,9 @@ public class TeamStrengthCalculator {
         }
         double playerAverage = totalPlayerAverage / (double) formation.getStarters().size();
 
-        int rankingValue = Math.max(0, TOURNAMENT_TEAM_COUNT - team.getRanking() + 1);
+        int ranking = Math.min(team.getRanking(), MAX_RANKING);
+        double rankingValue = TOURNAMENT_TEAM_COUNT * (MAX_RANKING - ranking) / (double) (MAX_RANKING - 1);
+
         HeadCoach headCoach = team.getHeadCoach();
         int titlesWon = headCoach == null ? 0 : Math.max(0, headCoach.getTitlesWon());
 

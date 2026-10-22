@@ -1,6 +1,7 @@
 package model.match;
 
 import java.io.Serializable;
+
 import model.event.Incidence;
 import model.event.Goal;
 import model.event.PenaltyExecuted;
@@ -100,13 +101,13 @@ public abstract class Match implements Serializable {
         this.played = true;
     }
 
-    public synchronized void registerPenaltyShootout(List<PenaltyExecuted> kicks){
-        Objects.requireNonNull(kicks,"The penalty kicks are required");
-        if (!played){
+    public synchronized void registerPenaltyShootout(List<PenaltyExecuted> kicks) {
+        Objects.requireNonNull(kicks, "The penalty kicks are required");
+        if (!played) {
             throw new IllegalStateException("The match must be completed before the shoot-out");
         }
-        for (PenaltyExecuted k : kicks){
-            if (k == null || k.getMatch() != this){
+        for (PenaltyExecuted k : kicks) {
+            if (k == null || k.getMatch() != this) {
                 throw new IllegalArgumentException("Every kick must belong to this match");
             }
         }
