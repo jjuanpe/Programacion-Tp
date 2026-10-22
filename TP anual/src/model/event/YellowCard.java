@@ -6,6 +6,7 @@ import model.people.Player;
 import java.util.Objects;
 
 public class YellowCard extends Incidence {
+    private static final long serialVersionUID = 1L;
     private final Player player;
 
     public YellowCard(int minute, Match match, Player player) {

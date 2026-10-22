@@ -10,9 +10,10 @@ import java.util.Set;
 
 public class Formation implements Serializable {
     private static final int STARTER_COUNT = 11;
-
+    private static final long serialVersionUID = 1L;
     private final List<Player> starters;
     private final List<Player> substitutes;
+
 
     public Formation(List<Player> starters, List<Player> substitutes) {
         Objects.requireNonNull(starters, "The starter list is required");

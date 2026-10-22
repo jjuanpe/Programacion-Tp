@@ -12,6 +12,7 @@ public class FieldPlayer extends Player {
     private final int heading;
     private final int tackling;
     private final int vision;
+    private static final long serialVersionUID = 1L;
 
     public FieldPlayer(String name, LocalDate birthday, DocumentType documentType, String document, Position position,
                         int speed, int stamina, int skill, int finishing, int shotPower, int heading, int tackling, int vision) {

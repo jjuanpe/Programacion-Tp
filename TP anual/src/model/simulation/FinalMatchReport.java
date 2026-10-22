@@ -7,6 +7,7 @@ import model.team.Team;
 import java.util.Objects;
 
 public final class FinalMatchReport implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final FinalMatch finalMatch;
     private final Team teamA;
     private final Team teamB;

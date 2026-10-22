@@ -4,6 +4,7 @@ import java.io.Serializable;
 import model.people.Player;
 
 public class PlayerParticipation implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final Player player;
     private final boolean starter;
     private final int minutesPlayed;

@@ -11,6 +11,7 @@ public class City implements Serializable {
     private String name;
     private Country country;
     private List<Stadium> stadiums = new ArrayList<>();
+    private static final long serialVersionUID = 1L;
 
     public City(Long id, String name, Country country) {
         if (id == null || id <= 0) {

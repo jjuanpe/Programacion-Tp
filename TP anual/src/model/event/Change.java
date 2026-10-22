@@ -6,6 +6,7 @@ import model.people.Player;
 import java.util.Objects;
 
 public class Change extends Incidence {
+    private static final long serialVersionUID = 1L;
     private final Player playerOut;
     private final Player playerIn;
 

@@ -8,6 +8,7 @@ import java.time.LocalDate;
 public class Referee extends Person {
     private final Country country;
     private final int years;
+    private static final long serialVersionUID = 1L;
 
     public Referee(
             String name,

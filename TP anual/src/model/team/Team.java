@@ -17,6 +17,7 @@ public class Team implements Serializable {
     private final List<Player> players;
     private HeadCoach headCoach;
     private Stadium stadium;
+    private static final long serialVersionUID = 1L;
 
     public Team(String name, Country country, int ranking) {
         if (name == null || name.isBlank()) {

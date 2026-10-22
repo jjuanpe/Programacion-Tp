@@ -6,6 +6,7 @@ public class Stadium implements Serializable {
     private String name;
     private City city;
     private int capacity;
+    private static final long serialVersionUID = 1L;
 
     public Stadium(Long id, String name, City city, int capacity) {
         if (id == null || id <= 0) {

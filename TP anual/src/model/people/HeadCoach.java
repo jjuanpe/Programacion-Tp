@@ -7,6 +7,7 @@ import java.time.LocalDate;
 public class HeadCoach extends Person{
     private Country country;
     private int titlesWon;
+    private static final long serialVersionUID = 1L;
 
     public HeadCoach(String name, LocalDate birthday, DocumentType documentType, String document, Country country, int titlesWon){
         super(name,birthday,documentType,document);

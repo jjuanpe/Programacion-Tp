@@ -12,4 +12,14 @@ public class GroupMatch extends Match {
         super(date, homeTeam, awayTeam, referee, stadium);
     }
 
+    @Override
+    public String getPhaseLabel() {
+        return "Group Stage";
+    }
+
+    @Override
+    public boolean allowsPenaltyShootout() {
+        return false;
+    }
+
 }

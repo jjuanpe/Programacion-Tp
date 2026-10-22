@@ -54,13 +54,6 @@ public class TournamentSession implements Serializable {
         return new File(DEFAULT_SAVE_PATH).exists();
     }
 
-    public static void discardSavedTournament() {
-        File saveFile = new File(DEFAULT_SAVE_PATH);
-        if (saveFile.exists()) {
-            saveFile.delete();
-        }
-    }
-
     public static TournamentSession load() throws IOException, ClassNotFoundException {
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(DEFAULT_SAVE_PATH))) {
             return (TournamentSession) in.readObject();

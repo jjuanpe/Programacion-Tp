@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class TournamentData implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final List<Team> teams = new ArrayList<>();
     private final List<Referee> referees = new ArrayList<>();
     private final List<String> warnings = new ArrayList<>();

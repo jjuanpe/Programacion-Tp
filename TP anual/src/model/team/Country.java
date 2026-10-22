@@ -6,6 +6,7 @@ import java.util.Objects;
 
 public final class Country implements Serializable {
     private final String countryName;
+    private static final long serialVersionUID = 1L;
 
     public Country (String countryName){
         if (countryName == null || countryName.isBlank()) {

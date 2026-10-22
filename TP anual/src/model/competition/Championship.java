@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class Championship implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final List<Team> teams;
     private final List<Zone> zones;
     private final List<Referee> referees;

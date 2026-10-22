@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Random;
 
 public class StadiumDrawService implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final List<Stadium> remainingStadiums;
 
     public StadiumDrawService(List<Stadium> stadiums) {

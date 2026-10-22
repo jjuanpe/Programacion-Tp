@@ -10,6 +10,7 @@ public class Goalkeeper extends Player {
     private final int rushingOut;
     private final int positioning;
     private final int footwork;
+    private static final long serialVersionUID = 1L;
 
     public Goalkeeper(String name, LocalDate birthday, DocumentType documentType, String document,
                        int reflexes, int handling, int aerialAbility, int rushingOut, int positioning, int footwork) {

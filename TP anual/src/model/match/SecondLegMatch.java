@@ -7,9 +7,10 @@ import model.team.Team;
 import java.time.LocalDate;
 
 public class SecondLegMatch extends Match {
-
+    private static final long serialVersionUID = 1L;
     private PhaseType phase;
     private FirstLegMatch firstLeg;
+
 
     public SecondLegMatch(LocalDate date, Team homeTeam, Team awayTeam, Referee referee,
                           Stadium stadium, PhaseType phase, FirstLegMatch firstLeg) {
@@ -62,5 +63,15 @@ public class SecondLegMatch extends Match {
             }
         }
         return winner;
+    }
+
+    @Override
+    public boolean allowsPenaltyShootout() {
+        return true;
+    }
+
+    @Override
+    public String getPhaseLabel() {
+        return "Quarter-final (2nd leg)";
     }
 }

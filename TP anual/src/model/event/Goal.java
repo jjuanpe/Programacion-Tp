@@ -7,6 +7,7 @@ import model.people.Player;
 import java.util.Objects;
 
 public class Goal extends Incidence {
+    private static final long serialVersionUID = 1L;
     private final Player scorer;
     private final Goalkeeper goalkeeper;
     private final boolean penalty;

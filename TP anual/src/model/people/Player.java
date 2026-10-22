@@ -5,6 +5,7 @@ import java.time.LocalDate;
 public class Player extends Person{
     private Position position;
     private int average;
+    private static final long serialVersionUID = 1L;
 
     public Player (String name, LocalDate birthday, DocumentType documentType, String document,Position position,int average){
         super(name,birthday,documentType,document);

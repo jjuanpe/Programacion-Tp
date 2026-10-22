@@ -27,6 +27,7 @@ public abstract class Match implements Serializable {
     private final List<PlayerParticipation> participations;
     private final List<Incidence> incidences;
     private boolean played;
+    private static final long serialVersionUID = 1L;
 
     public Match(LocalDate date, Team homeTeam, Team awayTeam, Referee referee, Stadium stadium) {
         this.date = Objects.requireNonNull(date, "The match date is required");
@@ -161,4 +162,8 @@ public abstract class Match implements Serializable {
     public synchronized List<Incidence> getIncidences() {
         return List.copyOf(incidences);
     }
+
+    public abstract String getPhaseLabel();
+
+    public abstract boolean allowsPenaltyShootout();
 }

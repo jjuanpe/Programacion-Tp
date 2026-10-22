@@ -9,6 +9,7 @@ public abstract class Person implements Serializable {
     private LocalDate birthDate;
     private DocumentType documentType;
     private String document;
+    private static final long serialVersionUID = 1L;
 
     public Person(String name,LocalDate birthday,DocumentType documentType,String document){
         if (name == null || name.isBlank()) {

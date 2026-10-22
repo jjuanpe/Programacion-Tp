@@ -92,7 +92,6 @@ public class AppWindow extends Application {
         if (TournamentSession.hasSavedTournament() && userWantsToContinue()) {
             resolved = loadSavedSession();
         } else {
-            TournamentSession.discardSavedTournament();
             resolved = new TournamentSession();
         }
         return resolved;
@@ -117,9 +116,19 @@ public class AppWindow extends Application {
         try {
             loaded = TournamentSession.load();
         } catch (IOException | ClassNotFoundException exception) {
+            showLoadError(exception);
             loaded = new TournamentSession();
         }
         return loaded;
+    }
+
+
+    private void showLoadError(Exception exception) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Copa Internacional de Clubes");
+        alert.setHeaderText("The saved tournament could not be loaded.");
+        alert.setContentText("A new tournament will start. Reason: " + exception.getMessage());
+        alert.showAndWait();
     }
 
     private void refreshPages() {

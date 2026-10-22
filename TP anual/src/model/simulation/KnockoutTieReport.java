@@ -9,6 +9,7 @@ import model.team.Team;
 import java.util.Objects;
 
 public final class KnockoutTieReport implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final PhaseType phase;
     private final FirstLegMatch firstLeg;
     private final SecondLegMatch secondLeg;

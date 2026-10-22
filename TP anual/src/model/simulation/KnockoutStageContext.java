@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Random;
 
 public final class KnockoutStageContext implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final StadiumDrawService stadiumDrawService;
     private final List<Referee> refereePool;
     private final Random seedGenerator;

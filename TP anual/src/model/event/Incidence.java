@@ -6,6 +6,7 @@ import model.match.Match;
 import java.util.Objects;
 
 public abstract class Incidence implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final int minute;
     private final Match match;
 
