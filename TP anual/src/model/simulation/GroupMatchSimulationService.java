@@ -1,11 +1,6 @@
 package model.simulation;
 
-import model.event.Change;
-import model.event.Expulsion;
-import model.event.ExpulsionReason;
-import model.event.Goal;
-import model.event.Incidence;
-import model.event.YellowCard;
+import model.event.*;
 import model.match.Formation;
 import model.match.Match;
 import model.match.PlayerParticipation;
@@ -13,16 +8,7 @@ import model.people.Goalkeeper;
 import model.people.Player;
 import model.people.Position;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class GroupMatchSimulationService implements MatchSimulationStrategy<Match> {
     private static final int MATCH_MINUTES = 90;
