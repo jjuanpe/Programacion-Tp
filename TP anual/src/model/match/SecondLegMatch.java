@@ -74,4 +74,9 @@ public class SecondLegMatch extends Match {
     public String getPhaseLabel() {
         return "Quarter-final (2nd leg)";
     }
+
+    @Override
+    public String getPhaseCategory() {
+        return "";
+    }
 }

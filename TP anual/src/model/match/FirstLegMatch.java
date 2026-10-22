@@ -22,12 +22,17 @@ public class FirstLegMatch extends Match {
     }
 
     @Override
-    public boolean allowsPenaltyShootout() {
-        return false;
+    public String getPhaseLabel() {
+        return phase.getLabel() + " (1st leg)";
     }
 
     @Override
-    public String getPhaseLabel() {
-        return "Quarter-final (1st leg)";
+    public String getPhaseCategory() {
+        return phase.getLabel();
+    }
+
+    @Override
+    public boolean allowsPenaltyShootout() {
+        return false;
     }
 }

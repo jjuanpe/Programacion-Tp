@@ -107,6 +107,9 @@ public abstract class Match implements Serializable {
         if (!played) {
             throw new IllegalStateException("The match must be completed before the shoot-out");
         }
+        if (!allowsPenaltyShootout()) {
+            throw new IllegalStateException("This match cannot be decided by penalties");
+        }
         for (PenaltyExecuted k : kicks) {
             if (k == null || k.getMatch() != this) {
                 throw new IllegalArgumentException("Every kick must belong to this match");
@@ -164,6 +167,8 @@ public abstract class Match implements Serializable {
     }
 
     public abstract String getPhaseLabel();
+
+    public abstract String getPhaseCategory();
 
     public abstract boolean allowsPenaltyShootout();
 }

@@ -14,13 +14,17 @@ public class FinalMatch extends Match {
     }
 
     @Override
-    public boolean allowsPenaltyShootout() {
-        return true;
+    public String getPhaseLabel() {
+        return PhaseType.FINAL.getLabel();
     }
 
     @Override
-    public String getPhaseLabel() {
-        return "Final Stage";
+    public String getPhaseCategory() {
+        return PhaseType.FINAL.getLabel();
     }
 
+    @Override
+    public boolean allowsPenaltyShootout() {
+        return true;
+    }
 }

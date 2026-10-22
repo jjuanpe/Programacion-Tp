@@ -1,17 +1,8 @@
 package controller;
 
-import model.event.Change;
-import model.event.Expulsion;
-import model.event.Goal;
-import model.event.Incidence;
-import model.event.PenaltyExecuted;
-import model.event.YellowCard;
-import model.match.FinalMatch;
-import model.match.FirstLegMatch;
+import model.event.*;
 import model.match.Formation;
-import model.match.GroupMatch;
 import model.match.Match;
-import model.match.PhaseType;
 import model.match.PlayerParticipation;
 import model.match.SecondLegMatch;
 import model.people.Player;
@@ -24,20 +15,13 @@ import ui.fx.MatchDetail;
 import ui.fx.MatchesViewModel;
 
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class MatchesController {
 
     private static final DateTimeFormatter DATE_FORMAT =
             DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.US);
     private static final String NOT_AVAILABLE = "-";
-    private static final String GROUP_STAGE_CATEGORY = "Group Stage";
     private static final String NO_MATCHES_MESSAGE =
             "No matches yet. Import the data and run the group draw from the Tournament page.";
 
@@ -66,8 +50,8 @@ public class MatchesController {
         Map<Player, Integer> minutes = indexMinutes(match.getParticipations());
 
         return new MatchDetail(
-                describePhase(match),
-                phaseCategory(match),
+                match.getPhaseLabel(),
+                match.getPhaseCategory(),
                 match.getDate().format(DATE_FORMAT),
                 match.getHomeTeam().getName(),
                 match.getAwayTeam().getName(),
@@ -80,46 +64,6 @@ public class MatchesController {
                 toLineup(match.getHomeFormation(), minutes),
                 toLineup(match.getAwayFormation(), minutes),
                 toIncidences(match.getIncidences()));
-    }
-
-    private String describePhase(Match match) {
-        String phase;
-        if (match instanceof GroupMatch) {
-            phase = GROUP_STAGE_CATEGORY;
-        } else if (match instanceof SecondLegMatch secondLeg) {
-            phase = labelOf(secondLeg.getPhase()) + " (2nd leg)";
-        } else if (match instanceof FirstLegMatch firstLeg) {
-            phase = labelOf(firstLeg.getPhase()) + " (1st leg)";
-        } else if (match instanceof FinalMatch) {
-            phase = "Final";
-        } else {
-            phase = NOT_AVAILABLE;
-        }
-        return phase;
-    }
-
-    private String phaseCategory(Match match) {
-        String category;
-        if (match instanceof GroupMatch) {
-            category = GROUP_STAGE_CATEGORY;
-        } else if (match instanceof SecondLegMatch secondLeg) {
-            category = labelOf(secondLeg.getPhase());
-        } else if (match instanceof FirstLegMatch firstLeg) {
-            category = labelOf(firstLeg.getPhase());
-        } else if (match instanceof FinalMatch) {
-            category = "Final";
-        } else {
-            category = NOT_AVAILABLE;
-        }
-        return category;
-    }
-
-    private String labelOf(PhaseType phase) {
-        return switch (phase) {
-            case QUARTER_FINAL -> "Quarter-final";
-            case SEMI_FINAL -> "Semi-final";
-            case FINAL -> "Final";
-        };
     }
 
     private String describeAggregate(Match match) {

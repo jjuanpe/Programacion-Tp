@@ -18,6 +18,11 @@ public class GroupMatch extends Match {
     }
 
     @Override
+    public String getPhaseCategory() {
+        return "Group Stage";
+    }
+
+    @Override
     public boolean allowsPenaltyShootout() {
         return false;
     }
