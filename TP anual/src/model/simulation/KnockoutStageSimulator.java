@@ -4,8 +4,10 @@ import model.competition.KnockoutBracketService;
 import model.competition.StadiumDrawService;
 import model.competition.Zone;
 import model.match.FinalMatch;
+import model.match.GroupMatch;
 import model.match.Match;
 import model.match.PhaseType;
+import model.people.Player;
 import model.people.Referee;
 import model.team.Team;
 import model.venue.Stadium;
@@ -240,12 +242,13 @@ public class KnockoutStageSimulator {
             LocalDate date,
             StadiumDrawService stadiumDrawService,
             List<Referee> refereePool,
-            Random seedGenerator) {
+            Random seedGenerator,
+            Set<Player> suspendedPlayers) {
         Random random = new Random(seedGenerator.nextLong());
         Referee referee = refereeAssignmentService.selectReferee(teamA, teamB, refereePool, random);
         FinalMatch finalMatch = new FinalMatch(date, teamA, teamB, referee, stadiumDrawService.draw(random));
 
-        MatchSimulationResult result = simulationStrategy.simulate(finalMatch, Set.of(), random);
+        MatchSimulationResult result = simulationStrategy.simulate(finalMatch, suspendedPlayers, random);
         result.applyTo(finalMatch);
         Team champion;
         String criteria;
@@ -261,6 +264,34 @@ public class KnockoutStageSimulator {
         }
 
         return new FinalMatchReport(finalMatch, champion, criteria);
+    }
+
+    private Set<Player> expelledInLastGroupRound(List<Zone> zones) {
+        LocalDate lastRoundDate = null;
+        for (Zone zone : zones) {
+            for (GroupMatch match : zone.getGroupMatches()) {
+                if (lastRoundDate == null || match.getDate().isAfter(lastRoundDate)) {
+                    lastRoundDate = match.getDate();
+                }
+            }
+        }
+        Set<Player> expelledPlayers = new HashSet<>();
+        for (Zone zone : zones) {
+            for (GroupMatch match : zone.getGroupMatches()) {
+                if (match.getDate().equals(lastRoundDate)) {
+                    expelledPlayers.addAll(match.getExpelledPlayers());
+                }
+            }
+        }
+        return expelledPlayers;
+    }
+
+    private Set<Player> expelledInSecondLegs(List<KnockoutTieReport> ties) {
+        Set<Player> expelledPlayers = new HashSet<>();
+        for (KnockoutTieReport tie : ties) {
+            expelledPlayers.addAll(tie.getSecondLeg().getExpelledPlayers());
+        }
+        return expelledPlayers;
     }
 
     private static final class KnockoutThreadFactory implements ThreadFactory {

@@ -30,6 +30,8 @@ public class KnockoutTieTask implements Callable<KnockoutTieReport> {
     private final MatchSimulationStrategy<Match> simulationStrategy;
     private final PenaltyShootoutSimulator penaltyShootoutSimulator;
     private final long seed;
+    private final Set<Player> suspendedForFirstLeg;
+
 
     public KnockoutTieTask(
             Team teamA,
@@ -57,6 +59,7 @@ public class KnockoutTieTask implements Callable<KnockoutTieReport> {
         this.penaltyShootoutSimulator =
                 Objects.requireNonNull(penaltyShootoutSimulator, "The penalty shoot-out simulator is required");
         this.seed = seed;
+        this.suspendedForFirstLeg = Set.copyOf(suspendedForFirstLeg);
     }
 
     @Override
@@ -66,8 +69,8 @@ public class KnockoutTieTask implements Callable<KnockoutTieReport> {
 
         FirstLegMatch firstLeg = new FirstLegMatch(
                 firstLegDate, teamA, teamB, firstLegReferee, firstLegStadium, phase);
-        MatchSimulationResult firstLegResult = simulationStrategy.simulate(firstLeg, Set.of(), random);
-        result.applyTo(firstLeg);
+        MatchSimulationResult firstLegResult = simulationStrategy.simulate(firstLeg, suspendedForFirstLeg, random);
+        firstLegResult.applyTo(firstLeg);
 
         Set<Player> suspendedForSecondLeg = firstLeg.getExpelledPlayers();
 
