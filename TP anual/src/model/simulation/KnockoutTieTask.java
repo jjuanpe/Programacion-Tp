@@ -43,6 +43,7 @@ public class KnockoutTieTask implements Callable<KnockoutTieReport> {
             Stadium secondLegStadium,
             Referee firstLegReferee,
             Referee secondLegReferee,
+            Set<Player> suspendedForFirstLeg,
             MatchSimulationStrategy<Match> simulationStrategy,
             PenaltyShootoutSimulator penaltyShootoutSimulator,
             long seed) {
@@ -78,7 +79,7 @@ public class KnockoutTieTask implements Callable<KnockoutTieReport> {
                 secondLegDate, teamB, teamA, secondLegReferee, secondLegStadium, phase, firstLeg);
         MatchSimulationResult secondLegResult =
                 simulationStrategy.simulate(secondLeg, suspendedForSecondLeg, random);
-        result.applyTo(secondLeg);
+        secondLegResult.applyTo(secondLeg);
 
         Team winner = secondLeg.resolveTieWinner();
         String criteria;

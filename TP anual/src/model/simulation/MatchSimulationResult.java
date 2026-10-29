@@ -2,6 +2,7 @@ package model.simulation;
 
 import model.event.Incidence;
 import model.match.Formation;
+import model.match.Match;
 import model.match.PlayerParticipation;
 
 import java.util.List;

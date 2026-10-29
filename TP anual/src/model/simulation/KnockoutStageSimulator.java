@@ -99,6 +99,7 @@ public class KnockoutStageSimulator {
                 context.getStadiumDrawService(),
                 context.getRefereePool(),
                 context.getSeedGenerator(),
+                expelledInLastGroupRound(zones),
                 QUARTER_FINAL_COUNT);
     }
 
@@ -126,6 +127,7 @@ public class KnockoutStageSimulator {
                 context.getStadiumDrawService(),
                 context.getRefereePool(),
                 context.getSeedGenerator(),
+                expelledInSecondLegs(quarterFinalReports),
                 SEMI_FINAL_COUNT);
     }
 
@@ -146,7 +148,8 @@ public class KnockoutStageSimulator {
                 finalDate,
                 context.getStadiumDrawService(),
                 context.getRefereePool(),
-                context.getSeedGenerator());
+                context.getSeedGenerator(),
+                expelledInSecondLegs(semiFinalReports));
     }
 
     private List<KnockoutTieReport> playRound(
@@ -156,6 +159,7 @@ public class KnockoutStageSimulator {
             StadiumDrawService stadiumDrawService,
             List<Referee> refereePool,
             Random seedGenerator,
+            Set<Player> suspendedPlayers,
             int expectedTieCount) throws InterruptedException {
         if (pairings.size() != expectedTieCount) {
             throw new IllegalArgumentException("Expected " + expectedTieCount + " ties for phase " + phase);
@@ -163,7 +167,8 @@ public class KnockoutStageSimulator {
 
         LocalDate secondLegDate = firstLegDate.plusDays(DAYS_BETWEEN_LEGS);
         List<KnockoutTieTask> tasks = createTieTasks(
-                pairings, phase, firstLegDate, secondLegDate, stadiumDrawService, refereePool, seedGenerator);
+                pairings, phase, firstLegDate, secondLegDate, stadiumDrawService, refereePool, seedGenerator,
+                suspendedPlayers);
 
         ExecutorService executor = Executors.newFixedThreadPool(tasks.size(), new KnockoutThreadFactory());
         List<Future<KnockoutTieReport>> futures = new ArrayList<>();
@@ -186,7 +191,8 @@ public class KnockoutStageSimulator {
             LocalDate secondLegDate,
             StadiumDrawService stadiumDrawService,
             List<Referee> refereePool,
-            Random seedGenerator) {
+            Random seedGenerator,
+            Set<Player> suspendedPlayers) {) {
         List<Referee> firstLegReferees = new ArrayList<>(refereePool);
         List<Referee> secondLegReferees = new ArrayList<>(refereePool);
         List<KnockoutTieTask> tasks = new ArrayList<>();
@@ -210,6 +216,7 @@ public class KnockoutStageSimulator {
                     stadiumDrawService.draw(seedGenerator),
                     firstLegReferee,
                     secondLegReferee,
+                    suspendedPlayers,
                     simulationStrategy,
                     penaltyShootoutSimulator,
                     seedGenerator.nextLong()));
@@ -236,14 +243,14 @@ public class KnockoutStageSimulator {
         return report;
     }
 
-    private FinalMatchReport playFinal(
-            Team teamA,
-            Team teamB,
-            LocalDate date,
-            StadiumDrawService stadiumDrawService,
-            List<Referee> refereePool,
-            Random seedGenerator,
-            Set<Player> suspendedPlayers) {
+        private FinalMatchReport playFinal(
+                Team teamA,
+                Team teamB,
+                LocalDate date,
+                StadiumDrawService stadiumDrawService,
+                List<Referee> refereePool,
+                Random seedGenerator,
+                Set<Player> suspendedPlayers) {
         Random random = new Random(seedGenerator.nextLong());
         Referee referee = refereeAssignmentService.selectReferee(teamA, teamB, refereePool, random);
         FinalMatch finalMatch = new FinalMatch(date, teamA, teamB, referee, stadiumDrawService.draw(random));

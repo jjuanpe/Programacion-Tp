@@ -21,6 +21,9 @@ public enum Position {
         return label;
     }
 
+    public int getRequiredPerSquad() {
+        return requiredPerSquad;
+    }
 
     public static Position fromFileValue(String fileValue) {
         Position selectedPosition = null;
