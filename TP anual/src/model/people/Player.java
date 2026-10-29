@@ -42,6 +42,6 @@ public class Player extends Person{
     }
 
     public String getRole(){
-        return "";
+        return "Player";
     }
 }

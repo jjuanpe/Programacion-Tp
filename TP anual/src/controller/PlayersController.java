@@ -54,7 +54,7 @@ public class PlayersController {
         boolean isGoalkeeper = player.getPosition() == Position.GOALKEEPER;
         return new PlayerStatsRow(
                 player.getName(),
-                labelOf(player.getPosition()),
+                player.getPosition().getLabel(),
                 entry.getTeam().getName(),
                 player.getAge(referenceDate),
                 player.getAverage(),
@@ -65,14 +65,6 @@ public class PlayersController {
                 isGoalkeeper ? formatDecimal(entry.getGoalsConcededAverage()) : NOT_AVAILABLE);
     }
 
-    private String labelOf(Position position) {
-        return switch (position) {
-            case GOALKEEPER -> "Goalkeeper";
-            case DEFENDER -> "Defender";
-            case MIDFIELDER -> "Midfielder";
-            case FORWARD -> "Forward";
-        };
-    }
 
     private String formatDecimal(double value) {
         return String.format(Locale.US, "%.2f", value);

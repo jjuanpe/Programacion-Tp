@@ -2,22 +2,25 @@ package model.people;
 
 public enum Position {
 
-    GOALKEEPER("arquero", 2),
-    DEFENDER("defensor", 6),
-    MIDFIELDER("mediocampista", 5),
-    FORWARD("delantero", 5);
+    GOALKEEPER("arquero", "Goalkeeper", 2),
+    DEFENDER("defensor", "Defender", 6),
+    MIDFIELDER("mediocampista", "Midfielder", 5),
+    FORWARD("delantero", "Forward", 5);
 
     private final String fileValue;
+    private final String label;
     private final int requiredPerSquad;
 
-    Position(String fileValue, int requiredPerSquad) {
+    Position(String fileValue, String label, int requiredPerSquad) {
         this.fileValue = fileValue;
+        this.label = label;
         this.requiredPerSquad = requiredPerSquad;
     }
 
-    public int getRequiredPerSquad() {
-        return requiredPerSquad;
+    public String getLabel() {
+        return label;
     }
+
 
     public static Position fromFileValue(String fileValue) {
         Position selectedPosition = null;

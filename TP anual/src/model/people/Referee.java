@@ -52,6 +52,6 @@ public class Referee extends Person {
 
     @Override
     public String getRole() {
-        return "";
+        return "Referee";
     }
 }

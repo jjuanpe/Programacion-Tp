@@ -30,6 +30,6 @@ public class HeadCoach extends Person{
     }
 
     public String getRole(){
-        return "";
+        return "Head coach";
     }
 }

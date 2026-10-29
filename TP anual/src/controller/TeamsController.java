@@ -108,20 +108,11 @@ public class TeamsController {
         for (Player player : team.getPlayers()) {
             squad.add(new PlayerRow(
                     player.getName(),
-                    labelOf(player.getPosition()),
+                    player.getPosition().getLabel(),
                     player.getAge(referenceDate),
                     player.getAverage()));
         }
         return squad;
-    }
-
-    private String labelOf(Position position) {
-        return switch (position) {
-            case GOALKEEPER -> "Goalkeeper";
-            case DEFENDER -> "Defender";
-            case MIDFIELDER -> "Midfielder";
-            case FORWARD -> "Forward";
-        };
     }
 
     private String countryNameOf(Country country) {

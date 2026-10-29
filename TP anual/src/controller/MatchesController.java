@@ -103,18 +103,9 @@ public class MatchesController {
         Integer played = minutes.get(player);
         return new LineupRow(
                 player.getName(),
-                labelOf(player.getPosition()),
+                player.getPosition().getLabel(),
                 role,
                 played == null || played == 0 ? NOT_AVAILABLE : String.valueOf(played));
-    }
-
-    private String labelOf(Position position) {
-        return switch (position) {
-            case GOALKEEPER -> "Goalkeeper";
-            case DEFENDER -> "Defender";
-            case MIDFIELDER -> "Midfielder";
-            case FORWARD -> "Forward";
-        };
     }
 
     private List<IncidenceRow> toIncidences(List<Incidence> incidences) {
