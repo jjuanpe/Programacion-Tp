@@ -267,7 +267,7 @@ public class KnockoutStageSimulator {
             criteria = "Penalty shoot-out";
         }
 
-        return new FinalMatchReport(finalMatch, teamA, teamB, champion, criteria);
+        return new FinalMatchReport(finalMatch, champion, criteria);
     }
 
     private static final class KnockoutThreadFactory implements ThreadFactory {

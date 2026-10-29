@@ -16,10 +16,6 @@ public class DrawService {
 
     private final Random random;
 
-    public DrawService() {
-        this(new Random());
-    }
-
     public DrawService(Random random) {
         this.random = random;
     }

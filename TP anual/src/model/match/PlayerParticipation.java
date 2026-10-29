@@ -9,10 +9,6 @@ public class PlayerParticipation implements Serializable {
     private final boolean starter;
     private final int minutesPlayed;
 
-    public PlayerParticipation(Player player, boolean starter) {
-        this(player, starter, 0);
-    }
-
     public PlayerParticipation(Player player, boolean starter, int minutesPlayed) {
         if (player == null) {
             throw new IllegalArgumentException("The player is required");

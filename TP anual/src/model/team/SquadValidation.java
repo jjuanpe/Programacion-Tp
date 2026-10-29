@@ -11,11 +11,9 @@ public final class SquadValidation {
 
     private static final int REQUIRED_SQUAD_SIZE = 18;
 
-    private final int squadSize;
     private final List<String> problems;
 
-    private SquadValidation(int squadSize, List<String> problems) {
-        this.squadSize = squadSize;
+    private SquadValidation(List<String> problems) {
         this.problems = List.copyOf(problems);
     }
 
@@ -34,15 +32,11 @@ public final class SquadValidation {
                 problems.add(actual + " of " + expected + " " + position.name().toLowerCase() + "s");
             }
         }
-        return new SquadValidation(players.size(), problems);
+        return new SquadValidation(problems);
     }
 
     public boolean isValid() {
         return problems.isEmpty();
-    }
-
-    public int getSquadSize() {
-        return squadSize;
     }
 
     public List<String> getProblems() {

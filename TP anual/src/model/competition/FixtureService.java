@@ -14,10 +14,6 @@ public class FixtureService {
 
     private static final int ROUNDS = 3;
 
-    public List<GroupMatch> generateFixture(Zone zone, LocalDate firstDate, int daysBetweenRounds) {
-        return generateFixture(zone, firstDate, daysBetweenRounds, List.of(), new Random());
-    }
-
     public List<GroupMatch> generateFixture(Zone zone, LocalDate firstDate, int daysBetweenRounds,
                                             List<Stadium> stadiums, Random random) {
         List<Team> teams = zone.getTeams();

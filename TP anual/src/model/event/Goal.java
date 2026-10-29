@@ -13,14 +13,10 @@ public class Goal extends Incidence {
     private final boolean penalty;
     private final boolean ownGoal;
 
-    public Goal(int minute, Match match, Player scorer, boolean penalty, boolean ownGoal) {
-        this(minute, match, scorer, null, penalty, ownGoal);
-    }
-
     public Goal(int minute, Match match, Player scorer, Goalkeeper goalkeeper, boolean penalty, boolean ownGoal) {
         super(minute, match);
         this.scorer = Objects.requireNonNull(scorer, "The goal scorer is required");
-        this.goalkeeper = goalkeeper;
+        this.goalkeeper = Objects.requireNonNull(goalkeeper, "The goalkeeper is required");
         this.penalty = penalty;
         this.ownGoal = ownGoal;
     }

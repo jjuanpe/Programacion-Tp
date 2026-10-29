@@ -110,8 +110,8 @@ public abstract class Match implements Serializable {
         if (!allowsPenaltyShootout()) {
             throw new IllegalStateException("This match cannot be decided by penalties");
         }
-        for (PenaltyExecuted k : kicks) {
-            if (k == null || k.getMatch() != this) {
+        for (PenaltyExecuted kick : kicks) {
+            if (kick == null || kick.getMatch() != this) {
                 throw new IllegalArgumentException("Every kick must belong to this match");
             }
         }
