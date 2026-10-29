@@ -246,14 +246,7 @@ public class KnockoutStageSimulator {
         FinalMatch finalMatch = new FinalMatch(date, teamA, teamB, referee, stadiumDrawService.draw(random));
 
         MatchSimulationResult result = simulationStrategy.simulate(finalMatch, Set.of(), random);
-        finalMatch.completeMatch(
-                result.getHomeGoals(),
-                result.getAwayGoals(),
-                result.getHomeFormation(),
-                result.getAwayFormation(),
-                result.getParticipations(),
-                result.getIncidences());
-
+        result.applyTo(finalMatch);
         Team champion;
         String criteria;
         if (finalMatch.getHomeGoals() != finalMatch.getAwayGoals()) {

@@ -82,13 +82,7 @@ public class GroupStageSimulator {
                     List<StandingEntry> standingsBefore =
                             standingsService.computeStandings(scheduledMatch.getZone());
 
-                    match.completeMatch(
-                            result.getHomeGoals(),
-                            result.getAwayGoals(),
-                            result.getHomeFormation(),
-                            result.getAwayFormation(),
-                            result.getParticipations(),
-                            result.getIncidences());
+                    result.applyTo(match);
 
                     List<StandingEntry> standingsAfter =
                             standingsService.computeStandings(scheduledMatch.getZone());
@@ -98,7 +92,7 @@ public class GroupStageSimulator {
                             standingsBefore,
                             standingsAfter,
                             tasks.get(index).getWorkerThreadName()));
-                    collectSuspensions(result, nextRoundSuspensions);
+                    nextRoundSuspensions.addAll(match.getExpelledPlayers());
                 }
                 suspendedPlayers = Set.copyOf(nextRoundSuspensions);
             }

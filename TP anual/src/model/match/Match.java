@@ -2,17 +2,17 @@ package model.match;
 
 import java.io.Serializable;
 
+import model.event.Expulsion;
 import model.event.Incidence;
 import model.event.Goal;
 import model.event.PenaltyExecuted;
+import model.people.Player;
 import model.people.Referee;
 import model.team.Team;
 import model.venue.Stadium;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public abstract class Match implements Serializable {
     private final LocalDate date;
@@ -117,6 +117,17 @@ public abstract class Match implements Serializable {
         }
         incidences.addAll(kicks);
     }
+
+    public synchronized Set<Player> getExpelledPlayers() {
+        Set<Player> expelledPlayers = new HashSet<>();
+        for (Incidence incidence : incidences) {
+            if (incidence instanceof Expulsion expulsion) {
+                expelledPlayers.add(expulsion.getPlayer());
+            }
+        }
+        return expelledPlayers;
+    }
+
 
     public synchronized boolean isPlayed() {
         return played;

@@ -21,7 +21,7 @@ public class DashboardController {
         List<Match> matches = session.getMatches();
 
         viewModel.setTeams(session.getTeams().size());
-        viewModel.setMatchesPlayed(countPlayedMatches(matches));
+        viewModel.setMatchesPlayed(session.countPlayedMatches());
         viewModel.setGoals(countGoals(matches));
 
         TournamentState state = session.getState();
@@ -30,15 +30,7 @@ public class DashboardController {
         viewModel.setStageLabel(stage == null ? state.getLabel() : stage.getLabel());
     }
 
-    private int countPlayedMatches(List<Match> matches) {
-        int played = 0;
-        for (Match match : matches) {
-            if (match.isPlayed()) {
-                played++;
-            }
-        }
-        return played;
-    }
+
 
     private int countGoals(List<Match> matches) {
         int goals = 0;

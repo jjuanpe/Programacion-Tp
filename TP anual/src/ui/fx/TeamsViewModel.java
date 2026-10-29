@@ -9,8 +9,6 @@ import java.util.List;
 
 public class TeamsViewModel {
 
-    private static final String EMPTY_MESSAGE = "No teams imported yet";
-
     private final ObservableList<TeamRow> rows = FXCollections.observableArrayList();
     private final ObservableList<TeamDetail> teams = FXCollections.observableArrayList();
 
@@ -19,7 +17,7 @@ public class TeamsViewModel {
     private final ObservableList<TeamDetail> readOnlyTeams =
             FXCollections.unmodifiableObservableList(teams);
 
-    private final StringProperty status = new SimpleStringProperty(this, "status", EMPTY_MESSAGE);
+    private final StringProperty status = new SimpleStringProperty(this, "status", "");
 
     public ObservableList<TeamRow> getRows() {
         return readOnlyRows;

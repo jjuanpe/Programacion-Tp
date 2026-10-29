@@ -172,6 +172,16 @@ public class TournamentSession implements Serializable {
         }
     }
 
+    public synchronized int countPlayedMatches() {
+        int played = 0;
+        for (Match match : getMatches()) {
+            if (match.isPlayed()) {
+                played++;
+            }
+        }
+        return played;
+    }
+
     public synchronized TournamentState getState() {
         TournamentState state;
         if (tournamentData == null) {

@@ -9,14 +9,12 @@ import java.util.List;
 
 public class GroupStageViewModel {
 
-    private static final String EMPTY_MESSAGE = "No group draw yet";
-
     private final ObservableList<GroupZone> zones = FXCollections.observableArrayList();
 
     private final ObservableList<GroupZone> readOnlyZones =
             FXCollections.unmodifiableObservableList(zones);
 
-    private final StringProperty status = new SimpleStringProperty(this, "status", EMPTY_MESSAGE);
+    private final StringProperty status = new SimpleStringProperty(this, "status", "");
 
     public ObservableList<GroupZone> getZones() {
         return readOnlyZones;

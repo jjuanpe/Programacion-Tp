@@ -67,27 +67,15 @@ public class KnockoutTieTask implements Callable<KnockoutTieReport> {
         FirstLegMatch firstLeg = new FirstLegMatch(
                 firstLegDate, teamA, teamB, firstLegReferee, firstLegStadium, phase);
         MatchSimulationResult firstLegResult = simulationStrategy.simulate(firstLeg, Set.of(), random);
-        firstLeg.completeMatch(
-                firstLegResult.getHomeGoals(),
-                firstLegResult.getAwayGoals(),
-                firstLegResult.getHomeFormation(),
-                firstLegResult.getAwayFormation(),
-                firstLegResult.getParticipations(),
-                firstLegResult.getIncidences());
+        result.applyTo(firstLeg);
 
-        Set<Player> suspendedForSecondLeg = collectExpelledPlayers(firstLegResult.getIncidences());
+        Set<Player> suspendedForSecondLeg = firstLeg.getExpelledPlayers();
 
         SecondLegMatch secondLeg = new SecondLegMatch(
                 secondLegDate, teamB, teamA, secondLegReferee, secondLegStadium, phase, firstLeg);
         MatchSimulationResult secondLegResult =
                 simulationStrategy.simulate(secondLeg, suspendedForSecondLeg, random);
-        secondLeg.completeMatch(
-                secondLegResult.getHomeGoals(),
-                secondLegResult.getAwayGoals(),
-                secondLegResult.getHomeFormation(),
-                secondLegResult.getAwayFormation(),
-                secondLegResult.getParticipations(),
-                secondLegResult.getIncidences());
+        result.applyTo(secondLeg);
 
         Team winner = secondLeg.resolveTieWinner();
         String criteria;

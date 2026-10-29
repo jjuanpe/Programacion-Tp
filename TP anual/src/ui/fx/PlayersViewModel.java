@@ -9,14 +9,12 @@ import java.util.List;
 
 public class PlayersViewModel {
 
-    private static final String EMPTY_MESSAGE = "No players imported yet";
-
     private final ObservableList<PlayerStatsRow> players = FXCollections.observableArrayList();
 
     private final ObservableList<PlayerStatsRow> readOnlyPlayers =
             FXCollections.unmodifiableObservableList(players);
 
-    private final StringProperty status = new SimpleStringProperty(this, "status", EMPTY_MESSAGE);
+    private final StringProperty status = new SimpleStringProperty(this, "status", "");
 
     public ObservableList<PlayerStatsRow> getPlayers() {
         return readOnlyPlayers;

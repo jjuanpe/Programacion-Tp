@@ -83,16 +83,9 @@ public class Team implements Serializable {
     }
 
     public void validateSquad() {
-        if (players.size() != 18) {
-            throw new IllegalStateException(name + ": has " + players.size() + " players instead of 18");
-        }
-        for (Position position : Position.values()) {
-            int expected = position.getRequiredPerSquad();
-            int actual = countByPosition(position);
-            if (actual != expected) {
-                throw new IllegalStateException(
-                        name + ": has " + actual + " " + position + "s instead of " + expected);
-            }
+        SquadValidation validation = SquadValidation.of(this);
+        if (!validation.isValid()) {
+            throw new IllegalStateException(name + ": " + String.join("; ", validation.getProblems()));
         }
     }
 }

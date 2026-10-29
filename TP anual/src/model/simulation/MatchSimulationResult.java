@@ -33,6 +33,11 @@ public final class MatchSimulationResult {
         this.incidences = List.copyOf(incidences);
     }
 
+    public void applyTo(Match match) {
+        Objects.requireNonNull(match, "The match is required");
+        match.completeMatch(homeGoals, awayGoals, homeFormation, awayFormation, participations, incidences);
+    }
+
     public int getHomeGoals() {
         return homeGoals;
     }

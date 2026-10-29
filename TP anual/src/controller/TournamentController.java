@@ -76,7 +76,7 @@ public class TournamentController {
         viewModel.setReferees(session.getReferees().size());
         viewModel.setZones(session.getZones().size());
         viewModel.setTotalMatches(matches.size());
-        viewModel.setMatchesPlayed(countPlayedMatches(matches));
+        viewModel.setMatchesPlayed(session.countPlayedMatches());
         viewModel.setWarnings(session.getWarnings().size());
         viewModel.setAdvanceLabel(advanceLabelFor(state));
 
@@ -104,16 +104,6 @@ public class TournamentController {
             case SEMI_FINALS_PLAYED -> "Continue: final";
             case FINISHED -> "Tournament finished";
         };
-    }
-
-    private int countPlayedMatches(List<Match> matches) {
-        int played = 0;
-        for (Match match : matches) {
-            if (match.isPlayed()) {
-                played++;
-            }
-        }
-        return played;
     }
 
     private interface Step {

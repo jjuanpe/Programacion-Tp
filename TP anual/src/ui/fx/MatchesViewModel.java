@@ -15,7 +15,7 @@ public class MatchesViewModel {
             FXCollections.unmodifiableObservableList(matches);
 
     private final StringProperty status =
-            new SimpleStringProperty(this, "status", "No matches yet");
+            new SimpleStringProperty(this, "status", "");
 
     public ObservableList<MatchDetail> getMatches() {
         return readOnlyMatches;
