@@ -47,20 +47,16 @@ public class SecondLegMatch extends Match {
         return getPlainAggregateForSecondLegHomeTeam() != getPlainAggregateForSecondLegAwayTeam();
     }
 
-    public model.team.Team resolveTieWinner() {
-        model.team.Team winner;
+    public Team resolveTieWinner() {
+        Team winner;
         if (isDecidedByPlainAggregate()) {
-            winner = getPlainAggregateForSecondLegHomeTeam() > getPlainAggregateForSecondLegAwayTeam()
-                    ? getHomeTeam()
-                    : getAwayTeam();
-        } else {
-            int weightedHome = getAwayGoalsWeightedAggregateForSecondLegHomeTeam();
-            int weightedAway = getAwayGoalsWeightedAggregateForSecondLegAwayTeam();
-            if (weightedHome != weightedAway) {
-                winner = weightedHome > weightedAway ? getHomeTeam() : getAwayTeam();
+            if (getPlainAggregateForSecondLegHomeTeam() > getPlainAggregateForSecondLegAwayTeam()) {
+                winner = getHomeTeam();
             } else {
-                winner = null;
+                winner = getAwayTeam();
             }
+        } else {
+            winner = null;
         }
         return winner;
     }
@@ -72,11 +68,11 @@ public class SecondLegMatch extends Match {
 
     @Override
     public String getPhaseLabel() {
-        return "Quarter-final (2nd leg)";
+        return phase.getLabel() + " (2nd leg)";
     }
 
     @Override
     public String getPhaseCategory() {
-        return "";
+        return phase.getLabel();
     }
 }

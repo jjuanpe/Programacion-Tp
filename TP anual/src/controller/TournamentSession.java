@@ -75,6 +75,24 @@ public class TournamentSession implements Serializable {
         resetKnockoutProgress();
     }
 
+    public List<Stadium> getRegisteredStadiums() throws SQLException {
+        return new StadiumDAO().getAllStadiums();
+    }
+
+    public List<model.venue.City> getRegisteredCities() throws SQLException {
+        return new dao.CityDao().getAllCities();
+    }
+
+    public void addStadium(long id, String name, model.venue.City city, int capacity) throws SQLException {
+        Stadium stadium = new Stadium(id, name, city, capacity);
+        new StadiumDAO().insertStadium(stadium.getId(), stadium.getName(), city, stadium.getCapacity());
+    }
+
+    public void deleteStadium(Stadium stadium) throws SQLException {
+        Objects.requireNonNull(stadium, "Select a stadium to delete");
+        new StadiumDAO().deleteStadium(stadium.getId());
+    }
+
     public synchronized void drawGroups() throws SQLException {
         requireState(TournamentState.DATA_LOADED, "the group draw");
 
@@ -204,28 +222,44 @@ public class TournamentSession implements Serializable {
 
     private boolean allPlayed(List<Match> matches) {
         boolean allPlayed = !matches.isEmpty();
-        for (Match match : matches) {
-            if (!match.isPlayed()) {
-                allPlayed = false;
-            }
+        int matchIndex = 0;
+        while (matchIndex < matches.size() && allPlayed) {
+            allPlayed = matches.get(matchIndex).isPlayed();
+            matchIndex++;
         }
         return allPlayed;
     }
 
     public synchronized List<Team> getTeams() {
-        return tournamentData == null ? List.of() : tournamentData.getTeams();
+        if (tournamentData == null) {
+            return List.of();
+        } else {
+            return tournamentData.getTeams();
+        }
     }
 
     public synchronized List<Referee> getReferees() {
-        return tournamentData == null ? List.of() : tournamentData.getReferees();
+        if (tournamentData == null) {
+            return List.of();
+        } else {
+            return tournamentData.getReferees();
+        }
     }
 
     public synchronized List<String> getWarnings() {
-        return tournamentData == null ? List.of() : tournamentData.getWarnings();
+        if (tournamentData == null) {
+            return List.of();
+        } else {
+            return tournamentData.getWarnings();
+        }
     }
 
     public synchronized List<Zone> getZones() {
-        return championship == null ? List.of() : championship.getZones();
+        if (championship == null) {
+            return List.of();
+        } else {
+            return championship.getZones();
+        }
     }
 
     public synchronized Championship getChampionship() {
@@ -259,11 +293,19 @@ public class TournamentSession implements Serializable {
     }
 
     public synchronized List<KnockoutTieReport> getQuarterFinalReports() {
-        return quarterFinalReports == null ? List.of() : List.copyOf(quarterFinalReports);
+        if (quarterFinalReports == null) {
+            return List.of();
+        } else {
+            return List.copyOf(quarterFinalReports);
+        }
     }
 
     public synchronized List<KnockoutTieReport> getSemiFinalReports() {
-        return semiFinalReports == null ? List.of() : List.copyOf(semiFinalReports);
+        if (semiFinalReports == null) {
+            return List.of();
+        } else {
+            return List.copyOf(semiFinalReports);
+        }
     }
 
     private void addTieMatches(List<Match> matches, List<KnockoutTieReport> ties) {

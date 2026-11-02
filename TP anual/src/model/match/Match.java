@@ -79,15 +79,37 @@ public abstract class Match implements Serializable {
         Objects.requireNonNull(awayFormation, "The away formation is required");
         Objects.requireNonNull(participations, "The player participations are required");
         Objects.requireNonNull(incidences, "The incidences are required");
-        for (Incidence incidence : incidences) {
+        int incidenceIndex = 0;
+        boolean validIncidences = true;
+        int recordedGoals = 0;
+        while (incidenceIndex < incidences.size() && validIncidences) {
+            Incidence incidence = incidences.get(incidenceIndex);
             if (incidence == null || incidence.getMatch() != this) {
-                throw new IllegalArgumentException("Every incidence must belong to this match");
+                validIncidences = false;
+            } else if (incidence instanceof Goal) {
+                recordedGoals++;
             }
+            incidenceIndex++;
         }
-        long recordedGoals = incidences.stream()
-                .filter(Goal.class::isInstance)
-                .count();
-        if (recordedGoals != homeGoals + awayGoals) {
+        if (!validIncidences) {
+            throw new IllegalArgumentException("Every incidence must belong to this match");
+        }
+        Expulsion fifthRed = findFifthExpulsion(incidences);
+        if (fifthRed != null) {
+            boolean homeLost = homeTeam.getPlayers().contains(fifthRed.getPlayer());
+            int expectedHomeGoals;
+            int expectedAwayGoals;
+            if (homeLost) {
+                expectedHomeGoals = 0;
+                expectedAwayGoals = 3;
+            } else {
+                expectedHomeGoals = 3;
+                expectedAwayGoals = 0;
+            }
+            if (homeGoals != expectedHomeGoals || awayGoals != expectedAwayGoals) {
+                throw new IllegalArgumentException("Five red cards require a 0-3 forfeit");
+            }
+        } else if (recordedGoals != homeGoals + awayGoals) {
             throw new IllegalArgumentException("The score must match the recorded goal incidences");
         }
 
@@ -102,18 +124,55 @@ public abstract class Match implements Serializable {
         this.played = true;
     }
 
+    /** Returns the first fifth dismissal in chronological order, counting distinct players. */
+    public Expulsion findFifthExpulsion(List<Incidence> events) {
+        List<Incidence> ordered = new ArrayList<>(events);
+        ordered.sort(Comparator.comparingInt(Incidence::getMinute));
+        Set<Player> homeDismissed = new HashSet<>();
+        Set<Player> awayDismissed = new HashSet<>();
+        Expulsion fifth = null;
+        int index = 0;
+        while (index < ordered.size() && fifth == null) {
+            if (ordered.get(index) instanceof Expulsion expulsion) {
+                Set<Player> dismissed;
+                if (homeTeam.getPlayers().contains(expulsion.getPlayer())) {
+                    dismissed = homeDismissed;
+                } else {
+                    dismissed = awayDismissed;
+                }
+                dismissed.add(expulsion.getPlayer());
+                if (dismissed.size() == 5) {
+                    fifth = expulsion;
+                }
+            }
+            index++;
+        }
+        return fifth;
+    }
+
     public synchronized void registerPenaltyShootout(List<PenaltyExecuted> kicks) {
         Objects.requireNonNull(kicks, "The penalty kicks are required");
-        if (!played) {
-            throw new IllegalStateException("The match must be completed before the shoot-out");
+        if (!played || !allowsPenaltyShootout()) {
+            throw new IllegalStateException("Shoot-outs require a completed deciding match");
         }
-        if (!allowsPenaltyShootout()) {
-            throw new IllegalStateException("This match cannot be decided by penalties");
+        int incidenceIndex = 0;
+        boolean shootoutRecorded = false;
+        while (incidenceIndex < incidences.size() && !shootoutRecorded) {
+            shootoutRecorded = incidences.get(incidenceIndex) instanceof model.event.PenaltyExecuted;
+            incidenceIndex++;
         }
-        for (PenaltyExecuted kick : kicks) {
-            if (kick == null || kick.getMatch() != this) {
-                throw new IllegalArgumentException("Every kick must belong to this match");
-            }
+        if (shootoutRecorded) {
+            throw new IllegalStateException("The shoot-out is already recorded");
+        }
+        int kickIndex = 0;
+        boolean validKicks = true;
+        while (kickIndex < kicks.size() && validKicks) {
+            model.event.PenaltyExecuted kick = kicks.get(kickIndex);
+            validKicks = kick != null && kick.getMatch() == this;
+            kickIndex++;
+        }
+        if (!validKicks) {
+            throw new IllegalArgumentException("Every kick must belong to this match");
         }
         incidences.addAll(kicks);
     }

@@ -4,7 +4,6 @@ import model.event.PenaltyExecuted;
 import model.match.Formation;
 import model.match.Match;
 import model.people.Player;
-import model.people.Position;
 import model.team.Team;
 
 import java.util.ArrayList;
@@ -16,7 +15,6 @@ import java.util.Random;
 public class PenaltyShootoutSimulator {
 
     private static final int MINIMUM_ROUNDS = 5;
-    private static final int MAXIMUM_ROUNDS = 15;
     private static final int FIRST_KICK_MINUTE = 121;
     private static final double BASE_SCORE_PROBABILITY = 0.72;
     private static final double SKILL_PROBABILITY_DIVISOR = 400.0;
@@ -33,8 +31,8 @@ public class PenaltyShootoutSimulator {
         Objects.requireNonNull(awayFormation, "The away formation is required");
         Objects.requireNonNull(random, "The random generator is required");
 
-        List<Player> homeKickers = buildKickerOrder(homeFormation, random);
-        List<Player> awayKickers = buildKickerOrder(awayFormation, random);
+        List<Player> homeKickers = buildKickerOrder(match, homeFormation, random);
+        List<Player> awayKickers = buildKickerOrder(match, awayFormation, random);
 
         List<PenaltyExecuted> kicks = new ArrayList<>();
 
@@ -47,37 +45,48 @@ public class PenaltyShootoutSimulator {
         boolean homeTurn = true;
 
         while (!decided) {
-            List<Player> kickers = homeTurn ? homeKickers : awayKickers;
-            int taken = homeTurn ? homeTaken : awayTaken;
+            List<Player> kickers;
+            int taken;
+            if (homeTurn) {
+                kickers = homeKickers;
+                taken = homeTaken;
+            } else {
+                kickers = awayKickers;
+                taken = awayTaken;
+            }
             Player kicker = kickers.get(taken % kickers.size());
             boolean converted = attemptPenalty(kicker, random);
-            kicks.add(new PenaltyExecuted(minute, match, kicker, converted));
+            kicks.add(new PenaltyExecuted(minute, match, kicker, converted, !converted && random.nextBoolean()));
             minute = minute + 1;
 
             if (homeTurn) {
                 homeTaken = homeTaken + 1;
-                homeScored = converted ? homeScored + 1 : homeScored;
+                if (converted) {
+                    homeScored++;
+                }
             } else {
                 awayTaken = awayTaken + 1;
-                awayScored = converted ? awayScored + 1 : awayScored;
+                if (converted) {
+                    awayScored++;
+                }
             }
 
             decided = isShootoutOver(homeScored, awayScored, homeTaken, awayTaken);
             homeTurn = !homeTurn;
         }
 
-        Team winner = resolveWinner(match, homeScored, awayScored, random);
+        Team winner = resolveWinner(match, homeScored, awayScored);
         return new PenaltyShootoutResult(winner, kicks);
     }
 
-    private Team resolveWinner(Match match, int homeScored, int awayScored, Random random) {
+    private Team resolveWinner(Match match, int homeScored, int awayScored) {
         Team winner;
         if (homeScored > awayScored) {
             winner = match.getHomeTeam();
         } else if (awayScored > homeScored) {
             winner = match.getAwayTeam();
         } else {
-            winner = random.nextBoolean() ? match.getHomeTeam() : match.getAwayTeam();
+            throw new IllegalStateException("A tied shoot-out has no winner");
         }
         return winner;
     }
@@ -87,8 +96,7 @@ public class PenaltyShootoutSimulator {
         int awayKicksLeft = Math.max(0, Math.max(MINIMUM_ROUNDS, homeTaken) - awayTaken);
         boolean outOfReach = homeScored > awayScored + awayKicksLeft
                 || awayScored > homeScored + homeKicksLeft;
-        boolean safetyLimitReached = awayTaken >= MAXIMUM_ROUNDS;
-        return outOfReach || safetyLimitReached;
+        return outOfReach;
     }
 
     private boolean attemptPenalty(Player kicker, Random random) {
@@ -98,14 +106,22 @@ public class PenaltyShootoutSimulator {
         return random.nextDouble() < clampedProbability;
     }
 
-    private List<Player> buildKickerOrder(Formation formation, Random random) {
-        List<Player> outfieldPlayers = new ArrayList<>();
-        for (Player player : formation.getStarters()) {
-            if (player.getPosition() != Position.GOALKEEPER) {
-                outfieldPlayers.add(player);
+    private List<Player> buildKickerOrder(Match match, Formation formation, Random random) {
+        List<Player> eligiblePlayers = new ArrayList<>(formation.getStarters());
+        for (model.event.Incidence incidence : match.getIncidences()) {
+            if (incidence instanceof model.event.Change change) {
+                eligiblePlayers.remove(change.getPlayerOut());
+                if (formation.getSubstitutes().contains(change.getPlayerIn())) {
+                    eligiblePlayers.add(change.getPlayerIn());
+                }
+            } else if (incidence instanceof model.event.Expulsion expulsion) {
+                eligiblePlayers.remove(expulsion.getPlayer());
             }
         }
-        List<Player> shuffled = new ArrayList<>(outfieldPlayers);
+        if (eligiblePlayers.isEmpty()) {
+            throw new IllegalStateException("No eligible penalty takers");
+        }
+        List<Player> shuffled = new ArrayList<>(eligiblePlayers);
         Collections.shuffle(shuffled, random);
         return shuffled;
     }

@@ -192,7 +192,7 @@ public class KnockoutStageSimulator {
             StadiumDrawService stadiumDrawService,
             List<Referee> refereePool,
             Random seedGenerator,
-            Set<Player> suspendedPlayers) {) {
+            Set<Player> suspendedPlayers) {
         List<Referee> firstLegReferees = new ArrayList<>(refereePool);
         List<Referee> secondLegReferees = new ArrayList<>(refereePool);
         List<KnockoutTieTask> tasks = new ArrayList<>();
