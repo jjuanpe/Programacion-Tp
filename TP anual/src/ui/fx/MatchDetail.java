@@ -18,6 +18,8 @@ public final class MatchDetail {
     private final List<LineupRow> homeLineup;
     private final List<LineupRow> awayLineup;
     private final List<IncidenceRow> incidences;
+    private final List<StandingRow> standingsBefore;
+    private final List<StandingRow> standingsAfter;
 
     public MatchDetail(
             String phase,
@@ -33,7 +35,9 @@ public final class MatchDetail {
             String aggregate,
             List<LineupRow> homeLineup,
             List<LineupRow> awayLineup,
-            List<IncidenceRow> incidences) {
+            List<IncidenceRow> incidences,
+            List<StandingRow> standingsBefore,
+            List<StandingRow> standingsAfter) {
         this.phase = phase;
         this.phaseCategory = phaseCategory;
         this.date = date;
@@ -48,7 +52,10 @@ public final class MatchDetail {
         this.homeLineup = List.copyOf(homeLineup);
         this.awayLineup = List.copyOf(awayLineup);
         this.incidences = List.copyOf(incidences);
+        this.standingsBefore = List.copyOf(standingsBefore);
+        this.standingsAfter = List.copyOf(standingsAfter);
     }
+
 
     public String getPhase() { return phase; }
 
@@ -77,6 +84,12 @@ public final class MatchDetail {
     public List<LineupRow> getAwayLineup() { return awayLineup; }
 
     public List<IncidenceRow> getIncidences() { return incidences; }
+
+    public List<StandingRow> getStandingsBefore() { return standingsBefore; }
+
+    public List<StandingRow> getStandingsAfter() { return standingsAfter; }
+
+    public boolean hasStandings() { return !standingsBefore.isEmpty(); }
 
     public String getTitle() {
         return homeTeam + "  " + score + "  " + awayTeam;

@@ -16,6 +16,7 @@ import model.simulation.KnockoutStageContext;
 import model.simulation.KnockoutStageResult;
 import model.simulation.KnockoutStageSimulator;
 import model.simulation.KnockoutTieReport;
+import model.simulation.MatchSimulationReport;
 import model.team.Team;
 import model.venue.Stadium;
 
@@ -45,6 +46,7 @@ public class TournamentSession implements Serializable {
 
     private TournamentData tournamentData;
     private Championship championship;
+    private List<MatchSimulationReport> groupStageReports;
     private KnockoutStageContext knockoutContext;
     private List<KnockoutTieReport> quarterFinalReports;
     private List<KnockoutTieReport> semiFinalReports;
@@ -128,6 +130,7 @@ public class TournamentSession implements Serializable {
     }
 
     private void resetKnockoutProgress() {
+        this.groupStageReports = null;
         this.knockoutContext = null;
         this.quarterFinalReports = null;
         this.semiFinalReports = null;
@@ -137,7 +140,7 @@ public class TournamentSession implements Serializable {
     public synchronized void playGroupStage() throws InterruptedException {
         requireState(TournamentState.GROUPS_DRAWN, "the group stage");
 
-        new GroupStageSimulator().simulate(
+        this.groupStageReports = new GroupStageSimulator().simulate(
                 championship.getZones(),
                 championship.getReferees(),
                 seedGenerator.nextLong());
@@ -290,6 +293,14 @@ public class TournamentSession implements Serializable {
             matches.add(knockoutResult.getFinalMatchReport().getFinalMatch());
         }
         return matches;
+    }
+
+    public synchronized List<MatchSimulationReport> getGroupStageReports() {
+        if (groupStageReports == null) {
+            return List.of();
+        } else {
+            return List.copyOf(groupStageReports);
+        }
     }
 
     public synchronized List<KnockoutTieReport> getQuarterFinalReports() {

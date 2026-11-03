@@ -17,10 +17,14 @@ import model.people.Player;
 import model.people.Position;
 import model.people.Referee;
 import model.venue.Stadium;
+import model.competition.StandingEntry;
+import model.simulation.MatchSimulationReport;
+import ui.fx.StandingRow;
 import ui.fx.IncidenceRow;
 import ui.fx.LineupRow;
 import ui.fx.MatchDetail;
 import ui.fx.MatchesViewModel;
+
 
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -45,9 +49,14 @@ public class MatchesController {
         List<Match> matches = new ArrayList<>(session.getMatches());
         matches.sort(Comparator.comparing(Match::getDate));
 
+        Map<Match, MatchSimulationReport> reports = new IdentityHashMap<>();
+        for (MatchSimulationReport report : session.getGroupStageReports()) {
+            reports.put(report.getMatch(), report);
+        }
+
         List<MatchDetail> details = new ArrayList<>();
         for (Match match : matches) {
-            details.add(toDetail(match));
+            details.add(toDetail(match, reports.get(match)));
         }
         viewModel.setMatches(details);
         if (details.isEmpty()) {
@@ -57,7 +66,7 @@ public class MatchesController {
         }
     }
 
-    private MatchDetail toDetail(Match match) {
+    private MatchDetail toDetail(Match match, MatchSimulationReport report) {
         boolean played = match.isPlayed();
         Map<Player, Integer> minutes = indexMinutes(match.getParticipations());
 
@@ -84,7 +93,29 @@ public class MatchesController {
                 describeAggregate(match),
                 toLineup(match.getHomeFormation(), minutes),
                 toLineup(match.getAwayFormation(), minutes),
-                toIncidences(match.getIncidences()));
+                toIncidences(match.getIncidences()),
+                toStandingRows(report == null ? List.of() : report.getStandingsBefore()),
+                toStandingRows(report == null ? List.of() : report.getStandingsAfter()));
+    }
+
+    private List<StandingRow> toStandingRows(List<StandingEntry> entries) {
+        List<StandingRow> rows = new ArrayList<>();
+        int position = 1;
+        for (StandingEntry entry : entries) {
+            rows.add(new StandingRow(
+                    position++,
+                    entry.getTeam().getName(),
+                    entry.getPlayed(),
+                    entry.getWon(),
+                    entry.getDrawn(),
+                    entry.getLost(),
+                    entry.getGoalsFor(),
+                    entry.getGoalsAgainst(),
+                    entry.getGoalDifference(),
+                    entry.getPoints(),
+                    false));
+        }
+        return rows;
     }
 
     private String describeAggregate(Match match) {

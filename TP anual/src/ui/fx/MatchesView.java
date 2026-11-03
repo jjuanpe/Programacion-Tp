@@ -31,6 +31,9 @@ public class MatchesView extends VBox {
     private final TableView<LineupRow> homeLineup = new TableView<>();
     private final TableView<LineupRow> awayLineup = new TableView<>();
     private final TableView<IncidenceRow> incidences = new TableView<>();
+    private final TableView<StandingRow> standingsBefore = new TableView<>();   // NUEVO
+    private final TableView<StandingRow> standingsAfter = new TableView<>();    // NUEVO
+    private final VBox standingsPanel = new VBox();
 
     public MatchesView(ObservableList<MatchDetail> matches, ObservableValue<String> emptyMessage) {
         getStyleClass().add("page");
@@ -138,9 +141,45 @@ public class MatchesView extends VBox {
                 buildSubtitle("Line-ups"),
                 lineups,
                 buildSubtitle("Incidences"),
-                buildIncidencesTable());
+                buildIncidencesTable(),
+                buildStandingsPanel());
         panel.getStyleClass().addAll("panel", "match-detail");
         return panel;
+    }
+
+    private VBox buildStandingsPanel() {
+        VBox before = new VBox(buildSubtitle("Standings before the match"),
+                buildStandingsTable(standingsBefore));
+        VBox after = new VBox(buildSubtitle("Standings after the match"),
+                buildStandingsTable(standingsAfter));
+        HBox.setHgrow(before, Priority.ALWAYS);
+        HBox.setHgrow(after, Priority.ALWAYS);
+
+        HBox tables = new HBox(before, after);
+        tables.getStyleClass().add("split");
+        standingsPanel.getChildren().setAll(tables);
+        standingsPanel.setManaged(false);
+        standingsPanel.setVisible(false);
+        return standingsPanel;
+    }
+
+    private TableView<StandingRow> buildStandingsTable(TableView<StandingRow> table) {
+        table.getStyleClass().add("data-table");
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+        table.setPrefHeight(190);
+        table.setPlaceholder(buildPlaceholder("No standings"));
+
+        table.getColumns().add(TableColumns.numeric("#", row -> String.valueOf(row.getPosition())));
+        table.getColumns().add(TableColumns.text("Team", StandingRow::getTeam));
+        table.getColumns().add(TableColumns.numeric("Pts", row -> String.valueOf(row.getPoints())));
+        table.getColumns().add(TableColumns.numeric("PJ", row -> String.valueOf(row.getPlayed())));
+        table.getColumns().add(TableColumns.numeric("PG", row -> String.valueOf(row.getWon())));
+        table.getColumns().add(TableColumns.numeric("PE", row -> String.valueOf(row.getDrawn())));
+        table.getColumns().add(TableColumns.numeric("PP", row -> String.valueOf(row.getLost())));
+        table.getColumns().add(TableColumns.numeric("GF", row -> String.valueOf(row.getGoalsFor())));
+        table.getColumns().add(TableColumns.numeric("GC", row -> String.valueOf(row.getGoalsAgainst())));
+        table.getColumns().add(TableColumns.numeric("Dif", row -> String.valueOf(row.getGoalDifference())));
+        return table;
     }
 
     private TableView<LineupRow> buildLineupTable(TableView<LineupRow> table) {
@@ -185,17 +224,23 @@ public class MatchesView extends VBox {
         homeLineup.getItems().setAll(hasMatch ? match.getHomeLineup() : List.of());
         awayLineup.getItems().setAll(hasMatch ? match.getAwayLineup() : List.of());
         incidences.getItems().setAll(hasMatch ? match.getIncidences() : List.of());
+
+        boolean showStandings = hasMatch && match.hasStandings();
+        standingsBefore.getItems().setAll(showStandings ? match.getStandingsBefore() : List.of());
+        standingsAfter.getItems().setAll(showStandings ? match.getStandingsAfter() : List.of());
+        standingsPanel.setVisible(showStandings);
+        standingsPanel.setManaged(showStandings);
     }
 
-    private String describe(MatchDetail match) {
-        StringBuilder description = new StringBuilder();
-        description.append(match.getPhase())
-                .append("  |  ").append(match.getDate())
-                .append("  |  Stadium: ").append(match.getStadium())
-                .append("  |  Referee: ").append(match.getReferee());
-        if (!match.getAggregate().isEmpty()) {
-            description.append("  |  ").append(match.getAggregate());
-        }
-        return description.toString();
+private String describe(MatchDetail match) {
+    StringBuilder description = new StringBuilder();
+    description.append(match.getPhase())
+            .append("  |  ").append(match.getDate())
+            .append("  |  Stadium: ").append(match.getStadium())
+            .append("  |  Referee: ").append(match.getReferee());
+    if (!match.getAggregate().isEmpty()) {
+        description.append("  |  ").append(match.getAggregate());
     }
+    return description.toString();
+}
 }

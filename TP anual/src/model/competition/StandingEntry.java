@@ -2,7 +2,13 @@ package model.competition;
 
 import model.team.Team;
 
-public class StandingEntry {
+import java.io.Serial;
+import java.io.Serializable;
+
+public class StandingEntry implements Serializable {
+
+    @Serial
+    private static final long   serialVersionUID = 1L;
 
     private final Team team;
     private int played;

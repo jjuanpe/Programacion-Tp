@@ -3,10 +3,15 @@ package model.simulation;
 import model.competition.StandingEntry;
 import model.match.GroupMatch;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-public final class MatchSimulationReport {
+public final class MatchSimulationReport implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private final String zoneName;
     private final GroupMatch match;
     private final List<StandingEntry> standingsBefore;
