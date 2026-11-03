@@ -1,6 +1,14 @@
 package controller;
 
-import model.event.*;
+import model.event.Change;
+import model.event.PlayEvent;
+import model.event.Expulsion;
+import model.event.Goal;
+import model.event.Incidence;
+import model.event.PenaltyExecuted;
+import model.event.YellowCard;
+import model.match.FinalMatch;
+import model.match.FirstLegMatch;
 import model.match.Formation;
 import model.match.Match;
 import model.match.PlayerParticipation;
@@ -42,21 +50,34 @@ public class MatchesController {
             details.add(toDetail(match));
         }
         viewModel.setMatches(details);
-        viewModel.setStatus(details.isEmpty() ? NO_MATCHES_MESSAGE : "");
+        if (details.isEmpty()) {
+            viewModel.setStatus(NO_MATCHES_MESSAGE);
+        } else {
+            viewModel.setStatus("");
+        }
     }
 
     private MatchDetail toDetail(Match match) {
         boolean played = match.isPlayed();
         Map<Player, Integer> minutes = indexMinutes(match.getParticipations());
 
+        String score;
+        String status;
+        if (played) {
+            score = match.getHomeGoals() + " - " + match.getAwayGoals();
+            status = "Played";
+        } else {
+            score = NOT_AVAILABLE;
+            status = "Pending";
+        }
         return new MatchDetail(
                 match.getPhaseLabel(),
                 match.getPhaseCategory(),
                 match.getDate().format(DATE_FORMAT),
                 match.getHomeTeam().getName(),
                 match.getAwayTeam().getName(),
-                played ? match.getHomeGoals() + " - " + match.getAwayGoals() : NOT_AVAILABLE,
-                played ? "Played" : "Pending",
+                score,
+                status,
                 played,
                 refereeNameOf(match.getReferee()),
                 stadiumNameOf(match.getStadium()),
@@ -74,6 +95,44 @@ public class MatchesController {
             aggregate = "Aggregate: "
                     + secondLeg.getPlainAggregateForSecondLegHomeTeam() + " - "
                     + secondLeg.getPlainAggregateForSecondLegAwayTeam();
+        }
+        int home = 0;
+        int away = 0;
+        boolean hasShootout = false;
+        for (Incidence incidence : match.getIncidences()) {
+            if (incidence instanceof PenaltyExecuted penalty) {
+                hasShootout = true;
+                if (penalty.isScored()) {
+                    if (match.getHomeTeam().getPlayers().contains(penalty.getKicker())) {
+                        home++;
+                    } else {
+                        away++;
+                    }
+                }
+            }
+        }
+        if (hasShootout) {
+            String winner;
+            if (home > away) {
+                winner = match.getHomeTeam().getName();
+            } else {
+                winner = match.getAwayTeam().getName();
+            }
+            if (aggregate.isEmpty()) {
+                aggregate = "Draw";
+            } else {
+                aggregate += " (draw)";
+            }
+            aggregate += " | Penalties: " + home + " - " + away + " | Winner: " + winner;
+        }
+        Expulsion fifthRed = match.findFifthExpulsion(match.getIncidences());
+        if (fifthRed != null) {
+            if (!aggregate.isEmpty()) {
+                aggregate += " | ";
+            }
+            aggregate += "Forfeit at "
+                    + fifthRed.getMinute() + "': " + teamOf(fifthRed.getPlayer(), match)
+                    + " received five red cards (0-3 loss)";
         }
         return aggregate;
     }
@@ -101,11 +160,17 @@ public class MatchesController {
 
     private LineupRow toLineupRow(Player player, String role, Map<Player, Integer> minutes) {
         Integer played = minutes.get(player);
+        String minutesLabel;
+        if (played == null || played == 0) {
+            minutesLabel = NOT_AVAILABLE;
+        } else {
+            minutesLabel = String.valueOf(played);
+        }
         return new LineupRow(
                 player.getName(),
                 player.getPosition().getLabel(),
                 role,
-                played == null || played == 0 ? NOT_AVAILABLE : String.valueOf(played));
+                minutesLabel);
     }
 
     private List<IncidenceRow> toIncidences(List<Incidence> incidences) {
@@ -114,8 +179,14 @@ public class MatchesController {
 
         List<IncidenceRow> rows = new ArrayList<>();
         for (Incidence incidence : ordered) {
+            String minuteLabel;
+            if (incidence instanceof PenaltyExecuted) {
+                minuteLabel = "Kick " + (incidence.getMinute() - 120);
+            } else {
+                minuteLabel = incidence.getMinute() + "'";
+            }
             rows.add(new IncidenceRow(
-                    incidence.getMinute() + "'",
+                    minuteLabel,
                     typeOf(incidence),
                     detailOf(incidence)));
         }
@@ -124,8 +195,16 @@ public class MatchesController {
 
     private String typeOf(Incidence incidence) {
         String type;
-        if (incidence instanceof Goal goal) {
-            type = goal.isOwnGoal() ? "Own goal" : goal.isPenalty() ? "Goal (penalty)" : "Goal";
+        if (incidence instanceof PlayEvent play) {
+            type = play.getType();
+        } else if (incidence instanceof Goal goal) {
+            if (goal.isOwnGoal()) {
+                type = "Own goal";
+            } else if (goal.isPenalty()) {
+                type = "Goal (penalty)";
+            } else {
+                type = "Goal";
+            }
         } else if (incidence instanceof YellowCard) {
             type = "Yellow card";
         } else if (incidence instanceof Expulsion) {
@@ -143,7 +222,9 @@ public class MatchesController {
     private String detailOf(Incidence incidence) {
         Match match = incidence.getMatch();
         String detail;
-        if (incidence instanceof Goal goal) {
+        if (incidence instanceof PlayEvent play) {
+            detail = withTeam(play.getPlayer(), match);
+        } else if (incidence instanceof Goal goal) {
             detail = withTeam(goal.getScorer(), match);
             if (goal.getGoalkeeper() != null) {
                 detail = detail + " (goalkeeper: " + goal.getGoalkeeper().getName() + ")";
@@ -155,11 +236,14 @@ public class MatchesController {
             if (expulsion.getReason() != null) {
                 detail = detail + " (" + expulsion.getReason().getDescription() + ")";
             }
+            if (match.findFifthExpulsion(match.getIncidences()) == expulsion) {
+                detail += " - Fifth red card: match abandoned, team loses 0-3";
+            }
         } else if (incidence instanceof Change change) {
             detail = withTeam(change.getPlayerOut(), match)
                     + " -> " + change.getPlayerIn().getName();
         } else if (incidence instanceof PenaltyExecuted penalty) {
-            detail = withTeam(penalty.getKicker(), match) + (penalty.isScored() ? " scored" : " missed");
+            detail = withTeam(penalty.getKicker(), match) + (" " + penalty.getOutcomeDescription());
         } else {
             detail = incidence.getDescription();
         }
@@ -168,7 +252,13 @@ public class MatchesController {
 
     private String withTeam(Player player, Match match) {
         String teamName = teamOf(player, match);
-        return teamName.isEmpty() ? player.getName() : teamName + " - " + player.getName();
+        String description;
+        if (teamName.isEmpty()) {
+            description = player.getName();
+        } else {
+            description = teamName + " - " + player.getName();
+        }
+        return description;
     }
 
     private String teamOf(Player player, Match match) {
@@ -184,10 +274,22 @@ public class MatchesController {
     }
 
     private String refereeNameOf(Referee referee) {
-        return referee == null ? NOT_AVAILABLE : referee.getName();
+        String name;
+        if (referee == null) {
+            name = NOT_AVAILABLE;
+        } else {
+            name = referee.getName();
+        }
+        return name;
     }
 
     private String stadiumNameOf(Stadium stadium) {
-        return stadium == null ? NOT_AVAILABLE : stadium.getName() + " (" + stadium.getCity().getName() + ")";
+        String name;
+        if (stadium == null) {
+            name = NOT_AVAILABLE;
+        } else {
+            name = stadium.getName() + " (" + stadium.getCity().getName() + ")";
+        }
+        return name;
     }
 }

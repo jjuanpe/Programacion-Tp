@@ -33,7 +33,7 @@ public class CityDao {
     }
 
     public List<City> getAllCities () throws SQLException{
-        String query = "SELECT nombre,idciudad FROM ciudades";
+        String query = "SELECT nombre,idciudad,pais FROM ciudades";
         List<City> cities = new ArrayList<>();
 
         try (Connection cn = DBManager.getConnection();
@@ -42,7 +42,9 @@ public class CityDao {
             while (rs.next()){
                 String name = rs.getString("nombre");
                 Long id = rs.getLong("idciudad");
-                City city = new City(id,name,new Country("Argentina"));
+                String countryName = rs.getString("pais");
+                Country country = new Country(countryName);
+                City city = new City(id,name,country);
                 cities.add(city);
             }
         }
@@ -50,7 +52,7 @@ public class CityDao {
     }
 
     public City getCityById(Long id) throws SQLException{
-        String query = "SELECT nombre,idciudad FROM ciudades WHERE idciudad = ?";
+        String query = "SELECT nombre,idciudad,pais FROM ciudades WHERE idciudad = ?";
         City cityfound = null;
 
         try (Connection cn = DBManager.getConnection();
@@ -60,7 +62,9 @@ public class CityDao {
                 if (rs.next()){
                     Long idciudad = rs.getLong("idciudad");
                     String name = rs.getString("nombre");
-                    cityfound = new City(idciudad,name,new Country("Argentina"));
+                    String countryName = rs.getString("pais");
+                    Country country = new Country(countryName);
+                    cityfound = new City(idciudad,name,country);
                 }
             }
         }

@@ -1,6 +1,12 @@
 package model.simulation;
 
-import model.event.*;
+import model.event.Change;
+import model.event.PlayEvent;
+import model.event.Expulsion;
+import model.event.ExpulsionReason;
+import model.event.Goal;
+import model.event.Incidence;
+import model.event.YellowCard;
 import model.match.Formation;
 import model.match.Match;
 import model.match.PlayerParticipation;
@@ -50,7 +56,12 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Matc
             throw new IllegalStateException("The match must have an assigned referee");
         }
 
-        Set<Player> suspended = suspendedPlayers == null ? Set.of() : Set.copyOf(suspendedPlayers);
+        Set<Player> suspended;
+        if (suspendedPlayers == null) {
+            suspended = Set.of();
+        } else {
+            suspended = Set.copyOf(suspendedPlayers);
+        }
         Formation homeFormation = formationService.createFormation(match.getHomeTeam(), suspended);
         Formation awayFormation = formationService.createFormation(match.getAwayTeam(), suspended);
 
@@ -59,7 +70,10 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Matc
 
         double homeStrength = strengthCalculator.calculate(match.getHomeTeam(), homeFormation);
         double awayStrength = strengthCalculator.calculate(match.getAwayTeam(), awayFormation);
-        int totalGoals = random.nextInt(3) + random.nextInt(3);
+        int totalGoals = 0;
+        while (random.nextDouble() < 0.65) {
+            totalGoals++;
+        }
         double homeGoalShare = calculateHomeGoalShare(homeStrength, awayStrength, random);
 
         int homeGoals = 0;
@@ -72,8 +86,15 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Matc
 
         for (int goalNumber = 0; goalNumber < totalGoals; goalNumber++) {
             boolean homeScores = random.nextDouble() < homeGoalShare;
-            TeamEventPlan attackingPlan = homeScores ? homePlan : awayPlan;
-            TeamEventPlan defendingPlan = homeScores ? awayPlan : homePlan;
+            TeamEventPlan attackingPlan;
+            TeamEventPlan defendingPlan;
+            if (homeScores) {
+                attackingPlan = homePlan;
+                defendingPlan = awayPlan;
+            } else {
+                attackingPlan = awayPlan;
+                defendingPlan = homePlan;
+            }
             incidences.add(createGoal(match, attackingPlan, defendingPlan, random));
             if (homeScores) {
                 homeGoals++;
@@ -82,10 +103,29 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Matc
             }
         }
 
+        addPlayEvents(match, homePlan, random, incidences);
+        addPlayEvents(match, awayPlan, random, incidences);
         incidences.sort(Comparator.comparingInt(Incidence::getMinute));
+        Expulsion fifthRed = match.findFifthExpulsion(incidences);
+        int endMinute = MATCH_MINUTES;
+        if (fifthRed != null) {
+            endMinute = fifthRed.getMinute();
+            // Stop at the fifth red, including when later events share its minute.
+            incidences = new ArrayList<>(incidences.subList(0, incidences.indexOf(fifthRed) + 1));
+            boolean homeLost = match.getHomeTeam().getPlayers().contains(fifthRed.getPlayer());
+            if (homeLost) {
+                homeGoals = 0;
+                awayGoals = 3;
+            } else {
+                homeGoals = 3;
+                awayGoals = 0;
+            }
+            homePlan.retainEvents(incidences);
+            awayPlan.retainEvents(incidences);
+        }
         List<PlayerParticipation> participations = new ArrayList<>();
-        participations.addAll(homePlan.getParticipations());
-        participations.addAll(awayPlan.getParticipations());
+        participations.addAll(homePlan.getParticipations(endMinute));
+        participations.addAll(awayPlan.getParticipations(endMinute));
 
         return new MatchSimulationResult(
                 homeGoals,
@@ -96,31 +136,71 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Matc
                 incidences);
     }
 
+    private void addPlayEvents(Match match, TeamEventPlan plan, Random random,
+            List<Incidence> incidences) {
+        int fouls = 3 + random.nextInt(10);
+        for (int index = 0; index < fouls; index++) {
+            int minute = 1 + random.nextInt(MATCH_MINUTES);
+            incidences.add(new PlayEvent(minute, match,
+                    plan.selectActivePlayer(minute, random, true), PlayEvent.FOUL));
+        }
+        int attempts = 2 + random.nextInt(9);
+        for (int index = 0; index < attempts; index++) {
+            int minute = 1 + random.nextInt(MATCH_MINUTES);
+            double outcome = random.nextDouble();
+            String type;
+            if (outcome < 0.15) {
+                type = PlayEvent.WOODWORK;
+            } else if (outcome < 0.60) {
+                type = PlayEvent.SHOT_SAVED;
+            } else {
+                type = PlayEvent.SHOT_OFF_TARGET;
+            }
+            incidences.add(new PlayEvent(minute, match,
+                    plan.selectActivePlayer(minute, random, true), type));
+        }
+    }
+
     private double calculateHomeGoalShare(double homeStrength, double awayStrength, Random random) {
         double totalStrength = homeStrength + awayStrength;
-        double strengthShare = totalStrength == 0 ? 0.50 : homeStrength / totalStrength;
+        double strengthShare;
+        if (totalStrength == 0) {
+            strengthShare = 0.50;
+        } else {
+            strengthShare = homeStrength / totalStrength;
+        }
         double surprise = random.nextDouble() * SURPRISE_VARIATION - SURPRISE_VARIATION / 2.0;
         double result = strengthShare + HOME_ADVANTAGE + surprise;
         return Math.max(MINIMUM_GOAL_SHARE, Math.min(MAXIMUM_GOAL_SHARE, result));
     }
 
     private TeamEventPlan createEventPlan(Match match, Formation formation, Random random) {
-        Player expelledPlayer = null;
         List<Expulsion> expulsions = new ArrayList<>();
-        if (random.nextDouble() < EXPULSION_PROBABILITY) {
-            List<Player> expulsionCandidates = getOutfieldPlayers(formation.getStarters());
-            expelledPlayer = selectRandom(expulsionCandidates, random);
-            int minute = 25 + random.nextInt(64);
-            expulsions.add(new Expulsion(minute, match, expelledPlayer));
+        List<Player> expulsionCandidates = getOutfieldPlayers(formation.getStarters());
+        int attempt = 0;
+        while (attempt < 5 && !expulsionCandidates.isEmpty()) {
+            if (random.nextDouble() < EXPULSION_PROBABILITY) {
+                Player player = selectRandom(expulsionCandidates, random);
+                expulsionCandidates.remove(player);
+                expulsions.add(new Expulsion(25 + random.nextInt(64), match, player));
+            }
+            attempt++;
         }
 
         List<Player> outgoingCandidates = getOutfieldPlayers(formation.getStarters());
-        outgoingCandidates.remove(expelledPlayer);
+        for (Expulsion expulsion : expulsions) {
+            outgoingCandidates.remove(expulsion.getPlayer());
+        }
         List<Player> substituteCandidates = new ArrayList<>(formation.getSubstitutes());
         Collections.shuffle(outgoingCandidates, random);
         Collections.shuffle(substituteCandidates, random);
 
-        int requestedChanges = substituteCandidates.isEmpty() ? 0 : 1 + random.nextInt(MAX_CHANGES_PER_TEAM);
+        int requestedChanges;
+        if (substituteCandidates.isEmpty()) {
+            requestedChanges = 0;
+        } else {
+            requestedChanges = 1 + random.nextInt(MAX_CHANGES_PER_TEAM);
+        }
         List<Change> changes = new ArrayList<>();
         int candidateIndex = 0;
         while (candidateIndex < outgoingCandidates.size()
@@ -165,7 +245,9 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Matc
         cardMinutes.sort(Integer::compareTo);
 
         Map<Player, Integer> yellowCardsByPlayer = new HashMap<>();
-        for (int minute : cardMinutes) {
+        int cardIndex = 0;
+        while (cardIndex < cardMinutes.size() && plan.expulsions.size() < 5) {
+            int minute = cardMinutes.get(cardIndex);
             Player player = plan.selectActivePlayer(minute, random, true);
             incidences.add(new YellowCard(minute, match, player));
             int playerYellowCards = yellowCardsByPlayer.merge(player, 1, Integer::sum);
@@ -176,6 +258,7 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Matc
                         player,
                         ExpulsionReason.SECOND_YELLOW_CARD));
             }
+            cardIndex++;
         }
     }
 
@@ -187,9 +270,12 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Matc
         int minute = 1 + random.nextInt(MATCH_MINUTES);
         boolean ownGoal = random.nextDouble() < OWN_GOAL_PROBABILITY;
         boolean penalty = !ownGoal && random.nextDouble() < PENALTY_GOAL_PROBABILITY;
-        Player scorer = ownGoal
-                ? defendingPlan.selectActivePlayer(minute, random, true)
-                : attackingPlan.selectActivePlayer(minute, random, true);
+        Player scorer;
+        if (ownGoal) {
+            scorer = defendingPlan.selectActivePlayer(minute, random, true);
+        } else {
+            scorer = attackingPlan.selectActivePlayer(minute, random, true);
+        }
         Goalkeeper goalkeeper = defendingPlan.getGoalkeeper();
         return new Goal(minute, match, scorer, goalkeeper, penalty, ownGoal);
     }
@@ -252,16 +338,21 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Matc
             }
         }
 
-        private List<PlayerParticipation> getParticipations() {
+        private void retainEvents(List<Incidence> retained) {
+            changes.removeIf(change -> !retained.contains(change));
+            expulsions.removeIf(expulsion -> !retained.contains(expulsion));
+        }
+
+        private List<PlayerParticipation> getParticipations(int endMinute) {
             Map<Player, Integer> entryMinuteByPlayer = new LinkedHashMap<>();
             Map<Player, Integer> exitMinuteByPlayer = new LinkedHashMap<>();
             for (Player starter : formation.getStarters()) {
                 entryMinuteByPlayer.put(starter, 0);
-                exitMinuteByPlayer.put(starter, MATCH_MINUTES);
+                exitMinuteByPlayer.put(starter, endMinute);
             }
             for (Player substitute : formation.getSubstitutes()) {
-                entryMinuteByPlayer.put(substitute, MATCH_MINUTES);
-                exitMinuteByPlayer.put(substitute, MATCH_MINUTES);
+                entryMinuteByPlayer.put(substitute, endMinute);
+                exitMinuteByPlayer.put(substitute, endMinute);
             }
             for (Change change : changes) {
                 exitMinuteByPlayer.put(

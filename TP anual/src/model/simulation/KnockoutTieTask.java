@@ -1,6 +1,5 @@
 package model.simulation;
 
-import model.competition.StadiumDrawService;
 import model.match.FirstLegMatch;
 import model.match.Match;
 import model.match.PhaseType;
@@ -82,7 +81,7 @@ public class KnockoutTieTask implements Callable<KnockoutTieReport> {
         Team winner = secondLeg.resolveTieWinner();
         String criteria;
         if (winner != null) {
-            criteria = secondLeg.isDecidedByPlainAggregate() ? "Aggregate score" : "Away goals rule";
+            criteria = "Aggregate score";
         } else {
             PenaltyShootoutResult shootoutResult = penaltyShootoutSimulator.simulate(
                     secondLeg, secondLeg.getHomeFormation(), secondLeg.getAwayFormation(), random);
@@ -93,4 +92,5 @@ public class KnockoutTieTask implements Callable<KnockoutTieReport> {
 
         return new KnockoutTieReport(phase, firstLeg, secondLeg, winner, criteria, workerThreadName);
     }
+
 }

@@ -57,6 +57,7 @@ public class AppWindow extends Application {
     @Override
     public void start(Stage stage) {
         session = resolveSession();
+        stadiumsView.setSession(session);
         dashboardController = new DashboardController(session, dashboardViewModel);
         tournamentController = new TournamentController(session, tournamentViewModel);
         teamsController = new TeamsController(session, teamsViewModel);
@@ -137,7 +138,7 @@ public class AppWindow extends Application {
         groupStageController.refresh();
         matchesController.refresh();
         playersController.refresh();
-        stadiumsView.refresh(session.getChampionship());
+
     }
 
     private BorderPane buildContent() {
@@ -155,6 +156,9 @@ public class AppWindow extends Application {
     }
 
     private void showPage(NavItem item) {
+        if (item == NavItem.STADIUMS) {
+            stadiumsView.refresh();
+        }
         pageArea.setContent(pages.get(item));
         pageArea.setVvalue(0);
     }
@@ -180,21 +184,10 @@ public class AppWindow extends Application {
         pages.put(NavItem.MATCHES, new MatchesView(
                 matchesViewModel.getMatches(),
                 matchesViewModel.statusProperty()));
-        putPlaceholder(NavItem.KNOCKOUT_STAGE,
-                "Bracket from the quarter-finals to the champion, with both legs, aggregate "
-                        + "score and qualifying criteria.");
         pages.put(NavItem.PEOPLE, new PeopleView(new PlayersView(
                 playersViewModel.getPlayers(),
                 playersViewModel.statusProperty())));
         pages.put(NavItem.STADIUMS, stadiumsView);
-        putPlaceholder(NavItem.STATISTICS,
-                "Tournament statistics.");
-        putPlaceholder(NavItem.REPORTS,
-                "Catalogue of the reports required by the assignment. Pick one and generate it.");
-    }
-
-    private void putPlaceholder(NavItem item, String description) {
-        pages.put(item, new PlaceholderPage(item.getLabel(), description));
     }
 
     private VBox buildDashboardPage() {

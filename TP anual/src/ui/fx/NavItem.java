@@ -7,11 +7,8 @@ public enum NavItem {
     TEAMS("Teams"),
     GROUP_STAGE("Group Stage"),
     MATCHES("Matches"),
-    KNOCKOUT_STAGE("Knockout Stage"),
     PEOPLE("People"),
-    STADIUMS("Stadiums"),
-    STATISTICS("Statistics"),
-    REPORTS("Reports");
+    STADIUMS("Stadiums");
 
     private final String label;
 
