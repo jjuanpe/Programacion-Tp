@@ -1,0 +1,149 @@
+@startuml
+' Copa Internacional de Clubes - diagrama de clases del dominio
+' Se puede ver en https://www.plantuml.com/plantuml o con el plugin "PlantUML Integration" de IntelliJ.
+hide empty members
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+package model.people {
+  abstract class Person {
+    - name : String
+    - birthDate : LocalDate
+    - documentType : DocumentType
+    - document : String
+    + getAge(referenceDate : LocalDate) : int
+    + {abstract} getRole() : String
+  }
+  class Player {
+    - position : Position
+  }
+  class Goalkeeper
+  class FieldPlayer
+  class HeadCoach
+  class Referee
+  enum Position
+  enum DocumentType
+  Person <|-- Player
+  Person <|-- HeadCoach
+  Person <|-- Referee
+  Player <|-- Goalkeeper
+  Player <|-- FieldPlayer
+}
+
+package model.team {
+  class Team {
+    - name : String
+    - ranking : int
+  }
+  class Country {
+    - name : String
+  }
+}
+
+package model.venue {
+  class City
+  class Stadium {
+    - capacity : int
+  }
+}
+
+package model.match {
+  abstract class Match {
+    - date : LocalDate
+    - homeGoals : int
+    - awayGoals : int
+    - played : boolean
+    + {abstract} getPhaseLabel() : String
+    + {abstract} allowsPenaltyShootout() : boolean
+  }
+  class GroupMatch
+  class FirstLegMatch
+  class SecondLegMatch
+  class FinalMatch
+  class PlayerParticipation {
+    - starter : boolean
+    - minutesPlayed : int
+  }
+  Match <|-- GroupMatch
+  Match <|-- FirstLegMatch
+  Match <|-- SecondLegMatch
+  Match <|-- FinalMatch
+}
+
+package model.event {
+  abstract class Incidence {
+    - minute : int
+    + {abstract} getDescription() : String
+  }
+  class Goal
+  class YellowCard
+  class Expulsion
+  class Change
+  class PenaltyExecuted
+  class PlayEvent
+  Incidence <|-- Goal
+  Incidence <|-- YellowCard
+  Incidence <|-- Expulsion
+  Incidence <|-- Change
+  Incidence <|-- PenaltyExecuted
+  Incidence <|-- PlayEvent
+}
+
+package model.competition {
+  class Championship
+  class Zone {
+    - name : String
+  }
+  class StandingEntry
+  class StandingsService
+  class DrawService
+  class FixtureService
+}
+
+package model.simulation {
+  interface "MatchSimulationStrategy<T extends Match>" as MSS {
+    + simulate(match, suspended, random) : MatchSimulationResult
+  }
+  class GroupMatchSimulationService
+  class GroupStageSimulator
+  class KnockoutStageSimulator
+  class KnockoutTieTask
+  class TeamStrengthCalculator
+  MSS <|.. GroupMatchSimulationService
+  GroupMatchSimulationService --> TeamStrengthCalculator
+  GroupStageSimulator --> MSS
+  KnockoutStageSimulator --> KnockoutTieTask
+}
+
+Team "1" *-- "18" Player : plantel
+Team "1" --> "1" HeadCoach
+Team --> Country
+Team --> Stadium : local
+HeadCoach --> Country
+Referee --> Country
+City --> Country
+City "1" o-- "*" Stadium
+Stadium --> City
+
+Match --> "2" Team : local / visitante
+Match --> Stadium
+Match --> Referee
+Match "1" *-- "*" Incidence
+Match "1" *-- "*" PlayerParticipation
+PlayerParticipation --> Player
+
+Championship "1" *-- "4" Zone
+Championship --> "*" Referee
+Championship --> "*" Stadium
+Zone "1" o-- "4" Team
+Zone "1" *-- "6" GroupMatch
+StandingsService ..> StandingEntry
+StandingEntry --> Team
+
+package controller {
+  class TournamentSession
+}
+TournamentSession --> Championship
+TournamentSession ..> GroupStageSimulator
+TournamentSession ..> KnockoutStageSimulator
+@enduml

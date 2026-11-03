@@ -83,7 +83,6 @@ public class AppWindow extends Application {
         groupStageController = new GroupStageController(session, groupStageViewModel);
         matchesController = new MatchesController(session, matchesViewModel);
         playersController = new PlayersController(session, playersViewModel);
-        playersController = new PlayersController(session, playersViewModel);
         topScorersController = new TopScorersController(topScorersViewModel);
         statisticsController = new StatisticsController(session, statisticsViewModel);
         knockoutController = new KnockoutController(session, knockoutViewModel);

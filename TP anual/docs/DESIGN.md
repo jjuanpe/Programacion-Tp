@@ -1,141 +1,184 @@
 # Documento de Diseño — Copa Internacional de Clubes
-## Programación B — UFASTA — Avance 1
+## Programación B — UFASTA — Entrega final
 
 ---
 
-## 1. Estado del avance
+## 1. Alcance
 
-Esta entrega cubre la **Fase 1** del plan de trabajo: el modelo de dominio base
-(personas, jugadores, sin todavía carga de archivo, simulación, ni interfaz).
+La aplicación cubre el campeonato completo:
+
+- Carga de equipos, jugadores, directores técnicos y árbitros desde un archivo JSON (`docs/torneo.json`).
+- Ciudades y estadios guardados en PostgreSQL, con alta, baja y modificación desde la interfaz.
+- Sorteo equilibrado de 16 equipos en 4 zonas, fixture todos contra todos y simulación de la fase de grupos.
+- Eliminación directa: cuartos y semifinales a ida y vuelta, y final a partido único.
+- Suspensiones que se arrastran entre fechas y entre fases.
+- Interfaz de escritorio en JavaFX y ocho reportes, incluidos los carnets de los jugadores en PDF.
+- Guardado y retome del torneo (`torneo.save`).
 
 ---
 
-## 2. Decisiones de diseño tomadas (y su justificación)
+## 2. Arquitectura
 
-### 2.1 — Separación Arquero / JugadorDeCampo
-
-El diagrama sugerido por la cátedra propone una única clase `Jugador` con un
-atributo `posicion` (enum con 4 valores: arquero, defensor, mediocampista,
-delantero). Al revisar el archivo de datos real (`campeonato.json`) provisto
-como ejemplo, se observó que:
-
-- Los **arqueros** registran características totalmente distintas al resto
-  (`reflejos`, `juegoAereo`, `ubicacion`, `achique`, `seguridadManos`,
-  `juegoPies`) y estadísticas propias (`golesRecibidos`, `penalesAtajados`).
-- Los **jugadores de campo** (defensor/mediocampista/delantero) comparten
-  entre sí un conjunto de características y estadísticas distinto
-  (`capacidadQuite`, `velocidad`, `habilidad`, `cabezazo`, `definicion`,
-  `potenciaDisparo`, `visionDeJuego`, `resistenciaFisica`, y estadísticas de
-  `goles`/`pasesGol`/`penalesConvertidos`).
-
-**Decisión:** se reemplaza el enum de 4 posiciones por una jerarquía:
+El código está organizado en capas. Cada capa depende solamente de las que están debajo.
 
 ```
-Jugador (abstracta)
- ├── Arquero
- └── JugadorDeCampo
-      (posicion: DEFENSOR | MEDIOCAMPISTA | DELANTERO)
+ ui.fx   (vistas JavaFX + view models)
+   │
+ controller   (TournamentSession + un controlador por página)
+   │
+ model ── dataload (JSON → modelo)      dao (PostgreSQL → modelo)      report (PDF)
 ```
 
-**Justificación:** esto permite resolver el cálculo de "fuerza"/valoración
-del jugador (necesario para la simulación de partidos, Fase 4) de forma
-**polimórfica**, sin condicionales sobre el tipo de posición — cumpliendo
-el requisito de aprobación que exige aplicar polimorfismo de forma
-indefectible. Es una mejora de diseño respecto al sugerido, no una
-desviación arbitraria: el diagrama de la cátedra se aclara como "sugerido".
+| Paquete | Responsabilidad |
+|---|---|
+| `model.people` | `Person` (abstracta), `Player`, `Goalkeeper`, `FieldPlayer`, `HeadCoach`, `Referee` |
+| `model.team` | `Team`, `Country`, validación del plantel |
+| `model.venue` | `City`, `Stadium` |
+| `model.match` | `Match` (abstracta) y `GroupMatch`, `FirstLegMatch`, `SecondLegMatch`, `FinalMatch` |
+| `model.event` | `Incidence` (abstracta) y `Goal`, `YellowCard`, `Expulsion`, `Change`, `PenaltyExecuted`, `PlayEvent` |
+| `model.competition` | `Championship`, `Zone`, sorteo, fixture, tabla de posiciones, fair play y servicios de reportes |
+| `model.simulation` | Estrategia de simulación de partidos, simuladores de grupos y eliminatorias, penales |
+| `dataload` | `JsonTournamentLoader` (Gson) |
+| `dao` | `DBManager`, `CityDao`, `StadiumDAO` (JDBC) |
+| `report` | `IdCard`, `IdCardPdfExporter` (PDFBox + código de barras con ZXing) |
+| `controller` | `TournamentSession` (punto de entrada único al dominio) y controladores de cada página |
+| `ui.fx` | Vistas, view models y filas de las tablas |
 
-### 2.2 — Nombre de persona: campo único, no separado
+### 2.1 Bajo acoplamiento entre interfaz y dominio
 
-El enunciado indica registrar "apellido y nombre" como si fueran dos campos,
-pero el archivo de datos real trae un único campo `nombre` con ambos
-combinados (ej: `"Fontanals Facundo"`, `"Lobos Vallejos Valentín"`).
-
-**Decisión:** se mantiene como un único atributo `nombreCompleto` en
-`Persona`, en lugar de intentar separar apellido/nombre por posición de
-palabra (un split ingenuo fallaría con apellidos compuestos, como se ve en
-varios registros del archivo real).
-
-### 2.3 — Fecha de nacimiento con `LocalDate`
-
-Se utiliza `java.time.LocalDate` (no `Date`, clase legada) para
-`fechaNacimiento`, parseando el formato `dd/MM/yyyy` que trae el archivo de
-origen mediante `DateTimeFormatter`.
-
----
-
-## 3. Diagrama de clases — Fase 1
-
-```
-Persona (abstracta)
- - nombreCompleto: String
- - fechaNacimiento: LocalDate
- - tipoDocumento: String
- - numeroDocumento: long
- + getEdad(): int   [método común, calculado]
-
-Jugador extends Persona (abstracta)
- - partidosJugados: int
- - expulsiones: int
- + getValoracion(): double   [abstracto — polimórfico]
-
-Arquero extends Jugador
- - reflejos, juegoAereo, ubicacion, achique, seguridadManos, juegoPies: int
- - golesRecibidos, penalesRecibidos, penalesAtajados: int
-
-JugadorDeCampo extends Jugador
- - posicion: PosicionCampo
- - capacidadQuite, velocidad, habilidad, cabezazo, definicion,
-   potenciaDisparo, visionDeJuego, resistenciaFisica: int
- - goles, penales, penalesConvertidos, pasesGol: int
-
-PosicionCampo <<enum>>
- - DEFENSOR, MEDIOCAMPISTA, DELANTERO
-
-DT extends Persona
- - nacionalidad: Pais
- - cantidadTitulos: int
-
-Referi extends Persona
- - nacionalidad: Pais
- - cantidadAniosReferato: int
-
-Pais
- - nombre: String
-```
+- Las vistas no importan clases de `model`. Cada página tiene un **view model** con
+  propiedades de JavaFX y objetos fila simples (`StandingRow`, `FixtureRow`, `ScorerRow`, …).
+- Los **controladores** leen el dominio a través de `TournamentSession` y completan el
+  view model. La vista sólo sabe dibujarse y avisar las acciones del usuario.
+- Toda la apariencia vive en `styles.css`; el código Java sólo asigna clases de estilo.
 
 ---
 
-## 4. Pendiente para el próximo avance
+## 3. Decisiones de diseño
 
-- [ ] `Equipo` (con su plantel de 18 jugadores + DT)
-- [ ] Carga de datos desde el archivo JSON (evaluar librería Gson)
-- [ ] Sorteo equilibrado de zonas
-- [ ] Tabla de posiciones con criterio de desempate en cascada
+### 3.1 Jerarquía de jugadores
+
+El archivo JSON trae atributos totalmente distintos para arqueros y jugadores de campo,
+por eso `Player` (que guarda la `Position`) tiene dos subclases, `Goalkeeper` y
+`FieldPlayer`, cada una con sus propias características y estadísticas.
+La valoración del jugador que usa la simulación se calcula de forma polimórfica,
+sin cadenas de `if` sobre la posición.
+
+### 3.2 Nombre de persona en un único campo
+
+El archivo de datos trae apellido y nombre juntos en un solo campo (por ejemplo
+`"Lobos Vallejos Valentín"`). Se guarda como un único atributo `name` en `Person`,
+porque separar por palabras fallaría con los apellidos compuestos.
+
+### 3.3 Jerarquía de partidos
+
+`Match` es abstracta. Cada fase es una subclase que responde sus propias preguntas:
+etiqueta de la fase, categoría y si admite definición por penales
+(`allowsPenaltyShootout()` es falso en partidos de grupo y de ida).
+
+### 3.4 Incidencias
+
+Cada evento de un partido es una subclase de `Incidence` (gol, amarilla, expulsión,
+cambio, penal, jugada). Cada una da su propia descripción, así la interfaz puede listar
+las incidencias de un partido sin conocer su tipo concreto.
+
+### 3.5 Simulación de partidos — patrón Strategy
+
+`MatchSimulationStrategy<T extends Match>` define cómo se simula un partido.
+La implementación usada es `GroupMatchSimulationService`:
+
+1. Se elige una formación para cada equipo y se dejan afuera los suspendidos.
+2. `TeamStrengthCalculator` combina el promedio de los titulares, el ranking del equipo
+   y los títulos del director técnico.
+3. Los goles se reparten según la fuerza de cada equipo, una pequeña ventaja de local
+   y un factor de "sorpresa" aleatorio.
+4. Amarillas, expulsiones, cambios, penales y goles en contra se generan con
+   probabilidades y límites fijos (máximo 3 cambios por equipo).
+5. Los minutos jugados de cada jugador se calculan a partir de los cambios y expulsiones.
+
+### 3.6 Concurrencia
+
+- **Fase de grupos:** los partidos de cada fecha se simulan en paralelo con un
+  `ExecutorService`. El simulador espera a que termine la fecha completa antes de
+  calcular las suspensiones para la siguiente.
+- **Eliminación directa:** cada llave (ida y vuelta) es un `KnockoutTieTask` que corre en
+  su propio hilo; la fase espera a todas las llaves antes de armar la ronda siguiente.
+- Cada tarea recibe su propia semilla de `Random`, así los hilos no comparten estado mutable.
+
+### 3.7 Tabla de posiciones y clasificación
+
+`StandingsService` ordena cada zona por puntos, diferencia de gol y goles a favor.
+Si sigue el empate, deciden el puntaje de fair play (amarilla = 1, doble amarilla = +1,
+roja directa = 4) y, por último, el ranking del equipo.
+Clasifican los dos primeros de cada zona. Los cuartos cruzan zonas:
+A1–D2, B1–C2, C1–A2, D1–B2.
+
+La tabla de antes y después de cada partido de zona se guarda junto con el partido y se
+muestra en el detalle del partido.
+
+### 3.8 Desempate en eliminación directa
+
+Las llaves de ida y vuelta se definen, en este orden, por:
+1. puntos obtenidos en los dos partidos,
+2. diferencia de gol, con los goles de visitante valiendo doble,
+3. definición por penales.
+
+La aplicación informa cuál de los tres criterios definió al ganador.
+La final es a partido único; si termina empatada se define por penales.
+
+### 3.9 Estadios
+
+- Para la fase de grupos, a cada equipo se le asigna un estadio local al azar.
+- Cada partido de eliminatorias se juega en un estadio distinto, por eso hacen falta
+  al menos 13 (4 cuartos × 2 + 2 semifinales × 2 + 1 final).
+- Al terminar las eliminatorias, los estadios usados se quitan de su ciudad sólo en
+  memoria. La simulación nunca modifica la base de datos.
+
+### 3.10 Persistencia
+
+| Datos | Dónde | Por qué |
+|---|---|---|
+| Ciudades y estadios | PostgreSQL (`ciudades`, `estadios`) | Datos maestros que pide la consigna, editables desde la interfaz |
+| Estado del torneo | `torneo.save` (serialización de `TournamentSession`) | Permite cerrar la aplicación y retomar donde quedó |
+| Equipos y personas | `docs/torneo.json` | Archivo de entrada provisto por la cátedra |
+
+Todas las clases del dominio que se guardan en la sesión implementan `Serializable`.
+Si un `torneo.save` viejo no se puede leer (por ejemplo, porque cambió una clase), la
+aplicación avisa y ofrece empezar un torneo nuevo en lugar de cerrarse.
+
+El script de la base es `docs/database.sql`. `estadios.idciudad` es clave foránea a
+`ciudades` con `ON DELETE RESTRICT`; además, la aplicación valida la regla y muestra un
+mensaje claro antes de intentar borrar una ciudad que tiene estadios.
+
+### 3.11 Fotos de los carnets
+
+El archivo JSON no trae fotos. El exportador busca en la carpeta `photos/` un archivo con
+el valor del código de barras del jugador como nombre (`.jpg`, `.jpeg` o `.png`). Si no lo
+encuentra, dibuja las iniciales del jugador sobre un recuadro gris, así el PDF siempre sale completo.
 
 ---
 
-## 5. Notas de gestión del proyecto
+## 4. Reportes
 
-*(completar con el equipo: link al tablero de tareas, sprint actual, y
-responsable de cada módulo)*
+| Reporte | Contenido |
+|---|---|
+| Carnets (PDF) | Un carnet por jugador con foto, datos y código de barras |
+| Goleadores | Jugadores ordenados por goles |
+| Fair play | Equipos ordenados por puntaje disciplinario |
+| Minutos jugados | Jugadores ordenados por minutos |
+| Cuadro de cruces | Llaves de eliminación directa y resultados |
+| Equipos | Listado de equipos con director técnico y estadio |
+| Árbitros | Partidos dirigidos y tarjetas mostradas |
+| Jugadores por posición | Jugadores agrupados por posición |
 
 ---
 
-## 6. Cómo correr `app.MainFX` (JavaFX) en IntelliJ
+## 5. Diagrama de clases
 
-Desde Java 11, JavaFX **no viene incluido en el JDK** — hay que agregarlo aparte:
+El diagrama de clases actualizado está en `docs/class-diagram.puml` (fuente PlantUML).
 
-1. Descargar el **JavaFX SDK** (versión compatible con tu JDK, ej. 21) desde
-   `https://gluonhq.com/products/javafx/` — elegir el SDK, no el jmods.
-2. En IntelliJ: `File → Project Structure → Libraries → +` → agregar la
-   carpeta `lib` del JavaFX SDK descargado.
-3. En la configuración de ejecución (`Run → Edit Configurations`) de
-   `MainFX`, agregar en **VM options**:
-   ```
-   --module-path "C:\ruta\a\javafx-sdk-21\lib" --add-modules javafx.controls
-   ```
-   (ajustar la ruta a donde hayan descomprimido el SDK).
-4. Ejecutar `MainFX.main()`.
+---
 
-**Nota:** `app.Main` (Swing) sigue funcionando sin este paso extra — Swing sí
-viene incluido en el JDK estándar.
+## 6. Cómo ejecutar
+
+Ver `README.md` en la raíz del repositorio.
