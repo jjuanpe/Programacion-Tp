@@ -1,7 +1,5 @@
 /* ============================================================
    Copa Internacional de Clubes - hoja de estilos principal
-   Toda la apariencia vive aca; el codigo Java solo asigna
-   clases de estilo (nunca setStyle).
    ============================================================ */
 
 .root {
@@ -662,5 +660,74 @@
 .sub-tab-button.active:hover {
     -fx-background-color: -accent;
     -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+/* ---------- Pagina Knockout Stage ---------- */
+
+.bracket {
+    -fx-spacing: 14px;
+}
+
+.bracket-column {
+    -fx-spacing: 8px;
+    -fx-min-width: 180px;
+}
+
+.bracket-cards {
+    -fx-spacing: 10px;
+}
+
+.bracket-card {
+    -fx-background-color: -card-bg;
+    -fx-background-radius: 12px;
+    -fx-padding: 10px 12px;
+    -fx-spacing: 3px;
+    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.07), 12, 0, 0, 2);
+}
+
+.bracket-card .label {
+    -fx-text-fill: -text-strong;
+    -fx-font-size: 12.5px;
+}
+
+.bracket-card .bracket-card-title {
+    -fx-text-fill: -text-muted;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.bracket-card .bracket-winner {
+    -fx-text-fill: -accent;
+    -fx-font-weight: bold;
+}
+
+.bracket-card .action-hint {
+    -fx-text-fill: -text-muted;
+    -fx-font-size: 11px;
+}
+
+.champion-banner {
+    -fx-background-color: -accent;
+    -fx-background-radius: 12px;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 12px 18px;
+}
+
+/* ---------- Pagina Reports ---------- */
+
+.report-row {
+    -fx-spacing: 14px;
+    -fx-padding: 12px 0;
+    -fx-alignment: center-left;
+    -fx-border-color: transparent transparent rgba(15, 23, 42, 0.06) transparent;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.report-name {
+    -fx-text-fill: -text-strong;
+    -fx-font-size: 13px;
     -fx-font-weight: bold;
 }

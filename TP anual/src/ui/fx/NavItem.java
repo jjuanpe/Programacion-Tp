@@ -7,8 +7,13 @@ public enum NavItem {
     TEAMS("Teams"),
     GROUP_STAGE("Group Stage"),
     MATCHES("Matches"),
+    KNOCKOUT_STAGE("Knockout Stage"),
     PEOPLE("People"),
-    STADIUMS("Stadiums");
+    STADIUMS("Stadiums"),
+    STATISTICS("Statistics"),
+    REPORTS("Reports");
+
+    // el resto del enum (label, constructor y getLabel) queda igual
 
     private final String label;
 

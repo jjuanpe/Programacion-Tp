@@ -7,6 +7,11 @@ import controller.PlayersController;
 import controller.TeamsController;
 import controller.TournamentController;
 import controller.TournamentSession;
+import controller.KnockoutController;
+import controller.ReportsController;
+import controller.StatisticsController;
+import controller.TopScorersController;
+import java.util.LinkedHashMap;
 import javafx.application.Application;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -50,6 +55,20 @@ public class AppWindow extends Application {
     private final PlayersViewModel playersViewModel = new PlayersViewModel();
     private PlayersController playersController;
 
+    private final TopScorersViewModel topScorersViewModel = new TopScorersViewModel();
+    private TopScorersController topScorersController;
+
+    private final StatisticsViewModel statisticsViewModel = new StatisticsViewModel();
+    private StatisticsController statisticsController;
+
+    private final KnockoutViewModel knockoutViewModel = new KnockoutViewModel();
+    private KnockoutController knockoutController;
+
+    private final ReportsViewModel reportsViewModel = new ReportsViewModel();
+    private ReportsController reportsController;
+
+    private final Sidebar sidebar = new Sidebar();
+
     private final Map<NavItem, Node> pages = new EnumMap<>(NavItem.class);
     private final ScrollPane pageArea = new ScrollPane();
     private final StadiumsView stadiumsView = new StadiumsView();
@@ -64,8 +83,12 @@ public class AppWindow extends Application {
         groupStageController = new GroupStageController(session, groupStageViewModel);
         matchesController = new MatchesController(session, matchesViewModel);
         playersController = new PlayersController(session, playersViewModel);
+        playersController = new PlayersController(session, playersViewModel);
+        topScorersController = new TopScorersController(topScorersViewModel);
+        statisticsController = new StatisticsController(session, statisticsViewModel);
+        knockoutController = new KnockoutController(session, knockoutViewModel);
+        reportsController = new ReportsController(session, reportsViewModel);
 
-        Sidebar sidebar = new Sidebar();
         sidebar.setOnSelect(this::showPage);
 
         BorderPane root = new BorderPane();
@@ -138,6 +161,9 @@ public class AppWindow extends Application {
         groupStageController.refresh();
         matchesController.refresh();
         playersController.refresh();
+        topScorersController.show(session);
+        statisticsController.refresh();
+        knockoutController.refresh();
 
     }
 
@@ -184,10 +210,32 @@ public class AppWindow extends Application {
         pages.put(NavItem.MATCHES, new MatchesView(
                 matchesViewModel.getMatches(),
                 matchesViewModel.statusProperty()));
+        pages.put(NavItem.KNOCKOUT_STAGE, new KnockoutView(knockoutViewModel));
         pages.put(NavItem.PEOPLE, new PeopleView(new PlayersView(
                 playersViewModel.getPlayers(),
                 playersViewModel.statusProperty())));
         pages.put(NavItem.STADIUMS, stadiumsView);
+
+        pages.put(NavItem.STATISTICS, buildStatisticsPage());
+        pages.put(NavItem.REPORTS, new ReportsView(
+                reportsViewModel,
+                sidebar::select,
+                reportsController::exportIdCards));
+    }
+
+    private TabbedPage buildStatisticsPage() {
+        Map<String, Node> tabs = new LinkedHashMap<>();
+        tabs.put("Top scorers", StatisticsTables.topScorers(
+                topScorersViewModel.getRows(), topScorersViewModel.statusProperty()));
+        tabs.put("Fair play", StatisticsTables.fairPlay(
+                statisticsViewModel.getFairPlayRows(), statisticsViewModel.statusProperty()));
+        tabs.put("Minutes played", StatisticsTables.minutesPlayed(
+                statisticsViewModel.getMinutesRows(), statisticsViewModel.statusProperty()));
+        tabs.put("Referees", StatisticsTables.referees(
+                statisticsViewModel.getRefereeRows(),
+                statisticsViewModel.statusProperty(),
+                statisticsViewModel.refereeAverageProperty()));
+        return new TabbedPage("Statistics", tabs);
     }
 
     private VBox buildDashboardPage() {
