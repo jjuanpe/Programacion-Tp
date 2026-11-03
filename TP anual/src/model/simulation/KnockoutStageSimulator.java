@@ -192,7 +192,7 @@ public class KnockoutStageSimulator {
             StadiumDrawService stadiumDrawService,
             List<Referee> refereePool,
             Random seedGenerator,
-            Set<Player> suspendedPlayers) {) {
+            Set<Player> suspendedPlayers) {
         List<Referee> firstLegReferees = new ArrayList<>(refereePool);
         List<Referee> secondLegReferees = new ArrayList<>(refereePool);
         List<KnockoutTieTask> tasks = new ArrayList<>();
@@ -243,14 +243,14 @@ public class KnockoutStageSimulator {
         return report;
     }
 
-        private FinalMatchReport playFinal(
-                Team teamA,
-                Team teamB,
-                LocalDate date,
-                StadiumDrawService stadiumDrawService,
-                List<Referee> refereePool,
-                Random seedGenerator,
-                Set<Player> suspendedPlayers) {
+    private FinalMatchReport playFinal(
+            Team teamA,
+            Team teamB,
+            LocalDate date,
+            StadiumDrawService stadiumDrawService,
+            List<Referee> refereePool,
+            Random seedGenerator,
+            Set<Player> suspendedPlayers) {
         Random random = new Random(seedGenerator.nextLong());
         Referee referee = refereeAssignmentService.selectReferee(teamA, teamB, refereePool, random);
         FinalMatch finalMatch = new FinalMatch(date, teamA, teamB, referee, stadiumDrawService.draw(random));

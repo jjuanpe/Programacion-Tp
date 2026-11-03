@@ -3,8 +3,6 @@ package model.simulation;
 import model.competition.StandingEntry;
 import model.competition.StandingsService;
 import model.competition.Zone;
-import model.event.Expulsion;
-import model.event.Incidence;
 import model.match.GroupMatch;
 import model.people.Player;
 import model.people.Referee;
@@ -164,16 +162,6 @@ public class GroupStageSimulator {
                 future.get();
             } catch (ExecutionException exception) {
                 throw new IllegalStateException("A group match simulation failed", exception.getCause());
-            }
-        }
-    }
-
-    private void collectSuspensions(
-            MatchSimulationResult result,
-            Set<Player> nextRoundSuspensions) {
-        for (Incidence incidence : result.getIncidences()) {
-            if (incidence instanceof Expulsion expulsion) {
-                nextRoundSuspensions.add(expulsion.getPlayer());
             }
         }
     }

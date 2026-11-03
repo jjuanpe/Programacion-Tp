@@ -4,10 +4,11 @@ import model.event.Expulsion;
 import model.event.ExpulsionReason;
 import model.event.Incidence;
 import model.event.YellowCard;
-import model.match.GroupMatch;
+import model.match.Match;
 import model.people.Player;
 import model.team.Team;
 
+import java.util.List;
 import java.util.Objects;
 
 public class FairPlayCalculator {
@@ -21,9 +22,15 @@ public class FairPlayCalculator {
         if (!zone.getTeams().contains(team)) {
             throw new IllegalArgumentException("The team does not belong to the zone");
         }
+        return calculate(team, zone.getGroupMatches());
+    }
+
+    public int calculate(Team team, List<? extends Match> matches) {
+        Objects.requireNonNull(team, "The team is required");
+        Objects.requireNonNull(matches, "The match list is required");
 
         int fairPlayPoints = 0;
-        for (GroupMatch match : zone.getGroupMatches()) {
+        for (Match match : matches) {
             if (match.isPlayed()) {
                 for (Incidence incidence : match.getIncidences()) {
                     if (incidence instanceof YellowCard yellowCard

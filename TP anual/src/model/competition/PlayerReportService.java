@@ -44,6 +44,16 @@ public class PlayerReportService {
         return report;
     }
 
+    public List<PlayerReportEntry> computeMinutesRanking(List<Team> teams, List<? extends Match> matches) {
+        List<PlayerReportEntry> ranking = new ArrayList<>();
+        for (PlayerReportEntry entry : computeReport(teams, matches)) {
+            if (entry.getMinutesPlayed() > 0) {
+                ranking.add(entry);
+            }
+        }
+        ranking.sort(Comparator.comparingInt(PlayerReportEntry::getMinutesPlayed).reversed());
+        return ranking;
+    }
     private void registerMatch(Match match, Map<Player, PlayerReportEntry> entries) {
         for (PlayerParticipation participation : match.getParticipations()) {
             if (participation.getMinutesPlayed() > 0) {
