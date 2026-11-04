@@ -927,3 +927,36 @@ defensores, 80 mediocampistas, 81 delanteros — 2-6-5-5 por cada uno de los 16
 equipos). Se comprobó puntualmente que los jugadores que no son arqueros
 muestran "-" en goles recibidos y su promedio, y que los valores de partidos,
 minutos, goles y goles recibidos de varios arqueros coinciden con lo jugado.
+
+---
+
+## 2026-11-03 — Bloque D: script de base de datos, documentación y limpieza
+
+**Qué cambió**
+
+| Archivo | Estado | Rol |
+|---|---|---|
+| `docs/database.sql` | nuevo | Crea `ciudades` (con `pais`) y `estadios` (clave foránea a `ciudades`, `ON DELETE RESTRICT`) y carga 16 ciudades y 16 estadios |
+| `docs/class-diagram.puml` | nuevo | Diagrama de clases actualizado (fuente PlantUML) |
+| `README.md` | modificado | La base se crea con el script, columna `pais`, regla de borrado de ciudades y fotos de los carnets |
+| `docs/DESIGN.md` | reescrito | Documento de diseño actualizado a la entrega final (ya no dice "Avance 1") |
+| `src/ui/fx/AppWindow.java` | modificado | `PlayersController` se creaba dos veces en `start()` |
+| `src/ui/fx/NavItem.java` | modificado | Se quitó un comentario que había quedado de más |
+
+**Por qué**
+
+Cada integrante restauraba la base de forma distinta desde que se agregó la columna
+`pais`. Con un script versionado todos tienen el mismo esquema y los mismos datos.
+El documento de diseño todavía describía la primera entrega.
+
+**Decisiones**
+
+- **El script borra y vuelve a crear las tablas**, así se puede ejecutar de nuevo para
+  dejar la base limpia.
+- **16 estadios en lugar de 13:** las eliminatorias necesitan 13; los demás permiten
+  probar bajas. Tokio queda sin estadios a propósito para probar el borrado de una ciudad.
+- **Fotos de los carnets:** van en `photos/` con el código de barras del jugador como
+  nombre; si falta la foto, el carnet muestra las iniciales. Se documentó en lugar de
+  subir fotos al repositorio.
+- **`Main` y `ConsoleReportFormatter` se mantienen** como punto de entrada por consola
+  para probar la simulación sin JavaFX.

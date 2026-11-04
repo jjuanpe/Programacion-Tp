@@ -14,8 +14,6 @@ public enum NavItem {
     STATISTICS("Statistics"),
     REPORTS("Reports");
 
-    // el resto del enum (label, constructor y getLabel) queda igual
-
     private final String label;
 
     NavItem(String label) {
