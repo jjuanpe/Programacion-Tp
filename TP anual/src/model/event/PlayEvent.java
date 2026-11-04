@@ -28,6 +28,16 @@ public final class PlayEvent extends Incidence {
     public String getType() { return type; }
 
     @Override
+    public String getTypeLabel() {
+        return type;
+    }
+
+    @Override
+    public String getDetail() {
+        return describeWithTeam(player);
+    }
+
+    @Override
     public String getDescription() {
         return getMinute() + "' " + type + ": " + player.getName();
     }

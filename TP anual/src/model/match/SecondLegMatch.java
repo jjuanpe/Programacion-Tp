@@ -43,22 +43,60 @@ public class SecondLegMatch extends Match {
         return firstLeg.getHomeGoals() + (getAwayGoals() * 2);
     }
 
-    public boolean isDecidedByPlainAggregate() {
-        return getPlainAggregateForSecondLegHomeTeam() != getPlainAggregateForSecondLegAwayTeam();
+    public int getPointsForSecondLegHomeTeam() {
+        return pointsOf(firstLeg.getAwayGoals(), firstLeg.getHomeGoals())
+                + pointsOf(getHomeGoals(), getAwayGoals());
+    }
+
+    public int getPointsForSecondLegAwayTeam() {
+        return pointsOf(firstLeg.getHomeGoals(), firstLeg.getAwayGoals())
+                + pointsOf(getAwayGoals(), getHomeGoals());
+    }
+
+    private static int pointsOf(int goalsScored, int goalsConceded) {
+        int points = 0;
+        if (goalsScored > goalsConceded) {
+            points = 3;
+        } else if (goalsScored == goalsConceded) {
+            points = 1;
+        }
+        return points;
+    }
+
+    public TieCriterion getDecidingCriterion() {
+        TieCriterion criterion = TieCriterion.PENALTY_SHOOTOUT;
+        if (getPointsForSecondLegHomeTeam() != getPointsForSecondLegAwayTeam()) {
+            criterion = TieCriterion.POINTS;
+        } else if (getAwayGoalsWeightedAggregateForSecondLegHomeTeam()
+                != getAwayGoalsWeightedAggregateForSecondLegAwayTeam()) {
+            criterion = TieCriterion.GOAL_DIFFERENCE;
+        }
+        return criterion;
     }
 
     public Team resolveTieWinner() {
-        Team winner;
-        if (isDecidedByPlainAggregate()) {
-            if (getPlainAggregateForSecondLegHomeTeam() > getPlainAggregateForSecondLegAwayTeam()) {
-                winner = getHomeTeam();
-            } else {
-                winner = getAwayTeam();
-            }
-        } else {
-            winner = null;
+        Team winner = null;
+        TieCriterion criterion = getDecidingCriterion();
+        if (criterion == TieCriterion.POINTS) {
+            winner = getPointsForSecondLegHomeTeam() > getPointsForSecondLegAwayTeam()
+                    ? getHomeTeam() : getAwayTeam();
+        } else if (criterion == TieCriterion.GOAL_DIFFERENCE) {
+            winner = getAwayGoalsWeightedAggregateForSecondLegHomeTeam()
+                    > getAwayGoalsWeightedAggregateForSecondLegAwayTeam()
+                    ? getHomeTeam() : getAwayTeam();
         }
         return winner;
+    }
+
+    @Override
+    public String describeAggregate() {
+        String aggregate = "";
+        if (isPlayed() && firstLeg.isPlayed()) {
+            aggregate = new StringBuilder("Aggregate: ")
+                    .append(getPlainAggregateForSecondLegHomeTeam()).append(" - ")
+                    .append(getPlainAggregateForSecondLegAwayTeam()).toString();
+        }
+        return aggregate;
     }
 
     @Override

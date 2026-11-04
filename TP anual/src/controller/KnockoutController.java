@@ -10,6 +10,7 @@ import model.match.FirstLegMatch;
 import model.match.FinalMatch;
 import model.match.Match;
 import model.match.SecondLegMatch;
+import model.match.TieCriterion;
 import model.simulation.FinalMatchReport;
 import model.simulation.KnockoutStageResult;
 import model.simulation.KnockoutTieReport;
@@ -26,7 +27,7 @@ public class KnockoutController {
 
     private static final String[] QUARTER_FINAL_NAMES = {"I", "II", "III", "IV"};
     private static final String[] SEMI_FINAL_NAMES = {"V", "VI"};
-    private static final String PENALTY_CRITERIA = "Penalty shoot-out";
+    private static final String PENALTY_CRITERIA = TieCriterion.PENALTY_SHOOTOUT.getLabel();
     private static final String NO_DRAW_MESSAGE = "The bracket appears after the group draw.";
 
     private final TournamentSession session;
@@ -119,8 +120,11 @@ public class KnockoutController {
         if (result != null) {
             FinalMatchReport report = result.getFinalMatchReport();
             FinalMatch finalMatch = report.getFinalMatch();
-            String score = finalMatch.getHomeGoals() + " - " + finalMatch.getAwayGoals()
-                    + penaltiesOf(finalMatch, report.getDecidingCriteria(), finalMatch.getHomeTeam());
+            String score = new StringBuilder()
+                    .append(finalMatch.getHomeGoals()).append(" - ").append(finalMatch.getAwayGoals())
+                    .append(penaltiesOf(finalMatch, report.getDecidingCriteria(),
+                            finalMatch.getHomeTeam(), finalMatch.getAwayTeam()))
+                    .toString();
             tie = new BracketTie("Final", finalMatch.getHomeTeam().getName(), finalMatch.getAwayTeam().getName(),
                     score, report.getChampion().getName(), report.getDecidingCriteria());
         } else {
@@ -140,30 +144,23 @@ public class KnockoutController {
         // Team A plays the first leg at home and the second leg away
         int goalsA = firstLeg.getHomeGoals() + secondLeg.getAwayGoals();
         int goalsB = firstLeg.getAwayGoals() + secondLeg.getHomeGoals();
-        String score = "1st leg " + firstLeg.getHomeGoals() + "-" + firstLeg.getAwayGoals()
-                + " / 2nd leg " + secondLeg.getAwayGoals() + "-" + secondLeg.getHomeGoals()
-                + " / Aggregate " + goalsA + "-" + goalsB
-                + penaltiesOf(secondLeg, report.getDecidingCriteria(), teamA);
+        String score = new StringBuilder("1st leg ")
+                .append(firstLeg.getHomeGoals()).append('-').append(firstLeg.getAwayGoals())
+                .append(" / 2nd leg ").append(secondLeg.getAwayGoals()).append('-').append(secondLeg.getHomeGoals())
+                .append(" / Aggregate ").append(goalsA).append('-').append(goalsB)
+                .append(penaltiesOf(secondLeg, report.getDecidingCriteria(), teamA, teamB))
+                .toString();
         return new BracketTie(title, teamA.getName(), teamB.getName(), score,
                 report.getWinner().getName(), report.getDecidingCriteria());
     }
 
     // Shoot-out result written from the point of view of teamA, e.g. " (pens 4-3)"
-    private String penaltiesOf(Match match, String criteria, Team teamA) {
+    private String penaltiesOf(Match match, String criteria, Team teamA, Team teamB) {
         String penalties = "";
         if (PENALTY_CRITERIA.equals(criteria)) {
-            int scoredA = 0;
-            int scoredB = 0;
-            for (Incidence incidence : match.getIncidences()) {
-                if (incidence instanceof PenaltyExecuted kick && kick.isScored()) {
-                    if (teamA.getPlayers().contains(kick.getKicker())) {
-                        scoredA++;
-                    } else {
-                        scoredB++;
-                    }
-                }
-            }
-            penalties = " (pens " + scoredA + "-" + scoredB + ")";
+            penalties = new StringBuilder(" (pens ")
+                    .append(match.getShootoutGoals(teamA)).append('-')
+                    .append(match.getShootoutGoals(teamB)).append(')').toString();
         }
         return penalties;
     }

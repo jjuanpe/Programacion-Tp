@@ -38,6 +38,26 @@ public class Goal extends Incidence {
     }
 
     @Override
+    public String getTypeLabel() {
+        String label = "Goal";
+        if (ownGoal) {
+            label = "Own goal";
+        } else if (penalty) {
+            label = "Goal (penalty)";
+        }
+        return label;
+    }
+
+    @Override
+    public String getDetail() {
+        StringBuilder detail = new StringBuilder(describeWithTeam(scorer));
+        if (goalkeeper != null) {
+            detail.append(" (goalkeeper: ").append(goalkeeper.getName()).append(')');
+        }
+        return detail.toString();
+    }
+
+    @Override
     public String getDescription() {
         String goalType = penalty ? " (penalty)" : ownGoal ? " (own goal)" : "";
         String goalkeeperName = goalkeeper == null ? "not recorded" : goalkeeper.getName();

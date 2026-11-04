@@ -25,6 +25,17 @@ public class Change extends Incidence {
     }
 
     @Override
+    public String getTypeLabel() {
+        return "Substitution";
+    }
+
+    @Override
+    public String getDetail() {
+        return new StringBuilder(describeWithTeam(playerOut))
+                .append(" -> ").append(playerIn.getName()).toString();
+    }
+
+    @Override
     public String getDescription() {
         return getMinute() + "' Change: " + playerOut.getName() + " -> " + playerIn.getName();
     }

@@ -29,6 +29,21 @@ public class Expulsion extends Incidence {
     }
 
     @Override
+    public String getTypeLabel() {
+        return "Expulsion";
+    }
+
+    @Override
+    public String getDetail() {
+        StringBuilder detail = new StringBuilder(describeWithTeam(player));
+        detail.append(" (").append(reason.getDescription()).append(')');
+        if (getMatch().findFifthExpulsion(getMatch().getIncidences()) == this) {
+            detail.append(" - Fifth red card: match abandoned, team loses 0-3");
+        }
+        return detail.toString();
+    }
+
+    @Override
     public String getDescription() {
         return getMinute() + "' Expulsion (" + reason.getDescription() + "): " + player.getName();
     }

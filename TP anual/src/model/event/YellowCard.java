@@ -19,6 +19,16 @@ public class YellowCard extends Incidence {
     }
 
     @Override
+    public String getTypeLabel() {
+        return "Yellow card";
+    }
+
+    @Override
+    public String getDetail() {
+        return describeWithTeam(player);
+    }
+
+    @Override
     public String getDescription() {
         return getMinute() + "' Yellow card: " + player.getName();
     }

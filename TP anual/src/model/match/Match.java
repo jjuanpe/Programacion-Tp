@@ -158,7 +158,7 @@ public abstract class Match implements Serializable {
         int incidenceIndex = 0;
         boolean shootoutRecorded = false;
         while (incidenceIndex < incidences.size() && !shootoutRecorded) {
-            shootoutRecorded = incidences.get(incidenceIndex) instanceof model.event.PenaltyExecuted;
+            shootoutRecorded = incidences.get(incidenceIndex).isShootoutKick();
             incidenceIndex++;
         }
         if (shootoutRecorded) {
@@ -234,6 +234,30 @@ public abstract class Match implements Serializable {
 
     public synchronized List<Incidence> getIncidences() {
         return List.copyOf(incidences);
+    }
+
+    public synchronized boolean hasPenaltyShootout() {
+        boolean found = false;
+        int index = 0;
+        while (index < incidences.size() && !found) {
+            found = incidences.get(index).isShootoutKick();
+            index++;
+        }
+        return found;
+    }
+
+    public synchronized int getShootoutGoals(Team team) {
+        int goals = 0;
+        for (Incidence incidence : incidences) {
+            if (incidence.isScoredShootoutKickBy(team)) {
+                goals++;
+            }
+        }
+        return goals;
+    }
+
+    public String describeAggregate() {
+        return "";
     }
 
     public abstract String getPhaseLabel();

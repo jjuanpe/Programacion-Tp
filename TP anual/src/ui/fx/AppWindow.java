@@ -139,7 +139,7 @@ public class AppWindow extends Application {
         TournamentSession loaded;
         try {
             loaded = TournamentSession.load();
-        } catch (IOException | ClassNotFoundException exception) {
+        } catch (IOException | ClassNotFoundException | ClassCastException exception) {
             showLoadError(exception);
             loaded = new TournamentSession();
         }

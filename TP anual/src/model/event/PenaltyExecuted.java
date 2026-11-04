@@ -2,6 +2,7 @@ package model.event;
 
 import model.match.Match;
 import model.people.Player;
+import model.team.Team;
 
 import java.util.Objects;
 
@@ -43,6 +44,32 @@ public class PenaltyExecuted extends Incidence {
             description = "off target";
         }
         return description;
+    }
+
+    @Override
+    public String getTypeLabel() {
+        return "Shoot-out penalty";
+    }
+
+    @Override
+    public String getDetail() {
+        return new StringBuilder(describeWithTeam(kicker))
+                .append(' ').append(getOutcomeDescription()).toString();
+    }
+
+    @Override
+    public String getMinuteLabel() {
+        return new StringBuilder("Kick ").append(getMinute() - 120).toString();
+    }
+
+    @Override
+    public boolean isShootoutKick() {
+        return true;
+    }
+
+    @Override
+    public boolean isScoredShootoutKickBy(Team team) {
+        return scored && team.getPlayers().contains(kicker);
     }
 
     @Override

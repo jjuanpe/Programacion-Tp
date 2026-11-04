@@ -4,6 +4,7 @@ import model.match.FirstLegMatch;
 import model.match.Match;
 import model.match.PhaseType;
 import model.match.SecondLegMatch;
+import model.match.TieCriterion;
 import model.people.Player;
 import model.people.Referee;
 import model.team.Team;
@@ -78,17 +79,15 @@ public class KnockoutTieTask implements Callable<KnockoutTieReport> {
                 simulationStrategy.simulate(secondLeg, suspendedForSecondLeg, random);
         secondLegResult.applyTo(secondLeg);
 
+        TieCriterion criterion = secondLeg.getDecidingCriterion();
         Team winner = secondLeg.resolveTieWinner();
-        String criteria;
-        if (winner != null) {
-            criteria = "Aggregate score";
-        } else {
+        if (criterion == TieCriterion.PENALTY_SHOOTOUT) {
             PenaltyShootoutResult shootoutResult = penaltyShootoutSimulator.simulate(
                     secondLeg, secondLeg.getHomeFormation(), secondLeg.getAwayFormation(), random);
             secondLeg.registerPenaltyShootout(shootoutResult.getKicks());
             winner = shootoutResult.getWinner();
-            criteria = "Penalty shoot-out";
         }
+        String criteria = criterion.getLabel();
 
         return new KnockoutTieReport(phase, firstLeg, secondLeg, winner, criteria, workerThreadName);
     }
