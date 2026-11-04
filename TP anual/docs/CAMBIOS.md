@@ -960,3 +960,20 @@ El documento de diseño todavía describía la primera entrega.
   subir fotos al repositorio.
 - **`Main` y `ConsoleReportFormatter` se mantienen** como punto de entrada por consola
   para probar la simulación sin JavaFX.
+
+---
+
+## 2026-11-04 — Documentación: diseño actualizado con los bloques A, B y C
+
+**Qué cambió**
+
+| Archivo | Estado | Rol |
+|---|---|---|
+| `docs/DESIGN.md` | modificado | Describe el polimorfismo en incidencias, `TieCriterion`, la tabla antes/después y el ABM de ciudades y estadios |
+| `docs/class-diagram.puml` | modificado | Agrega `TieCriterion`, los métodos nuevos de `Incidence`, `Match` y `SecondLegMatch`, `MatchSimulationReport`, `KnockoutTieReport` y el paquete `dao` |
+| `docs/class-diagram.png` | nuevo | Imagen exportada del diagrama |
+
+**Por qué**
+
+El documento de diseño y el diagrama tenían que reflejar lo que se incorporó en los
+bloques A (desempate y polimorfismo), B (tabla antes/después) y C (ABM de ciudades).

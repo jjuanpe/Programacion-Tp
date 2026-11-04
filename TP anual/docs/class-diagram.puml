@@ -55,10 +55,24 @@ package model.match {
     - played : boolean
     + {abstract} getPhaseLabel() : String
     + {abstract} allowsPenaltyShootout() : boolean
+    + hasPenaltyShootout() : boolean
+    + getShootoutGoals(team : Team) : int
+    + describeAggregate() : String
   }
   class GroupMatch
   class FirstLegMatch
-  class SecondLegMatch
+  class SecondLegMatch {
+    + getPointsForSecondLegHomeTeam() : int
+    + getPointsForSecondLegAwayTeam() : int
+    + getDecidingCriterion() : TieCriterion
+    + describeAggregate() : String
+  }
+  enum TieCriterion {
+    POINTS
+    GOAL_DIFFERENCE
+    PENALTY_SHOOTOUT
+    + getLabel() : String
+  }
   class FinalMatch
   class PlayerParticipation {
     - starter : boolean
@@ -68,18 +82,30 @@ package model.match {
   Match <|-- FirstLegMatch
   Match <|-- SecondLegMatch
   Match <|-- FinalMatch
+  SecondLegMatch --> "1" FirstLegMatch : firstLeg
+  SecondLegMatch ..> TieCriterion
 }
 
 package model.event {
   abstract class Incidence {
     - minute : int
-    + {abstract} getDescription() : String
+    + {abstract} getTypeLabel() : String
+    + {abstract} getDetail() : String
+    + getMinuteLabel() : String
+    + isShootoutKick() : boolean
+    + isScoredShootoutKickBy(team : Team) : boolean
   }
-  class Goal
+  class Goal {
+    - ownGoal : boolean
+    - penalty : boolean
+  }
   class YellowCard
   class Expulsion
   class Change
-  class PenaltyExecuted
+  class PenaltyExecuted {
+    + isShootoutKick() : boolean
+    + isScoredShootoutKickBy(team : Team) : boolean
+  }
   class PlayEvent
   Incidence <|-- Goal
   Incidence <|-- YellowCard
@@ -108,11 +134,22 @@ package model.simulation {
   class GroupStageSimulator
   class KnockoutStageSimulator
   class KnockoutTieTask
+  class KnockoutTieReport {
+    - decidingCriteria : String
+  }
+  class MatchSimulationReport {
+    - standingsBefore : List<StandingEntry>
+    - standingsAfter : List<StandingEntry>
+  }
   class TeamStrengthCalculator
   MSS <|.. GroupMatchSimulationService
   GroupMatchSimulationService --> TeamStrengthCalculator
   GroupStageSimulator --> MSS
   KnockoutStageSimulator --> KnockoutTieTask
+  KnockoutTieTask ..> KnockoutTieReport
+  KnockoutTieTask ..> TieCriterion
+  GroupStageSimulator ..> MatchSimulationReport
+  MatchSimulationReport --> "*" StandingEntry
 }
 
 Team "1" *-- "18" Player : plantel
@@ -140,10 +177,40 @@ Zone "1" *-- "6" GroupMatch
 StandingsService ..> StandingEntry
 StandingEntry --> Team
 
+package dao {
+  class DBManager {
+    + {static} getConnection() : Connection
+  }
+  class CityDao {
+    + insertCity(id, name, country)
+    + updateCity(id, name, country)
+    + deleteCity(id)
+    + getAllCities() : List<City>
+  }
+  class StadiumDAO {
+    + insertStadium(id, name, city, capacity)
+    + updateStadium(originalId, newId, name, city, capacity)
+    + deleteStadium(id)
+    + getAllStadiums() : List<Stadium>
+  }
+  CityDao ..> DBManager
+  StadiumDAO ..> DBManager
+  StadiumDAO --> CityDao
+}
+CityDao ..> City
+StadiumDAO ..> Stadium
+
 package controller {
-  class TournamentSession
+  class TournamentSession {
+    + addCity() / updateCity() / deleteCity()
+    + addStadium() / updateStadium() / deleteStadium()
+    + getGroupStageReports() : List<MatchSimulationReport>
+  }
 }
 TournamentSession --> Championship
+TournamentSession --> "*" MatchSimulationReport
+TournamentSession ..> CityDao
+TournamentSession ..> StadiumDAO
 TournamentSession ..> GroupStageSimulator
 TournamentSession ..> KnockoutStageSimulator
 @enduml
