@@ -20,6 +20,7 @@ public class StadiumsView extends VBox {
     private final Label summary = new Label();
     private final TableView<Stadium> table = new TableView<>();
     private final Button add = new Button("Add stadium");
+    private final Button edit = new Button("Editar seleccionado");
     private final Button delete = new Button("Delete selected");
     private final Button reload = new Button("Refresh");
     private TournamentSession session;
@@ -38,11 +39,17 @@ public class StadiumsView extends VBox {
         table.getColumns().add(TableColumns.text("City", stadium -> stadium.getCity().getName()));
         table.getColumns().add(TableColumns.numeric("Capacity", stadium -> String.valueOf(stadium.getCapacity())));
         table.setPlaceholder(new Label("No stadiums loaded."));
-        add.setOnAction(event -> runDatabaseAction(session::getRegisteredCities, this::showAddDialog));
+        add.setOnAction(event -> runDatabaseAction(session::getRegisteredCities, cities -> showStadiumDialog(cities, null)));
+        edit.setOnAction(event -> {
+            Stadium selected = table.getSelectionModel().getSelectedItem();
+            if (selected != null) {
+                runDatabaseAction(session::getRegisteredCities, cities -> showStadiumDialog(cities, selected));
+            }
+        });
         delete.setOnAction(event -> deleteSelected());
         reload.setOnAction(event -> refresh());
         table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateButtons());
-        getChildren().addAll(title, note, new HBox(10, add, delete, reload), summary, table);
+        getChildren().addAll(title, note, new HBox(10, add, edit, delete, reload), summary, table);
         updateButtons();
     }
 
@@ -60,19 +67,39 @@ public class StadiumsView extends VBox {
         }
     }
 
-    private void showAddDialog(List<City> cities) {
+    private void showStadiumDialog(List<City> cities, Stadium selected) {
         if (cities.isEmpty()) {
             showError("No cities are registered in the database.");
             return;
         }
         Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle("Add stadium");
+        boolean editing = selected != null;
+        if (editing) {
+            dialog.setTitle("Editar estadio");
+        } else {
+            dialog.setTitle("Agregar estadio");
+        }
         dialog.initOwner(getScene().getWindow());
         TextField id = new TextField();
         TextField name = new TextField();
         TextField capacity = new TextField();
         ComboBox<City> city = new ComboBox<>();
         city.getItems().setAll(cities);
+        if (editing) {
+            id.setText(selected.getId().toString());
+            name.setText(selected.getName());
+            capacity.setText(String.valueOf(selected.getCapacity()));
+            int index = 0;
+            City selectedCity = null;
+            while (index < cities.size() && selectedCity == null) {
+                City candidate = cities.get(index);
+                if (candidate.getId().equals(selected.getCity().getId())) {
+                    selectedCity = candidate;
+                }
+                index++;
+            }
+            city.setValue(selectedCity);
+        }
         city.setConverter(new StringConverter<>() {
             @Override public String toString(City value) {
                 String description;
@@ -98,19 +125,25 @@ public class StadiumsView extends VBox {
         submit.addEventFilter(ActionEvent.ACTION, event -> {
             event.consume();
             try {
-                Stadium stadium = new Stadium(Long.parseLong(id.getText().trim()), name.getText(),
-                        city.getValue(), Integer.parseInt(capacity.getText().trim()));
+                long stadiumId = Long.parseLong(id.getText().trim());
+                int stadiumCapacity = Integer.parseInt(capacity.getText().trim());
+                String stadiumName = name.getText();
+                City stadiumCity = city.getValue();
                 submit.setDisable(true);
                 runDatabaseAction(() -> {
-                    session.addStadium(stadium.getId(), stadium.getName(), stadium.getCity(), stadium.getCapacity());
-                    return stadium;
+                    if (editing) {
+                        session.updateStadium(selected.getId(), stadiumId, stadiumName, stadiumCity, stadiumCapacity);
+                    } else {
+                        session.addStadium(stadiumId, stadiumName, stadiumCity, stadiumCapacity);
+                    }
+                    return stadiumId;
                 }, saved -> {
                     dialog.setResult(ButtonType.OK);
                     dialog.close();
                     refresh();
                 }, () -> submit.setDisable(false));
             } catch (NumberFormatException exception) {
-                showError("ID and capacity must be positive whole numbers.");
+                showError("El ID y la capacidad deben ser números enteros positivos.");
             } catch (IllegalArgumentException exception) {
                 showError(exception.getMessage());
             }
@@ -169,6 +202,7 @@ public class StadiumsView extends VBox {
     private void updateButtons() {
         add.setDisable(session == null || busy);
         reload.setDisable(session == null || busy);
+        edit.setDisable(session == null || busy || table.getSelectionModel().getSelectedItem() == null);
         delete.setDisable(session == null || busy || table.getSelectionModel().getSelectedItem() == null);
     }
 
@@ -179,8 +213,15 @@ public class StadiumsView extends VBox {
         } else {
             errorMessage = message;
         }
-        Alert alert = new Alert(Alert.AlertType.ERROR, errorMessage);
-        alert.setHeaderText("The operation could not be completed");
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setHeaderText("No se pudo completar la operación");
+        TextArea details = new TextArea(errorMessage);
+        details.setEditable(false);
+        details.setWrapText(true);
+        details.setPrefColumnCount(55);
+        details.setPrefRowCount(6);
+        alert.getDialogPane().setContent(details);
+        alert.setResizable(true);
         alert.initOwner(getScene().getWindow());
         alert.showAndWait();
     }

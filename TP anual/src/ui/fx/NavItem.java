@@ -10,6 +10,7 @@ public enum NavItem {
     KNOCKOUT_STAGE("Knockout Stage"),
     PEOPLE("People"),
     STADIUMS("Stadiums"),
+    CITIES("Ciudades"),
     STATISTICS("Statistics"),
     REPORTS("Reports");
 

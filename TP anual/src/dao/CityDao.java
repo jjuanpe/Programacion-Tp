@@ -9,31 +9,83 @@ import java.util.List;
 
 public class CityDao {
 
-    public void insertCity (Long id , String name) throws SQLException {
-        String query = "INSERT INTO ciudades (nombre,idciudad) VALUES (?,?)";
-
-        try(Connection cn = DBManager.getConnection();
-            PreparedStatement pst = cn.prepareStatement(query);
-            ){
-                pst.setString(1,name);
-                pst.setLong(2,id);
-                pst.executeUpdate();
-        }
-    }
-
-    public void deleteCity (Long id) throws SQLException{
-        String query = "DELETE FROM ciudades WHERE idciudad = ?";
-
-        try(Connection cn = DBManager.getConnection();
-        PreparedStatement pst = cn.prepareStatement(query);
-        ){
-            pst.setLong(1,id);
+    public void insertCity(Long id, String name, Country country) throws SQLException {
+        City city = new City(id, name, country);
+        String query = "INSERT INTO ciudades (idciudad, nombre, pais) VALUES (?, ?, ?)";
+        try (Connection cn = DBManager.getConnection();
+             PreparedStatement pst = cn.prepareStatement(query)) {
+            pst.setLong(1, city.getId());
+            pst.setString(2, city.getName());
+            pst.setString(3, city.getCountry().getCountryName());
             pst.executeUpdate();
         }
     }
 
+    public void updateCity(Long id, String name, Country country) throws SQLException {
+        City city = new City(id, name, country);
+        String query = "UPDATE ciudades SET nombre = ?, pais = ? WHERE idciudad = ?";
+        try (Connection cn = DBManager.getConnection();
+             PreparedStatement pst = cn.prepareStatement(query)) {
+            pst.setString(1, city.getName());
+            pst.setString(2, city.getCountry().getCountryName());
+            pst.setLong(3, city.getId());
+            if (pst.executeUpdate() == 0) {
+                throw new SQLException("La ciudad seleccionada ya no existe. Actualizá el listado.");
+            }
+        }
+    }
+
+    public void deleteCity(Long id) throws SQLException {
+        if (id == null || id <= 0) {
+            throw new IllegalArgumentException("El ID de la ciudad debe ser positivo.");
+        }
+        try (Connection cn = DBManager.getConnection()) {
+            cn.setAutoCommit(false);
+            try {
+                // Prevent a stadium from being assigned between validation and deletion.
+                try (Statement lock = cn.createStatement()) {
+                    lock.execute("LOCK TABLE estadios IN SHARE MODE");
+                }
+                String cityName;
+                try (PreparedStatement cityQuery = cn.prepareStatement(
+                        "SELECT nombre FROM ciudades WHERE idciudad = ? FOR UPDATE")) {
+                    cityQuery.setLong(1, id);
+                    try (ResultSet rs = cityQuery.executeQuery()) {
+                        if (!rs.next()) {
+                            throw new SQLException("La ciudad seleccionada ya no existe. Actualizá el listado.");
+                        }
+                        cityName = rs.getString("nombre");
+                    }
+                }
+                try (PreparedStatement stadiumQuery = cn.prepareStatement(
+                        "SELECT nombre FROM estadios WHERE idciudad = ? ORDER BY nombre, idestadio")) {
+                    stadiumQuery.setLong(1, id);
+                    try (ResultSet rs = stadiumQuery.executeQuery()) {
+                        List<String> stadiumNames = new ArrayList<>();
+                        while (rs.next()) {
+                            stadiumNames.add(rs.getString("nombre"));
+                        }
+                        if (!stadiumNames.isEmpty()) {
+                            throw new SQLException("No se puede eliminar la ciudad seleccionada: " + cityName
+                                    + ", debido a que contiene estadios asignados:\n\n- "
+                                    + String.join("\n- ", stadiumNames));
+                        }
+                    }
+                }
+                try (PreparedStatement pst = cn.prepareStatement("DELETE FROM ciudades WHERE idciudad = ?")) {
+                    pst.setLong(1, id);
+                    pst.executeUpdate();
+                }
+                cn.commit();
+            } catch (SQLException exception) {
+                cn.rollback();
+                throw exception;
+            }
+        }
+    }
+
     public List<City> getAllCities () throws SQLException{
-        String query = "SELECT nombre,idciudad,pais FROM ciudades";
+        String query = "SELECT nombre,idciudad,pais FROM ciudades ORDER BY nombre, idciudad";
         List<City> cities = new ArrayList<>();
 
         try (Connection cn = DBManager.getConnection();

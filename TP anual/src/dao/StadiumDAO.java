@@ -13,17 +13,27 @@ public class StadiumDAO {
 
     private final CityDao cityDao = new CityDao();
 
-    public void insertStadium (Long id, String name, City city, int capacity) throws SQLException{
-        String query = "INSERT INTO estadios (idestadio,idciudad, nombre,capacidad) VALUES (?,?,?,?)";
-
-        try(Connection cn = DBManager.getConnection();
-            PreparedStatement pst = cn.prepareStatement(query);
-        ){
-            pst.setLong(1,id);
-            pst.setLong(2,city.getId());
-            pst.setString(3,name);
-            pst.setInt(4,capacity);
-            pst.executeUpdate();
+    public void insertStadium(Long id, String name, City city, int capacity) throws SQLException {
+        validateInput(id, name, city, capacity);
+        String query = "INSERT INTO estadios (idestadio, idciudad, nombre, capacidad) VALUES (?, ?, ?, ?)";
+        try (Connection cn = DBManager.getConnection()) {
+            cn.setAutoCommit(false);
+            try {
+                lockStadiumWrites(cn);
+                validateCity(cn, city.getId());
+                validateAvailableId(cn, id);
+                try (PreparedStatement pst = cn.prepareStatement(query)) {
+                    pst.setLong(1, id);
+                    pst.setLong(2, city.getId());
+                    pst.setString(3, name.trim());
+                    pst.setInt(4, capacity);
+                    pst.executeUpdate();
+                }
+                cn.commit();
+            } catch (SQLException exception) {
+                cn.rollback();
+                throw describeConstraintError(exception, id);
+            }
         }
     }
 
@@ -38,16 +48,93 @@ public class StadiumDAO {
         }
     }
 
-    public void updateStadium (Long id, int capacity) throws SQLException{
-        String query = "UPDATE estadios SET capacidad = ? WHERE idestadio = ?";
-
-        try(Connection cn = DBManager.getConnection();
-            PreparedStatement pst = cn.prepareStatement(query);
-        ){
-            pst.setInt(1,capacity);
-            pst.setLong(2,id);
-            pst.executeUpdate();
+    public void updateStadium(Long originalId, Long newId, String name, City city, int capacity)
+            throws SQLException {
+        if (originalId == null || originalId <= 0) {
+            throw new IllegalArgumentException("El ID original del estadio debe ser positivo.");
         }
+        validateInput(newId, name, city, capacity);
+        String query = "UPDATE estadios SET idestadio = ?, idciudad = ?, nombre = ?, capacidad = ? WHERE idestadio = ?";
+        try (Connection cn = DBManager.getConnection()) {
+            cn.setAutoCommit(false);
+            try {
+                lockStadiumWrites(cn);
+                validateCity(cn, city.getId());
+                if (!originalId.equals(newId)) {
+                    validateAvailableId(cn, newId);
+                }
+                try (PreparedStatement pst = cn.prepareStatement(query)) {
+                    pst.setLong(1, newId);
+                    pst.setLong(2, city.getId());
+                    pst.setString(3, name.trim());
+                    pst.setInt(4, capacity);
+                    pst.setLong(5, originalId);
+                    if (pst.executeUpdate() == 0) {
+                        throw new SQLException("El estadio seleccionado ya no existe. Actualizá el listado.");
+                    }
+                }
+                cn.commit();
+            } catch (SQLException exception) {
+                cn.rollback();
+                throw describeConstraintError(exception, newId);
+            }
+        }
+    }
+
+    private void validateInput(Long id, String name, City city, int capacity) {
+        if (id == null || id <= 0) {
+            throw new IllegalArgumentException("El ID del estadio debe ser un número entero positivo.");
+        }
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("El nombre del estadio no puede estar vacío.");
+        }
+        if (capacity <= 0) {
+            throw new IllegalArgumentException("La capacidad debe ser mayor que cero.");
+        }
+        if (city == null) {
+            throw new IllegalArgumentException("Seleccioná una ciudad existente.");
+        }
+    }
+
+    private void lockStadiumWrites(Connection cn) throws SQLException {
+        // Same table-first lock order as CityDao.deleteCity, avoiding a lock-order cycle.
+        try (Statement lock = cn.createStatement()) {
+            lock.execute("LOCK TABLE estadios IN ROW EXCLUSIVE MODE");
+        }
+    }
+
+    private void validateCity(Connection cn, Long cityId) throws SQLException {
+        try (PreparedStatement pst = cn.prepareStatement("SELECT idciudad FROM ciudades WHERE idciudad = ? FOR KEY SHARE")) {
+            pst.setLong(1, cityId);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (!rs.next()) {
+                    throw new SQLException("La ciudad seleccionada ya no existe. Actualizá el listado de ciudades.");
+                }
+            }
+        }
+    }
+
+    private void validateAvailableId(Connection cn, Long id) throws SQLException {
+        try (PreparedStatement pst = cn.prepareStatement("SELECT idestadio FROM estadios WHERE idestadio = ?")) {
+            pst.setLong(1, id);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    throw new SQLException("Ya existe un estadio con el ID " + id + ". Elegí otro ID.");
+                }
+            }
+        }
+    }
+
+    private SQLException describeConstraintError(SQLException exception, Long id) {
+        SQLException result = exception;
+        if ("23505".equals(exception.getSQLState())) {
+            result = new SQLException("Ya existe un estadio con el ID " + id
+                    + " u otro dato único repetido. Revisá los datos ingresados.", exception.getSQLState(), exception);
+        } else if ("23503".equals(exception.getSQLState())) {
+            result = new SQLException("No se pudo guardar: la ciudad ya no existe o el ID del estadio "
+                    + "está referenciado por otros registros.", exception.getSQLState(), exception);
+        }
+        return result;
     }
 
     public List<Stadium> getAllStadiums () throws SQLException{

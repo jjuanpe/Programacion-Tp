@@ -72,11 +72,13 @@ public class AppWindow extends Application {
     private final Map<NavItem, Node> pages = new EnumMap<>(NavItem.class);
     private final ScrollPane pageArea = new ScrollPane();
     private final StadiumsView stadiumsView = new StadiumsView();
+    private final CitiesView citiesView = new CitiesView();
 
     @Override
     public void start(Stage stage) {
         session = resolveSession();
         stadiumsView.setSession(session);
+        citiesView.setSession(session);
         dashboardController = new DashboardController(session, dashboardViewModel);
         tournamentController = new TournamentController(session, tournamentViewModel);
         teamsController = new TeamsController(session, teamsViewModel);
@@ -184,6 +186,8 @@ public class AppWindow extends Application {
     private void showPage(NavItem item) {
         if (item == NavItem.STADIUMS) {
             stadiumsView.refresh();
+        } else if (item == NavItem.CITIES) {
+            citiesView.refresh();
         }
         pageArea.setContent(pages.get(item));
         pageArea.setVvalue(0);
@@ -215,6 +219,7 @@ public class AppWindow extends Application {
                 playersViewModel.getPlayers(),
                 playersViewModel.statusProperty())));
         pages.put(NavItem.STADIUMS, stadiumsView);
+        pages.put(NavItem.CITIES, citiesView);
 
         pages.put(NavItem.STATISTICS, buildStatisticsPage());
         pages.put(NavItem.REPORTS, new ReportsView(

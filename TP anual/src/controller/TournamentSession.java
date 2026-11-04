@@ -85,9 +85,26 @@ public class TournamentSession implements Serializable {
         return new dao.CityDao().getAllCities();
     }
 
+    public void addCity(long id, String name, String countryName) throws SQLException {
+        new dao.CityDao().insertCity(id, name, new model.team.Country(countryName));
+    }
+
+    public void updateCity(long id, String name, String countryName) throws SQLException {
+        new dao.CityDao().updateCity(id, name, new model.team.Country(countryName));
+    }
+
+    public void deleteCity(model.venue.City city) throws SQLException {
+        Objects.requireNonNull(city, "Seleccioná una ciudad para eliminar.");
+        new dao.CityDao().deleteCity(city.getId());
+    }
+
     public void addStadium(long id, String name, model.venue.City city, int capacity) throws SQLException {
-        Stadium stadium = new Stadium(id, name, city, capacity);
-        new StadiumDAO().insertStadium(stadium.getId(), stadium.getName(), city, stadium.getCapacity());
+        new StadiumDAO().insertStadium(id, name, city, capacity);
+    }
+
+    public void updateStadium(long originalId, long newId, String name, model.venue.City city, int capacity)
+            throws SQLException {
+        new StadiumDAO().updateStadium(originalId, newId, name, city, capacity);
     }
 
     public void deleteStadium(Stadium stadium) throws SQLException {
