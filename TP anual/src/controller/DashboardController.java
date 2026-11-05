@@ -28,6 +28,24 @@ public class DashboardController {
         TournamentStage stage = stageOf(state);
         viewModel.setCurrentStage(stage);
         viewModel.setStageLabel(stage == null ? state.getLabel() : stage.getLabel());
+        viewModel.setNextStep(nextStepOf(state));
+        if (session.getKnockoutResult() == null) {
+            viewModel.setChampion("");
+        } else {
+            viewModel.setChampion(session.getKnockoutResult().getChampion().getName());
+        }
+    }
+
+    private String nextStepOf(TournamentState state) {
+        return switch (state) {
+            case EMPTY -> "Import the tournament data";
+            case DATA_LOADED -> "Run the group draw";
+            case GROUPS_DRAWN -> "Play the group stage";
+            case GROUP_STAGE_PLAYED -> "Play the quarter-finals";
+            case QUARTER_FINALS_PLAYED -> "Play the semi-finals";
+            case SEMI_FINALS_PLAYED -> "Play the final";
+            case FINISHED -> "The tournament is over";
+        };
     }
 
     private int countGoals(List<Match> matches) {

@@ -904,3 +904,117 @@
     -fx-effect: dropshadow(gaussian, rgba(255, 200, 61, 0.5), 20, 0, 0, 0);
     -fx-font-size: 20px;
 }
+
+/* ---------- Dashboard: siguiente paso y goleadores ---------- */
+
+.next-step-card, .scorer-preview {
+    -fx-background-color: -card-bg;
+    -fx-background-radius: 14px;
+    -fx-border-color: -border;
+    -fx-border-radius: 14px;
+    -fx-padding: 18px 22px 20px 22px;
+    -fx-spacing: 10px;
+    -fx-pref-width: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 12, 0, 0, 2);
+}
+
+.next-step-card {
+    -fx-border-color: -accent;
+}
+
+.card-kicker {
+    -fx-text-fill: -text-muted;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.next-step-text {
+    -fx-text-fill: -text-strong;
+    -fx-font-family: "Bahnschrift", "Segoe UI Semibold", "Segoe UI", sans-serif;
+    -fx-font-size: 22px;
+}
+
+.scorer-rows {
+    -fx-spacing: 6px;
+}
+
+.scorer-row {
+    -fx-spacing: 12px;
+    -fx-padding: 4px 0;
+}
+
+.scorer-rank {
+    -fx-text-fill: -accent;
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+    -fx-min-width: 18px;
+}
+
+.scorer-player {
+    -fx-text-fill: -text-strong;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.scorer-goals {
+    -fx-text-fill: -accent;
+    -fx-font-family: "Bahnschrift", "Segoe UI Semibold", "Segoe UI", sans-serif;
+    -fx-font-size: 20px;
+}
+
+.clickable {
+    -fx-cursor: hand;
+}
+
+.bracket-card.clickable:hover, .scorer-preview.clickable:hover {
+    -fx-border-color: -accent;
+}
+
+/* ---------- Matches: marcador e incidencias ---------- */
+
+.scoreboard {
+    -fx-spacing: 18px;
+    -fx-padding: 14px 0 12px 0;
+}
+
+.scoreboard-team {
+    -fx-text-fill: -text-strong;
+    -fx-font-family: "Bahnschrift", "Segoe UI Semibold", "Segoe UI", sans-serif;
+    -fx-font-size: 20px;
+}
+
+.scoreboard-score {
+    -fx-text-fill: -on-accent;
+    -fx-background-color: -accent;
+    -fx-background-radius: 10px;
+    -fx-padding: 6px 18px;
+    -fx-font-family: "Bahnschrift", "Segoe UI Semibold", "Segoe UI", sans-serif;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(255, 200, 61, 0.45), 14, 0, 0, 0);
+}
+
+.data-table .table-row-cell.row-goal {
+    -fx-background-color: rgba(53, 242, 160, 0.14);
+}
+
+.data-table .table-row-cell.row-yellow {
+    -fx-background-color: rgba(255, 200, 61, 0.14);
+}
+
+.data-table .table-row-cell.row-red {
+    -fx-background-color: rgba(255, 92, 116, 0.18);
+}
+
+/* ---------- Group Stage: tarjeta de zona ---------- */
+
+.zone-panel {
+    -fx-border-color: -border;
+    -fx-border-radius: 14px;
+}
+
+.zone-panel .detail-title {
+    -fx-text-fill: -accent;
+    -fx-font-family: "Bahnschrift", "Segoe UI Semibold", "Segoe UI", sans-serif;
+    -fx-font-size: 20px;
+}

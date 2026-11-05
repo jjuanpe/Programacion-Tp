@@ -45,7 +45,7 @@ public class Sidebar extends VBox {
         nav.getStyleClass().add("sidebar-nav");
 
         for (NavItem item : NavItem.values()) {
-            Button button = new Button(item.getLabel());
+            Button button = new Button(new StringBuilder(item.getIcon()).append("   ").append(item.getLabel()).toString());
             button.getStyleClass().add("nav-button");
             button.setMaxWidth(Double.MAX_VALUE);
             button.setOnAction(event -> select(item));

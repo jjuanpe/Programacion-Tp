@@ -8,6 +8,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -28,6 +29,9 @@ public class MatchesView extends VBox {
     private final Label detailSubtitle = new Label();
     private final Label homeTeamName = new Label();
     private final Label awayTeamName = new Label();
+    private final Label scoreboardHome = new Label();
+    private final Label scoreboardScore = new Label();
+    private final Label scoreboardAway = new Label();
     private final TableView<LineupRow> homeLineup = new TableView<>();
     private final TableView<LineupRow> awayLineup = new TableView<>();
     private final TableView<IncidenceRow> incidences = new TableView<>();
@@ -137,6 +141,7 @@ public class MatchesView extends VBox {
 
         VBox panel = new VBox(
                 detailTitle,
+                buildScoreboard(),
                 detailSubtitle,
                 buildSubtitle("Line-ups"),
                 lineups,
@@ -145,6 +150,23 @@ public class MatchesView extends VBox {
                 buildStandingsPanel());
         panel.getStyleClass().addAll("panel", "match-detail");
         return panel;
+    }
+
+    private HBox buildScoreboard() {
+        scoreboardHome.getStyleClass().add("scoreboard-team");
+        scoreboardAway.getStyleClass().add("scoreboard-team");
+        scoreboardScore.getStyleClass().add("scoreboard-score");
+        scoreboardHome.setAlignment(Pos.CENTER_RIGHT);
+        scoreboardAway.setAlignment(Pos.CENTER_LEFT);
+        scoreboardHome.setMaxWidth(Double.MAX_VALUE);
+        scoreboardAway.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(scoreboardHome, Priority.ALWAYS);
+        HBox.setHgrow(scoreboardAway, Priority.ALWAYS);
+
+        HBox board = new HBox(scoreboardHome, scoreboardScore, scoreboardAway);
+        board.getStyleClass().add("scoreboard");
+        board.setAlignment(Pos.CENTER);
+        return board;
     }
 
     private VBox buildStandingsPanel() {
@@ -201,10 +223,32 @@ public class MatchesView extends VBox {
         incidences.setPrefHeight(260);
         incidences.setPlaceholder(buildPlaceholder("No incidences recorded"));
 
+        incidences.setRowFactory(ignored -> buildIncidenceRow());
         incidences.getColumns().add(TableColumns.numeric("Minute", IncidenceRow::getMinute));
         incidences.getColumns().add(TableColumns.text("Type", IncidenceRow::getType));
         incidences.getColumns().add(TableColumns.text("Detail", IncidenceRow::getDetail));
         return incidences;
+    }
+
+    // Colors the row by event type so goals and cards stand out in the list.
+    private TableRow<IncidenceRow> buildIncidenceRow() {
+        return new TableRow<>() {
+            @Override
+            protected void updateItem(IncidenceRow item, boolean empty) {
+                super.updateItem(item, empty);
+                getStyleClass().removeAll("row-goal", "row-yellow", "row-red");
+                if (!empty && item != null) {
+                    String type = item.getType().toLowerCase();
+                    if (type.contains("goal")) {
+                        getStyleClass().add("row-goal");
+                    } else if (type.contains("yellow")) {
+                        getStyleClass().add("row-yellow");
+                    } else if (type.contains("red") || type.contains("expul")) {
+                        getStyleClass().add("row-red");
+                    }
+                }
+            }
+        };
     }
 
     private Label buildPlaceholder(String text) {
@@ -218,6 +262,9 @@ public class MatchesView extends VBox {
 
         detailTitle.setText(hasMatch ? match.getTitle() : "No match selected");
         detailSubtitle.setText(hasMatch ? describe(match) : "");
+        scoreboardHome.setText(hasMatch ? match.getHomeTeam() : "");
+        scoreboardAway.setText(hasMatch ? match.getAwayTeam() : "");
+        scoreboardScore.setText(hasMatch ? match.getScore() : "");
         homeTeamName.setText(hasMatch ? match.getHomeTeam() : "");
         awayTeamName.setText(hasMatch ? match.getAwayTeam() : "");
 

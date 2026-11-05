@@ -26,10 +26,12 @@ public class KnockoutView extends VBox {
     private static final int COLUMN_COUNT = 5;
 
     private final KnockoutViewModel viewModel;
+    private final Runnable onOpenMatches;
     private final Pane board = new Pane();
 
-    public KnockoutView(KnockoutViewModel viewModel) {
+    public KnockoutView(KnockoutViewModel viewModel, Runnable onOpenMatches) {
         this.viewModel = viewModel;
+        this.onOpenMatches = onOpenMatches;
         getStyleClass().add("page");
 
         Label title = new Label("Knockout Stage");
@@ -198,6 +200,8 @@ public class KnockoutView extends VBox {
             detail.append("\nDecided by: ").append(tie.getCriteria());
         }
         Tooltip.install(card, new Tooltip(detail.toString()));
+        card.getStyleClass().add("clickable");
+        card.setOnMouseClicked(event -> onOpenMatches.run());
         return card;
     }
 

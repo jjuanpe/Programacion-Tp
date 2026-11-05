@@ -16,6 +16,9 @@ public class DashboardViewModel {
     private final ObjectProperty<TournamentStage> currentStage =
             new SimpleObjectProperty<>(this, "currentStage");
 
+    private final StringProperty nextStep = new SimpleStringProperty(this, "nextStep", "");
+    private final StringProperty champion = new SimpleStringProperty(this, "champion", "");
+
     private final StringProperty stageLabel = new SimpleStringProperty(this, "stageLabel", "");
 
     public IntegerProperty teamsProperty() {
@@ -68,5 +71,21 @@ public class DashboardViewModel {
 
     public void setStageLabel(String text) {
         stageLabel.set(text);
+    }
+
+    public StringProperty nextStepProperty() {
+        return nextStep;
+    }
+
+    public void setNextStep(String text) {
+        nextStep.set(text);
+    }
+
+    public StringProperty championProperty() {
+        return champion;
+    }
+
+    public void setChampion(String text) {
+        champion.set(text);
     }
 }

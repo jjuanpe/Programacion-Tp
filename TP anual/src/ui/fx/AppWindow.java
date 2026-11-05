@@ -213,7 +213,7 @@ public class AppWindow extends Application {
         pages.put(NavItem.MATCHES, new MatchesView(
                 matchesViewModel.getMatches(),
                 matchesViewModel.statusProperty()));
-        pages.put(NavItem.KNOCKOUT_STAGE, new KnockoutView(knockoutViewModel));
+        pages.put(NavItem.KNOCKOUT_STAGE, new KnockoutView(knockoutViewModel, () -> sidebar.select(NavItem.MATCHES)));
         pages.put(NavItem.PEOPLE, buildPeoplePage());
         pages.put(NavItem.STADIUMS, stadiumsView);
         pages.put(NavItem.CITIES, citiesView);
@@ -249,9 +249,22 @@ public class AppWindow extends Application {
     }
 
     private VBox buildDashboardPage() {
+        NextStepCard nextStep = new NextStepCard(
+                dashboardViewModel.nextStepProperty(),
+                dashboardViewModel.championProperty(),
+                () -> sidebar.select(NavItem.TOURNAMENT));
+        ScorerPreview scorers = new ScorerPreview(
+                topScorersViewModel.getRows(),
+                () -> sidebar.select(NavItem.STATISTICS));
+        HBox.setHgrow(nextStep, Priority.ALWAYS);
+        HBox.setHgrow(scorers, Priority.ALWAYS);
+        HBox lower = new HBox(nextStep, scorers);
+        lower.getStyleClass().add("summary-row");
+
         VBox body = new VBox(
                 buildSummaryRow(),
-                new TournamentProgress(dashboardViewModel.currentStageProperty()));
+                new TournamentProgress(dashboardViewModel.currentStageProperty()),
+                lower);
         body.getStyleClass().add("dashboard-body");
         return body;
     }
