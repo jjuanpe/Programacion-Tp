@@ -4,14 +4,11 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 public class DashboardHeader extends HBox {
 
     private final Label subtitle;
-    private final Label status;
 
     public DashboardHeader(ObservableValue<String> subtitleText) {
         getStyleClass().add("dashboard-header");
@@ -21,10 +18,7 @@ public class DashboardHeader extends HBox {
         this.subtitle.textProperty().bind(subtitleText);
         this.subtitle.getStyleClass().add("dashboard-subtitle");
 
-        this.status = Icons.with(new Label("Saved"), Icon.CHECK);
-        this.status.getStyleClass().add("status-label");
-
-        getChildren().addAll(buildTitles(), buildSpacer(), buildStatus());
+        getChildren().add(buildTitles());
     }
 
     private VBox buildTitles() {
@@ -36,29 +30,11 @@ public class DashboardHeader extends HBox {
         return titles;
     }
 
-    private Region buildSpacer() {
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-        return spacer;
-    }
-
-    private HBox buildStatus() {
-        HBox badge = new HBox(status);
-        badge.getStyleClass().add("status-badge");
-        badge.setAlignment(Pos.CENTER);
-        badge.setMinWidth(Region.USE_PREF_SIZE);
-        return badge;
-    }
-
     /** En el Dashboard el encabezado lleva la foto de fondo (ver .home-header en styles.css). */
     public void showPage(NavItem item) {
         getStyleClass().remove("home-header");
         if (item == NavItem.DASHBOARD) {
             getStyleClass().add("home-header");
         }
-    }
-
-    public void setStatus(String text) {
-        status.setText(text);
     }
 }
