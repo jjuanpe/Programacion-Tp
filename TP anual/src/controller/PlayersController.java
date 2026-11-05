@@ -65,7 +65,6 @@ public class PlayersController {
                 isGoalkeeper ? formatDecimal(entry.getGoalsConcededAverage()) : NOT_AVAILABLE);
     }
 
-
     private String formatDecimal(double value) {
         return String.format(Locale.US, "%.2f", value);
     }

@@ -124,7 +124,6 @@ public abstract class Match implements Serializable {
         this.played = true;
     }
 
-    /** Returns the first fifth dismissal in chronological order, counting distinct players. */
     public Expulsion findFifthExpulsion(List<Incidence> events) {
         List<Incidence> ordered = new ArrayList<>(events);
         ordered.sort(Comparator.comparingInt(Incidence::getMinute));
@@ -186,7 +185,6 @@ public abstract class Match implements Serializable {
         }
         return expelledPlayers;
     }
-
 
     public synchronized boolean isPlayed() {
         return played;

@@ -17,7 +17,6 @@ import java.util.Objects;
 
 public class FairPlayRankingService {
 
-    // Fewer fair play points = cleaner team = better position
     private static final Comparator<FairPlayEntry> RANKING_CRITERIA =
             Comparator.comparingInt(FairPlayEntry::getPoints)
                     .thenComparingInt(FairPlayEntry::getExpulsions)

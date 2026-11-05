@@ -88,7 +88,7 @@ public class KnockoutController {
                         pairings.get(index)[0].getName(), pairings.get(index)[1].getName()));
             }
         } else {
-            // Same crossings as KnockoutBracketService: 1A-2D, 1B-2C, 1C-2A, 1D-2B
+
             int[][] crossings = {{0, 3}, {1, 2}, {2, 0}, {3, 1}};
             for (int index = 0; index < crossings.length; index++) {
                 ties.add(BracketTie.pending("Quarter-final " + QUARTER_FINAL_NAMES[index],
@@ -141,7 +141,6 @@ public class KnockoutController {
         Team teamA = firstLeg.getHomeTeam();
         Team teamB = firstLeg.getAwayTeam();
 
-        // Team A plays the first leg at home and the second leg away
         int goalsA = firstLeg.getHomeGoals() + secondLeg.getAwayGoals();
         int goalsB = firstLeg.getAwayGoals() + secondLeg.getHomeGoals();
         String score = new StringBuilder("1st leg ")
@@ -154,7 +153,6 @@ public class KnockoutController {
                 report.getWinner().getName(), report.getDecidingCriteria());
     }
 
-    // Shoot-out result written from the point of view of teamA, e.g. " (pens 4-3)"
     private String penaltiesOf(Match match, String criteria, Team teamA, Team teamB) {
         String penalties = "";
         if (PENALTY_CRITERIA.equals(criteria)) {

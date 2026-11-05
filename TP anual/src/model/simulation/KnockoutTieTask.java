@@ -30,7 +30,6 @@ public class KnockoutTieTask implements Callable<KnockoutTieReport> {
     private final long seed;
     private final Set<Player> suspendedForFirstLeg;
 
-
     public KnockoutTieTask(
             Team teamA,
             Team teamB,

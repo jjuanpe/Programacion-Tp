@@ -63,8 +63,6 @@ public class TournamentViewModel {
 
     public void setWarnings(int value) { warnings.set(value); }
 
-    public BooleanProperty busyProperty() { return busy; }
-
     public boolean isBusy() { return busy.get(); }
 
     public void setBusy(boolean value) { busy.set(value); }

@@ -56,7 +56,6 @@ public final class MatchDetail {
         this.standingsAfter = List.copyOf(standingsAfter);
     }
 
-
     public String getPhase() { return phase; }
 
     public String getPhaseCategory() { return phaseCategory; }

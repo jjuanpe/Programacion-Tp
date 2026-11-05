@@ -57,10 +57,6 @@ public class Championship implements Serializable {
         return stadiums;
     }
 
-    public List<City> getCities() {
-        return List.copyOf(cities);
-    }
-
     public void consumeStadium(Stadium stadium) {
         City city = Objects.requireNonNull(stadium, "The stadium is required").getCity();
         if (!city.remove(stadium)) {

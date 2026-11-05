@@ -30,8 +30,6 @@ public class DashboardController {
         viewModel.setStageLabel(stage == null ? state.getLabel() : stage.getLabel());
     }
 
-
-
     private int countGoals(List<Match> matches) {
         int goals = 0;
         for (Match match : matches) {

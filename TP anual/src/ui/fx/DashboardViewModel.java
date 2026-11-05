@@ -58,10 +58,6 @@ public class DashboardViewModel {
         return currentStage;
     }
 
-    public TournamentStage getCurrentStage() {
-        return currentStage.get();
-    }
-
     public void setCurrentStage(TournamentStage value) {
         currentStage.set(value);
     }

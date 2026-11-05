@@ -14,7 +14,6 @@ public class Formation implements Serializable {
     private final List<Player> starters;
     private final List<Player> substitutes;
 
-
     public Formation(List<Player> starters, List<Player> substitutes) {
         Objects.requireNonNull(starters, "The starter list is required");
         Objects.requireNonNull(substitutes, "The substitute list is required");

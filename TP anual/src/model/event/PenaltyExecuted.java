@@ -26,14 +26,6 @@ public class PenaltyExecuted extends Incidence {
         this.scored = scored;
     }
 
-    public Player getKicker() {
-        return kicker;
-    }
-
-    public boolean isScored() {
-        return scored;
-    }
-
     public String getOutcomeDescription() {
         String description;
         if (scored) {

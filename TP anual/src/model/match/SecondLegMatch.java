@@ -11,7 +11,6 @@ public class SecondLegMatch extends Match {
     private PhaseType phase;
     private FirstLegMatch firstLeg;
 
-
     public SecondLegMatch(LocalDate date, Team homeTeam, Team awayTeam, Referee referee,
                           Stadium stadium, PhaseType phase, FirstLegMatch firstLeg) {
         super(date, homeTeam, awayTeam, referee, stadium);

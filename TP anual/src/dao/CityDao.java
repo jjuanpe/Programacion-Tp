@@ -42,7 +42,7 @@ public class CityDao {
         try (Connection cn = DBManager.getConnection()) {
             cn.setAutoCommit(false);
             try {
-                // Prevent a stadium from being assigned between validation and deletion.
+
                 try (Statement lock = cn.createStatement()) {
                     lock.execute("LOCK TABLE estadios IN SHARE MODE");
                 }

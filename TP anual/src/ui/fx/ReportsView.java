@@ -11,10 +11,6 @@ import javafx.stage.FileChooser;
 import java.io.File;
 import java.util.function.Consumer;
 
-/**
- * Catalogue of the reports required by the assignment. The PDF report is generated here;
- * the others open the page where they are shown.
- */
 public class ReportsView extends VBox {
 
     private final Consumer<NavItem> openPage;

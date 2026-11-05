@@ -25,10 +25,6 @@ public class PlayerParticipation implements Serializable {
         return player;
     }
 
-    public boolean isStarter() {
-        return starter;
-    }
-
     public int getMinutesPlayed() {
         return minutesPlayed;
     }

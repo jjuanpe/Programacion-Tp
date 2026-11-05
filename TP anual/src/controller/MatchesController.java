@@ -25,7 +25,6 @@ import ui.fx.LineupRow;
 import ui.fx.MatchDetail;
 import ui.fx.MatchesViewModel;
 
-
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 

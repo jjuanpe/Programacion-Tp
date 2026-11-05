@@ -110,7 +110,7 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Matc
         int endMinute = MATCH_MINUTES;
         if (fifthRed != null) {
             endMinute = fifthRed.getMinute();
-            // Stop at the fifth red, including when later events share its minute.
+
             incidences = new ArrayList<>(incidences.subList(0, incidences.indexOf(fifthRed) + 1));
             boolean homeLost = match.getHomeTeam().getPlayers().contains(fifthRed.getPlayer());
             if (homeLost) {

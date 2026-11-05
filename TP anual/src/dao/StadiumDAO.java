@@ -97,7 +97,7 @@ public class StadiumDAO {
     }
 
     private void lockStadiumWrites(Connection cn) throws SQLException {
-        // Same table-first lock order as CityDao.deleteCity, avoiding a lock-order cycle.
+
         try (Statement lock = cn.createStatement()) {
             lock.execute("LOCK TABLE estadios IN ROW EXCLUSIVE MODE");
         }

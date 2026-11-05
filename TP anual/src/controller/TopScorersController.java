@@ -33,10 +33,6 @@ public class TopScorersController {
         publish(computeRanking(session));
     }
 
-    public void showFailure(Throwable failure) {
-        reportFailure(failure);
-    }
-
     private List<ScorerRow> computeRanking(TournamentSession session) {
         List<ScorerEntry> ranking =
                 topScorersService.computeTopScorers(session.getTeams(), session.getMatches());
@@ -65,14 +61,6 @@ public class TopScorersController {
         runOnFxThread(() -> {
             viewModel.setStatus(NO_GOALS_MESSAGE);
             viewModel.setRows(rows);
-        });
-    }
-
-    private void reportFailure(Throwable failure) {
-        String reason = failure == null ? "unknown error" : String.valueOf(failure.getMessage());
-        runOnFxThread(() -> {
-            viewModel.setRows(List.of());
-            viewModel.setStatus("The ranking could not be loaded: " + reason);
         });
     }
 

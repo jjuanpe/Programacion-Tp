@@ -149,7 +149,6 @@ public class AppWindow extends Application {
         return loaded;
     }
 
-
     private void showLoadError(Exception exception) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Copa Internacional de Clubes");

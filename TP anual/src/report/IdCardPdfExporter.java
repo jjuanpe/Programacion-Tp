@@ -17,13 +17,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-/**
- * Writes identification cards to a PDF file: 8 cards per A4 page (2 columns x 4 rows)
- */
 public class IdCardPdfExporter {
 
-    private static final float CARD_WIDTH = 243f;      // 85.6 mm
-    private static final float CARD_HEIGHT = 153f;     // 54 mm
+    private static final float CARD_WIDTH = 243f;
+    private static final float CARD_HEIGHT = 153f;
     private static final float GAP = 14f;
     private static final int COLUMNS = 2;
     private static final int ROWS = 4;
@@ -91,13 +88,12 @@ public class IdCardPdfExporter {
 
     private void drawCard(PDDocument document, PDPageContentStream content, IdCard card, float x, float y)
             throws IOException {
-        // Border
+
         content.setStrokingColor(MUTED);
         content.setLineWidth(0.6f);
         content.addRect(x, y, CARD_WIDTH, CARD_HEIGHT);
         content.stroke();
 
-        // Header band with the tournament name and the role
         float headerY = y + CARD_HEIGHT - HEADER_HEIGHT;
         content.setNonStrokingColor(ACCENT);
         content.addRect(x, headerY, CARD_WIDTH, HEADER_HEIGHT);
@@ -107,12 +103,10 @@ public class IdCardPdfExporter {
         float roleWidth = textWidth(BOLD, 7.5f, role);
         writeText(content, BOLD, 7.5f, Color.WHITE, x + CARD_WIDTH - PADDING - roleWidth, headerY + 8, role);
 
-        // Photo
         float photoX = x + PADDING;
         float photoY = headerY - PADDING - PHOTO_HEIGHT;
         drawPhoto(document, content, card, photoX, photoY);
 
-        // Personal data
         float textX = photoX + PHOTO_WIDTH + PADDING;
         float maxTextWidth = x + CARD_WIDTH - PADDING - textX;
         float lineY = headerY - PADDING - 9;
@@ -126,7 +120,6 @@ public class IdCardPdfExporter {
             writeText(content, REGULAR, 7.5f, MUTED, textX, lineY, fit(REGULAR, 7.5f, detail, maxTextWidth));
         }
 
-        // Barcode with its value underneath
         drawBarcode(content, card.getBarcodeValue(), x + PADDING, y + PADDING + 8, CARD_WIDTH - 2 * PADDING);
         float valueWidth = textWidth(REGULAR, 6.5f, card.getBarcodeValue());
         writeText(content, REGULAR, 6.5f, TEXT, x + (CARD_WIDTH - valueWidth) / 2, y + PADDING,
@@ -162,7 +155,7 @@ public class IdCardPdfExporter {
 
     private void drawBarcode(PDPageContentStream content, String value, float x, float y, float maxWidth)
             throws IOException {
-        // ZXing returns one boolean per module: true = black bar, false = space
+
         boolean[] modules = new Code128Writer().encode(value);
         float module = Math.min(MAX_MODULE_WIDTH, maxWidth / modules.length);
         float start = x + (maxWidth - modules.length * module) / 2;
@@ -190,7 +183,6 @@ public class IdCardPdfExporter {
         return font.getStringWidth(printable(font, text)) / 1000 * size;
     }
 
-    // Shortens a text with "..." so that it fits in the available width
     private String fit(PDFont font, float size, String text, float maxWidth) throws IOException {
         String fitted = text;
         while (fitted.length() > 4 && textWidth(font, size, fitted) > maxWidth) {
@@ -199,7 +191,6 @@ public class IdCardPdfExporter {
         return fitted;
     }
 
-    // The standard PDF fonts cannot draw every Unicode character; unsupported ones become '?'
     private String printable(PDFont font, String text) {
         StringBuilder printable = new StringBuilder();
         for (int index = 0; index < text.length(); index++) {

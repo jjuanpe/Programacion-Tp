@@ -4,7 +4,6 @@ import model.match.Match;
 import model.people.Player;
 import java.util.Objects;
 
-/** A non-scoring action: foul, woodwork or unsuccessful attempt. */
 public final class PlayEvent extends Incidence {
     private static final long serialVersionUID = 1L;
     public static final String FOUL = "Foul";

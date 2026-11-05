@@ -282,10 +282,6 @@ public class TournamentSession implements Serializable {
         }
     }
 
-    public synchronized Championship getChampionship() {
-        return championship;
-    }
-
     public synchronized KnockoutStageResult getKnockoutResult() {
         return knockoutResult;
     }

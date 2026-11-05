@@ -8,9 +8,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
-/**
- * Knockout bracket: qualified teams of each zone, quarter-finals, semi-finals and the final.
- */
 public class KnockoutView extends VBox {
 
     private static final String STYLE_WINNER = "bracket-winner";

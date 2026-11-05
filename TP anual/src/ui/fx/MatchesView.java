@@ -31,8 +31,8 @@ public class MatchesView extends VBox {
     private final TableView<LineupRow> homeLineup = new TableView<>();
     private final TableView<LineupRow> awayLineup = new TableView<>();
     private final TableView<IncidenceRow> incidences = new TableView<>();
-    private final TableView<StandingRow> standingsBefore = new TableView<>();   // NUEVO
-    private final TableView<StandingRow> standingsAfter = new TableView<>();    // NUEVO
+    private final TableView<StandingRow> standingsBefore = new TableView<>();
+    private final TableView<StandingRow> standingsAfter = new TableView<>();
     private final VBox standingsPanel = new VBox();
 
     public MatchesView(ObservableList<MatchDetail> matches, ObservableValue<String> emptyMessage) {
