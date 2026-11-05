@@ -1,8 +1,7 @@
 package controller;
 
 import dataload.JsonTournamentLoader;
-import dao.CityDao;
-import dao.StadiumDAO;
+import java.io.IOException;
 import dataload.TournamentData;
 import java.io.Serializable;
 import model.competition.Championship;
@@ -18,17 +17,9 @@ import model.simulation.KnockoutStageResult;
 import model.simulation.KnockoutStageSimulator;
 import model.simulation.KnockoutTieReport;
 import model.simulation.MatchSimulationReport;
-import model.team.Country;
 import model.team.Team;
-import model.venue.City;
 import model.venue.Stadium;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -43,7 +34,6 @@ public class TournamentSession implements Serializable {
     private static final LocalDate KNOCKOUT_STAGE_START_DATE = LocalDate.of(2026, 11, 1);
     private static final int DAYS_BETWEEN_ROUNDS = 7;
     private static final int DAYS_BETWEEN_KNOCKOUT_STAGES = 14;
-    private static final String DEFAULT_SAVE_PATH = "torneo.save";
     // Change this number if a saved class changes, so old saves fail clean.
     private static final long serialVersionUID = 1L;
 
@@ -57,22 +47,6 @@ public class TournamentSession implements Serializable {
     private List<KnockoutTieReport> semiFinalReports;
     private KnockoutStageResult knockoutResult;
 
-    public static boolean hasSavedTournament() {
-        return new File(DEFAULT_SAVE_PATH).exists();
-    }
-
-    public static TournamentSession load() throws IOException, ClassNotFoundException {
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(DEFAULT_SAVE_PATH))) {
-            return (TournamentSession) in.readObject();
-        }
-    }
-
-    public synchronized void save() throws IOException {
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(DEFAULT_SAVE_PATH))) {
-            out.writeObject(this);
-        }
-    }
-
     public synchronized void importData(String dataPath) throws IOException {
         Objects.requireNonNull(dataPath, "The data path is required");
         TournamentData imported = new JsonTournamentLoader(dataPath).load();
@@ -82,48 +56,13 @@ public class TournamentSession implements Serializable {
         resetKnockoutProgress();
     }
 
-    public List<Stadium> getRegisteredStadiums() throws SQLException {
-        return new StadiumDAO().getAllStadiums();
-    }
-
-    public List<City> getRegisteredCities() throws SQLException {
-        return new CityDao().getAllCities();
-    }
-
-    public void addCity(long id, String name, String countryName) throws SQLException {
-        new CityDao().insertCity(id, name, new Country(countryName));
-    }
-
-    public void updateCity(long id, String name, String countryName) throws SQLException {
-        new CityDao().updateCity(id, name, new Country(countryName));
-    }
-
-    public void deleteCity(City city) throws SQLException {
-        Objects.requireNonNull(city, "Select a city to delete");
-        new CityDao().deleteCity(city.getId());
-    }
-
-    public void addStadium(long id, String name, City city, int capacity) throws SQLException {
-        new StadiumDAO().insertStadium(id, name, city, capacity);
-    }
-
-    public void updateStadium(long originalId, long newId, String name, City city, int capacity)
-            throws SQLException {
-        new StadiumDAO().updateStadium(originalId, newId, name, city, capacity);
-    }
-
-    public void deleteStadium(Stadium stadium) throws SQLException {
-        Objects.requireNonNull(stadium, "Select a stadium to delete");
-        new StadiumDAO().deleteStadium(stadium.getId());
-    }
-
     public synchronized void drawGroups() throws SQLException {
         requireState(TournamentState.DATA_LOADED, "the group draw");
 
         for (Team team : tournamentData.getTeams()) {
             team.validateSquad();
         }
-        List<Stadium> stadiums = new StadiumDAO().getAllStadiums();
+        List<Stadium> stadiums = new VenueCatalog().getStadiums();
         // 4 quarters x2 + 2 semis x2 + final = 13 different stadiums.
         if (stadiums.size() < 13) {
             throw new IllegalStateException(new StringBuilder(

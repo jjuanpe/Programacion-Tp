@@ -53,7 +53,7 @@ public abstract class Match implements Serializable {
         if (this.referee != null) {
             throw new IllegalStateException("The match already has an assigned referee");
         }
-        if (!referee.canOfficiate(homeTeam, awayTeam)) {
+        if (!referee.canOfficiate(homeTeam.getCountry(), awayTeam.getCountry())) {
             throw new IllegalArgumentException("The referee cannot officiate this match");
         }
         this.referee = referee;

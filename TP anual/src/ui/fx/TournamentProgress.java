@@ -1,5 +1,7 @@
 package ui.fx;
 
+import viewmodel.TournamentStage;
+
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Node;

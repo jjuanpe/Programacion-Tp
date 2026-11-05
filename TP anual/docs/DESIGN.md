@@ -23,17 +23,20 @@ The application covers the whole championship:
 The code is organised in layers. Each layer depends only on the ones below it.
 
 ```
- ui.fx   (JavaFX views + view models)
+ ui.fx   (JavaFX views)  ──►  viewmodel   (view models + table rows)
+   │                              ▲
+   ▼                              │
+ controller  (TournamentSession, VenueCatalog, TournamentStorage, one controller per page)
    │
- controller   (TournamentSession + one controller per page)
-   │
- model ── dataload (JSON → model)      dao (PostgreSQL → model)      report (PDF)
+   ▼
+ model ◄── dataload (JSON → model)      dao (PostgreSQL → model)      report (PDF)
 ```
 
 | Package | Responsibility |
 |---|---|
 | `model.people` | `Person` (abstract), `Player`, `Goalkeeper`, `FieldPlayer`, `HeadCoach`, `Referee` |
-| `model.team` | `Team`, `Country`, squad validation |
+| `model.common` | `Country` (shared by teams, people and venues) |
+| `model.team` | `Team`, squad validation |
 | `model.venue` | `City`, `Stadium`, `CityInUseException` |
 | `model.match` | `Match` (abstract) and `GroupMatch`, `FirstLegMatch`, `SecondLegMatch`, `FinalMatch`; `TieCriterion` enum |
 | `model.event` | `Incidence` (abstract) and `Goal`, `YellowCard`, `Expulsion`, `Change`, `PenaltyExecuted`, `PlayEvent` |
@@ -42,17 +45,20 @@ The code is organised in layers. Each layer depends only on the ones below it.
 | `dataload` | `JsonTournamentLoader` (Gson) |
 | `dao` | `DBManager`, `CityDao`, `StadiumDAO` (JDBC) |
 | `report` | `IdCard`, `IdCardPdfExporter` (PDFBox + ZXing barcode) |
-| `controller` | `TournamentSession` (single entry point to the domain) and one controller per page |
-| `ui.fx` | Views, view models and table rows |
+| `controller` | `TournamentSession` (tournament state and flow), `VenueCatalog` (cities and stadiums in the database), `TournamentStorage` (save and load) and one controller per page |
+| `viewmodel` | View models and table rows: the only classes shared by the controllers and the views |
+| `ui.fx` | JavaFX views, sidebar, styling and `AppWindow` |
 
 ### 2.1 Low coupling between interface and domain
 
-- The views do not import `model` classes, with one exception: the city and stadium
-  management views (`CitiesView`, `StadiumsView`) import `model.venue` because they edit
-  those entities directly. Every other page has a **view model** with JavaFX properties and
-  simple row objects (`StandingRow`, `FixtureRow`, `ScorerRow`, …).
-- The **controllers** read the domain through `TournamentSession` and fill the view model.
-  The view only knows how to draw itself and report the user's actions.
+- No view imports `model`. The views only know `viewmodel` (properties and simple row
+  objects such as `StandingRow`, `FixtureRow`, `ScorerRow`, `CityRow`, …) and the controllers.
+- The **controllers** read the domain, convert it into rows and fill the view model; the
+  view only knows how to draw itself and report the user's actions. For the city and stadium
+  forms the view sends plain values (id, name, city id…) and the controller builds the domain
+  objects, so the domain validation and its exceptions stay out of the interface.
+- `viewmodel` depends on nothing, so `ui.fx` and `controller` never import each other's
+  internals: views call controllers, controllers fill `viewmodel`, views read `viewmodel`.
 - All the styling lives in `styles.css`; the Java code only assigns style classes.
 
 ---
@@ -170,7 +176,7 @@ The final is a single match; if it ends in a draw it is decided by penalties.
 | Data | Where | Why |
 |---|---|---|
 | Cities and stadiums | PostgreSQL (`ciudades`, `estadios`) | Master data required by the assignment, editable from the interface |
-| Tournament state | `torneo.save` (serialization of `TournamentSession`) | Lets the user close the application and resume where it was left |
+| Tournament state | `torneo.save` (serialization of `TournamentSession`, done by `TournamentStorage`) | Lets the user close the application and resume where it was left |
 | Teams and people | `docs/torneo.json` | Input file provided by the course |
 
 All the domain classes saved in the session implement `Serializable`.
@@ -186,9 +192,9 @@ The database script is `docs/database.sql`. `estadios.idciudad` is a foreign key
 - **Cities** (*Cities* page, `CitiesView`): create, update (name and country) and delete.
 - **Stadiums** (*Stadiums* page, `StadiumsView`): create, update (including the ID, the
   city, the name and the capacity) and delete.
-- Operations go through `CitiesController` / `StadiumsController` and `TournamentSession`
+- Operations go through `CitiesController` / `StadiumsController` and `VenueCatalog`
   (`addCity`, `updateCity`, `deleteCity`, `addStadium`, `updateStadium`, `deleteStadium`),
-  which delegates to `CityDao` and `StadiumDAO`.
+  which builds the domain objects and delegates to `CityDao` and `StadiumDAO`.
 
 **Rule: a city with stadiums cannot be deleted.** `CityDao.deleteCity()` works in a
 transaction:

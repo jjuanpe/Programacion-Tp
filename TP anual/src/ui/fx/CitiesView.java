@@ -7,8 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import model.venue.City;
-import model.team.Country;
+import viewmodel.CityRow;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -16,7 +15,7 @@ import java.util.function.Consumer;
 
 public class CitiesView extends VBox {
     private final Label summary = new Label();
-    private final TableView<City> table = new TableView<>();
+    private final TableView<CityRow> table = new TableView<>();
     private final Button add = new Button("Add city");
     private final Button edit = new Button("Edit selected");
     private final Button delete = new Button("Delete selected");
@@ -33,9 +32,9 @@ public class CitiesView extends VBox {
         note.setWrapText(true);
         table.getStyleClass().add("data-table");
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
-        table.getColumns().add(TableColumns.numeric("ID", city -> city.getId().toString()));
-        table.getColumns().add(TableColumns.text("City", City::getName));
-        table.getColumns().add(TableColumns.text("Country", city -> city.getCountry().getCountryName()));
+        table.getColumns().add(TableColumns.numeric("ID", city -> String.valueOf(city.getId())));
+        table.getColumns().add(TableColumns.text("City", CityRow::getName));
+        table.getColumns().add(TableColumns.text("Country", CityRow::getCountry));
         table.setPlaceholder(new Label("No cities loaded."));
         add.setOnAction(event -> showCityDialog(null));
         edit.setOnAction(event -> showCityDialog(table.getSelectionModel().getSelectedItem()));
@@ -60,7 +59,7 @@ public class CitiesView extends VBox {
         }
     }
 
-    private void showCityDialog(City selected) {
+    private void showCityDialog(CityRow selected) {
         boolean editing = selected != null;
         Dialog<ButtonType> dialog = new Dialog<>();
         if (editing) {
@@ -73,10 +72,10 @@ public class CitiesView extends VBox {
         TextField name = new TextField();
         TextField country = new TextField();
         if (editing) {
-            id.setText(selected.getId().toString());
+            id.setText(String.valueOf(selected.getId()));
             id.setEditable(false);
             name.setText(selected.getName());
-            country.setText(selected.getCountry().getCountryName());
+            country.setText(selected.getCountry());
         }
         GridPane form = new GridPane();
         form.setHgap(10);
@@ -92,22 +91,17 @@ public class CitiesView extends VBox {
         submit.addEventFilter(ActionEvent.ACTION, event -> {
             event.consume();
             try {
-                if (name.getText().isBlank() || country.getText().isBlank()) {
-                    throw new IllegalArgumentException("The name and the country are required.");
-                }
                 long cityId = Long.parseLong(id.getText().trim());
-                if (cityId <= 0) {
-                    throw new IllegalArgumentException("The id must be a positive whole number.");
-                }
-                City city = new City(cityId, name.getText(), new Country(country.getText()));
+                String cityName = name.getText();
+                String cityCountry = country.getText();
                 submit.setDisable(true);
                 runDatabaseAction(() -> {
                     if (editing) {
-                        controller.updateCity(city.getId(), city.getName(), city.getCountry().getCountryName());
+                        controller.updateCity(cityId, cityName, cityCountry);
                     } else {
-                        controller.addCity(city.getId(), city.getName(), city.getCountry().getCountryName());
+                        controller.addCity(cityId, cityName, cityCountry);
                     }
-                    return city;
+                    return cityId;
                 }, saved -> {
                     dialog.setResult(save);
                     dialog.close();
@@ -115,15 +109,13 @@ public class CitiesView extends VBox {
                 }, () -> submit.setDisable(false));
             } catch (NumberFormatException exception) {
                 showError("The id must be a positive whole number.");
-            } catch (IllegalArgumentException exception) {
-                showError(exception.getMessage());
             }
         });
         dialog.showAndWait();
     }
 
     private void deleteSelected() {
-        City city = table.getSelectionModel().getSelectedItem();
+        CityRow city = table.getSelectionModel().getSelectedItem();
         if (city != null) {
             Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
                     new StringBuilder("Delete the city ").append(city.getName())
@@ -132,7 +124,7 @@ public class CitiesView extends VBox {
             confirm.initOwner(getScene().getWindow());
             if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
                 runDatabaseAction(() -> {
-                    controller.deleteCity(city);
+                    controller.deleteCity(city.getId());
                     return city;
                 }, removed -> refresh());
             }

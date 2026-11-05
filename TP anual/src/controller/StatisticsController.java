@@ -9,10 +9,10 @@ import model.competition.RefereeReportService;
 import model.match.Match;
 import model.people.Referee;
 import model.team.Team;
-import ui.fx.FairPlayRow;
-import ui.fx.MinutesRow;
-import ui.fx.RefereeRow;
-import ui.fx.StatisticsViewModel;
+import viewmodel.FairPlayRow;
+import viewmodel.MinutesRow;
+import viewmodel.RefereeRow;
+import viewmodel.StatisticsViewModel;
 
 import java.util.ArrayList;
 import java.util.List;

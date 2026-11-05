@@ -12,7 +12,7 @@ import model.people.HeadCoach;
 import model.people.Player;
 import model.people.Position;
 import model.people.Referee;
-import model.team.Country;
+import model.common.Country;
 import model.team.Team;
 
 import java.io.FileReader;

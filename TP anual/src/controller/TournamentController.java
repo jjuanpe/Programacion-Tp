@@ -2,7 +2,7 @@ package controller;
 
 import javafx.concurrent.Task;
 import model.match.Match;
-import ui.fx.TournamentViewModel;
+import viewmodel.TournamentViewModel;
 
 import java.io.IOException;
 import java.util.List;
@@ -42,7 +42,7 @@ public class TournamentController {
     public void save() {
         String message;
         try {
-            session.save();
+            TournamentStorage.save(session);
             message = "Tournament saved";
         } catch (IOException exception) {
             message = new StringBuilder("Could not save the tournament: ").append(exception.getMessage()).toString();
@@ -147,7 +147,7 @@ public class TournamentController {
     private String autoSaveSuffix() {
         String suffix;
         try {
-            session.save();
+            TournamentStorage.save(session);
             suffix = "";
         } catch (IOException exception) {
             suffix = new StringBuilder(" (could not auto-save: ").append(exception.getMessage()).append(')').toString();

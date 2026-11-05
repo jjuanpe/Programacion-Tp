@@ -3,7 +3,7 @@ package model.competition;
 import model.match.Match;
 import model.people.HeadCoach;
 import model.people.Player;
-import model.team.Country;
+import model.common.Country;
 import model.team.Team;
 
 import java.time.LocalDate;

@@ -1,7 +1,6 @@
 package model.people;
 
-import model.team.Country;
-import model.team.Team;
+import model.common.Country;
 
 import java.time.LocalDate;
 
@@ -36,17 +35,13 @@ public class Referee extends Person {
         return country;
     }
 
-    public boolean canOfficiate(Team home, Team away) {
-        boolean hasRequiredData = home != null
-                && away != null
-                && country != null
-                && home.getCountry() != null
-                && away.getCountry() != null;
+    public boolean canOfficiate(Country homeCountry, Country awayCountry) {
+        boolean hasRequiredData = homeCountry != null && awayCountry != null && country != null;
         boolean canOfficiate = false;
         if (hasRequiredData) {
             // A referee can't work a game of his own country, unless both teams are from the same country.
-            boolean sameCountryTeams = home.getCountry().equals(away.getCountry());
-            canOfficiate = sameCountryTeams || (!country.equals(home.getCountry()) && !country.equals(away.getCountry()));
+            boolean sameCountryTeams = homeCountry.equals(awayCountry);
+            canOfficiate = sameCountryTeams || (!country.equals(homeCountry) && !country.equals(awayCountry));
         }
         return canOfficiate;
     }

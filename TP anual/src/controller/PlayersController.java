@@ -5,8 +5,8 @@ import model.competition.PlayerReportService;
 import model.people.Player;
 import model.people.Position;
 import model.team.Team;
-import ui.fx.PlayerStatsRow;
-import ui.fx.PlayersViewModel;
+import viewmodel.PlayerStatsRow;
+import viewmodel.PlayersViewModel;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

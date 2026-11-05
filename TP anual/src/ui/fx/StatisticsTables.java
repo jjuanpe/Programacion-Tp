@@ -1,5 +1,10 @@
 package ui.fx;
 
+import viewmodel.FairPlayRow;
+import viewmodel.MinutesRow;
+import viewmodel.RefereeRow;
+import viewmodel.ScorerRow;
+
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;

@@ -8,8 +8,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
-import model.venue.City;
-import model.venue.Stadium;
+import viewmodel.CityRow;
+import viewmodel.StadiumRow;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 
 public class StadiumsView extends VBox {
     private final Label summary = new Label();
-    private final TableView<Stadium> table = new TableView<>();
+    private final TableView<StadiumRow> table = new TableView<>();
     private final Button add = new Button("Add stadium");
     private final Button edit = new Button("Edit selected");
     private final Button delete = new Button("Delete selected");
@@ -34,14 +34,14 @@ public class StadiumsView extends VBox {
         note.setWrapText(true);
         table.getStyleClass().add("data-table");
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
-        table.getColumns().add(TableColumns.numeric("ID", stadium -> stadium.getId().toString()));
-        table.getColumns().add(TableColumns.text("Stadium", Stadium::getName));
-        table.getColumns().add(TableColumns.text("City", stadium -> stadium.getCity().getName()));
+        table.getColumns().add(TableColumns.numeric("ID", stadium -> String.valueOf(stadium.getId())));
+        table.getColumns().add(TableColumns.text("Stadium", StadiumRow::getName));
+        table.getColumns().add(TableColumns.text("City", StadiumRow::getCityName));
         table.getColumns().add(TableColumns.numeric("Capacity", stadium -> String.valueOf(stadium.getCapacity())));
         table.setPlaceholder(new Label("No stadiums loaded."));
         add.setOnAction(event -> runDatabaseAction(controller::getRegisteredCities, cities -> showStadiumDialog(cities, null)));
         edit.setOnAction(event -> {
-            Stadium selected = table.getSelectionModel().getSelectedItem();
+            StadiumRow selected = table.getSelectionModel().getSelectedItem();
             if (selected != null) {
                 runDatabaseAction(controller::getRegisteredCities, cities -> showStadiumDialog(cities, selected));
             }
@@ -67,7 +67,7 @@ public class StadiumsView extends VBox {
         }
     }
 
-    private void showStadiumDialog(List<City> cities, Stadium selected) {
+    private void showStadiumDialog(List<CityRow> cities, StadiumRow selected) {
         if (cities.isEmpty()) {
             showError("No cities are registered in the database.");
             return;
@@ -83,17 +83,17 @@ public class StadiumsView extends VBox {
         TextField id = new TextField();
         TextField name = new TextField();
         TextField capacity = new TextField();
-        ComboBox<City> city = new ComboBox<>();
+        ComboBox<CityRow> city = new ComboBox<>();
         city.getItems().setAll(cities);
         if (editing) {
-            id.setText(selected.getId().toString());
+            id.setText(String.valueOf(selected.getId()));
             name.setText(selected.getName());
             capacity.setText(String.valueOf(selected.getCapacity()));
             int index = 0;
-            City selectedCity = null;
+            CityRow selectedCity = null;
             while (index < cities.size() && selectedCity == null) {
-                City candidate = cities.get(index);
-                if (candidate.getId().equals(selected.getCity().getId())) {
+                CityRow candidate = cities.get(index);
+                if (candidate.getId() == selected.getCityId()) {
                     selectedCity = candidate;
                 }
                 index++;
@@ -101,7 +101,7 @@ public class StadiumsView extends VBox {
             city.setValue(selectedCity);
         }
         city.setConverter(new StringConverter<>() {
-            @Override public String toString(City value) {
+            @Override public String toString(CityRow value) {
                 String description;
                 if (value == null) {
                     description = "";
@@ -110,7 +110,7 @@ public class StadiumsView extends VBox {
                 }
                 return description;
             }
-            @Override public City fromString(String value) { return null; }
+            @Override public CityRow fromString(String value) { return null; }
         });
         GridPane form = new GridPane();
         form.setHgap(10);
@@ -128,13 +128,17 @@ public class StadiumsView extends VBox {
                 long stadiumId = Long.parseLong(id.getText().trim());
                 int stadiumCapacity = Integer.parseInt(capacity.getText().trim());
                 String stadiumName = name.getText();
-                City stadiumCity = city.getValue();
+                CityRow selectedCity = city.getValue();
+                if (selectedCity == null) {
+                    throw new IllegalArgumentException("Select the city of the stadium.");
+                }
+                long stadiumCityId = selectedCity.getId();
                 submit.setDisable(true);
                 runDatabaseAction(() -> {
                     if (editing) {
-                        controller.updateStadium(selected.getId(), stadiumId, stadiumName, stadiumCity, stadiumCapacity);
+                        controller.updateStadium(selected.getId(), stadiumId, stadiumName, stadiumCityId, stadiumCapacity);
                     } else {
-                        controller.addStadium(stadiumId, stadiumName, stadiumCity, stadiumCapacity);
+                        controller.addStadium(stadiumId, stadiumName, stadiumCityId, stadiumCapacity);
                     }
                     return stadiumId;
                 }, saved -> {
@@ -152,7 +156,7 @@ public class StadiumsView extends VBox {
     }
 
     private void deleteSelected() {
-        Stadium stadium = table.getSelectionModel().getSelectedItem();
+        StadiumRow stadium = table.getSelectionModel().getSelectedItem();
         if (stadium == null) {
             return;
         }
@@ -163,7 +167,7 @@ public class StadiumsView extends VBox {
         confirm.initOwner(getScene().getWindow());
         if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
             runDatabaseAction(() -> {
-                controller.deleteStadium(stadium);
+                controller.deleteStadium(stadium.getId());
                 return stadium;
             }, removed -> refresh());
         }

@@ -1,8 +1,8 @@
 package controller;
 
 import model.match.Match;
-import ui.fx.DashboardViewModel;
-import ui.fx.TournamentStage;
+import viewmodel.DashboardViewModel;
+import viewmodel.TournamentStage;
 
 import java.util.List;
 import java.util.Objects;

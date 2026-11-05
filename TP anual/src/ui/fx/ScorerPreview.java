@@ -1,5 +1,7 @@
 package ui.fx;
 
+import viewmodel.ScorerRow;
+
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;

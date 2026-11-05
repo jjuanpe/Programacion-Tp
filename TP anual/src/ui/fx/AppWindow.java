@@ -1,5 +1,16 @@
 package ui.fx;
 
+import viewmodel.DashboardViewModel;
+import viewmodel.GroupStageViewModel;
+import viewmodel.KnockoutViewModel;
+import viewmodel.MatchesViewModel;
+import viewmodel.PlayersViewModel;
+import viewmodel.ReportsViewModel;
+import viewmodel.StatisticsViewModel;
+import viewmodel.TeamsViewModel;
+import viewmodel.TopScorersViewModel;
+import viewmodel.TournamentViewModel;
+
 import controller.DashboardController;
 import controller.GroupStageController;
 import controller.MatchesController;
@@ -7,6 +18,7 @@ import controller.PlayersController;
 import controller.TeamsController;
 import controller.TournamentController;
 import controller.TournamentSession;
+import controller.TournamentStorage;
 import controller.KnockoutController;
 import controller.ReportsController;
 import controller.CitiesController;
@@ -79,8 +91,8 @@ public class AppWindow extends Application {
     @Override
     public void start(Stage stage) {
         session = resolveSession();
-        stadiumsView.setController(new StadiumsController(session));
-        citiesView.setController(new CitiesController(session));
+        stadiumsView.setController(new StadiumsController());
+        citiesView.setController(new CitiesController());
         dashboardController = new DashboardController(session, dashboardViewModel);
         tournamentController = new TournamentController(session, tournamentViewModel);
         teamsController = new TeamsController(session, teamsViewModel);
@@ -116,7 +128,7 @@ public class AppWindow extends Application {
 
     private TournamentSession resolveSession() {
         TournamentSession resolved;
-        if (TournamentSession.hasSavedTournament() && userWantsToContinue()) {
+        if (TournamentStorage.hasSavedTournament() && userWantsToContinue()) {
             resolved = loadSavedSession();
         } else {
             resolved = new TournamentSession();
@@ -141,7 +153,7 @@ public class AppWindow extends Application {
     private TournamentSession loadSavedSession() {
         TournamentSession loaded;
         try {
-            loaded = TournamentSession.load();
+            loaded = TournamentStorage.load();
         } catch (IOException | ClassNotFoundException | ClassCastException exception) {
             showLoadError(exception);
             loaded = new TournamentSession();

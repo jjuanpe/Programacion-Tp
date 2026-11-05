@@ -35,6 +35,9 @@ package model.team {
     - name : String
     - ranking : int
   }
+}
+
+package model.common {
   class Country {
     - name : String
   }
@@ -201,16 +204,23 @@ CityDao ..> City
 StadiumDAO ..> Stadium
 
 package controller {
-  class TournamentSession {
+  class VenueCatalog {
     + addCity() / updateCity() / deleteCity()
     + addStadium() / updateStadium() / deleteStadium()
+  }
+  class TournamentStorage {
+    + save() / load()
+  }
+  class TournamentSession {
     + getGroupStageReports() : List<MatchSimulationReport>
   }
 }
 TournamentSession --> Championship
 TournamentSession --> "*" MatchSimulationReport
-TournamentSession ..> CityDao
-TournamentSession ..> StadiumDAO
+TournamentSession ..> VenueCatalog
+TournamentStorage ..> TournamentSession
+VenueCatalog ..> CityDao
+VenueCatalog ..> StadiumDAO
 TournamentSession ..> GroupStageSimulator
 TournamentSession ..> KnockoutStageSimulator
 @enduml

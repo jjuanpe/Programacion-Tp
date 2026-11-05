@@ -5,13 +5,13 @@ import model.competition.TeamReportService;
 import model.people.HeadCoach;
 import model.people.Player;
 import model.people.Position;
-import model.team.Country;
+import model.common.Country;
 import model.team.SquadValidation;
 import model.team.Team;
-import ui.fx.PlayerRow;
-import ui.fx.TeamDetail;
-import ui.fx.TeamRow;
-import ui.fx.TeamsViewModel;
+import viewmodel.PlayerRow;
+import viewmodel.TeamDetail;
+import viewmodel.TeamRow;
+import viewmodel.TeamsViewModel;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

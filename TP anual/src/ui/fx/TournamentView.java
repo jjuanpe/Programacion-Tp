@@ -1,5 +1,7 @@
 package ui.fx;
 
+import viewmodel.TournamentViewModel;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;

@@ -1,6 +1,6 @@
 package dao;
 
-import model.team.Country;
+import model.common.Country;
 import model.venue.City;
 import model.venue.CityInUseException;
 

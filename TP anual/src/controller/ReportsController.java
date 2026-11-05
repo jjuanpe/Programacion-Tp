@@ -7,7 +7,7 @@ import model.people.Referee;
 import model.team.Team;
 import report.IdCard;
 import report.IdCardPdfExporter;
-import ui.fx.ReportsViewModel;
+import viewmodel.ReportsViewModel;
 
 import java.io.File;
 import java.io.IOException;

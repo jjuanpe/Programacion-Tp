@@ -22,7 +22,7 @@ public class RefereeAssignmentService {
 
         List<Referee> eligibleReferees = new ArrayList<>();
         for (Referee referee : availableReferees) {
-            if (referee.canOfficiate(homeTeam, awayTeam)) {
+            if (referee.canOfficiate(homeTeam.getCountry(), awayTeam.getCountry())) {
                 eligibleReferees.add(referee);
             }
         }

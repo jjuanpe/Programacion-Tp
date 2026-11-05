@@ -1,5 +1,8 @@
 package ui.fx;
 
+import viewmodel.GroupZone;
+import viewmodel.StandingRow;
+
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;

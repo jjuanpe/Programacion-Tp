@@ -1,5 +1,7 @@
 package model.team;
 
+import model.common.Country;
+
 import java.io.Serializable;
 import model.people.HeadCoach;
 import model.people.Player;

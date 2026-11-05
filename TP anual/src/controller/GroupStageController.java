@@ -7,10 +7,10 @@ import model.competition.Zone;
 import model.match.GroupMatch;
 import model.people.Referee;
 import model.team.Team;
-import ui.fx.FixtureRow;
-import ui.fx.GroupStageViewModel;
-import ui.fx.GroupZone;
-import ui.fx.StandingRow;
+import viewmodel.FixtureRow;
+import viewmodel.GroupStageViewModel;
+import viewmodel.GroupZone;
+import viewmodel.StandingRow;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;

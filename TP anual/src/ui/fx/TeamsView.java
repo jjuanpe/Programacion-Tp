@@ -1,5 +1,9 @@
 package ui.fx;
 
+import viewmodel.PlayerRow;
+import viewmodel.TeamDetail;
+import viewmodel.TeamRow;
+
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;

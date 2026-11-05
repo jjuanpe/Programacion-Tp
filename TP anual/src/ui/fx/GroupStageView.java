@@ -1,5 +1,9 @@
 package ui.fx;
 
+import viewmodel.FixtureRow;
+import viewmodel.GroupZone;
+import viewmodel.StandingRow;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;

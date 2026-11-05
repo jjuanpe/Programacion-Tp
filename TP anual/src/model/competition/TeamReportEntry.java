@@ -1,6 +1,6 @@
 package model.competition;
 
-import model.team.Country;
+import model.common.Country;
 import model.team.Team;
 
 import java.util.Objects;

@@ -1,5 +1,10 @@
 package ui.fx;
 
+import viewmodel.IncidenceRow;
+import viewmodel.LineupRow;
+import viewmodel.MatchDetail;
+import viewmodel.StandingRow;
+
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;

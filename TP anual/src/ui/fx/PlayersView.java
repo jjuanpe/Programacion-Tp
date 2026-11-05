@@ -1,5 +1,7 @@
 package ui.fx;
 
+import viewmodel.PlayerStatsRow;
+
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

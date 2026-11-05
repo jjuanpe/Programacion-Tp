@@ -19,11 +19,11 @@ import model.people.Referee;
 import model.venue.Stadium;
 import model.competition.StandingEntry;
 import model.simulation.MatchSimulationReport;
-import ui.fx.StandingRow;
-import ui.fx.IncidenceRow;
-import ui.fx.LineupRow;
-import ui.fx.MatchDetail;
-import ui.fx.MatchesViewModel;
+import viewmodel.StandingRow;
+import viewmodel.IncidenceRow;
+import viewmodel.LineupRow;
+import viewmodel.MatchDetail;
+import viewmodel.MatchesViewModel;
 
 import java.time.format.DateTimeFormatter;
 import java.util.*;

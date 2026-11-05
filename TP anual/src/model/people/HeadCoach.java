@@ -1,6 +1,6 @@
 package model.people;
 
-import model.team.Country;
+import model.common.Country;
 
 import java.time.LocalDate;
 

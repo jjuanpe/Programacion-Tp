@@ -15,9 +15,9 @@ import model.simulation.FinalMatchReport;
 import model.simulation.KnockoutStageResult;
 import model.simulation.KnockoutTieReport;
 import model.team.Team;
-import ui.fx.BracketTie;
-import ui.fx.KnockoutViewModel;
-import ui.fx.QualifiedRow;
+import viewmodel.BracketTie;
+import viewmodel.KnockoutViewModel;
+import viewmodel.QualifiedRow;
 
 import java.util.ArrayList;
 import java.util.List;

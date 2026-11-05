@@ -4,8 +4,8 @@ import javafx.application.Platform;
 import model.competition.ScorerEntry;
 import model.competition.TopScorersService;
 import model.team.Team;
-import ui.fx.ScorerRow;
-import ui.fx.TopScorersViewModel;
+import viewmodel.ScorerRow;
+import viewmodel.TopScorersViewModel;
 
 import java.util.ArrayList;
 import java.util.List;

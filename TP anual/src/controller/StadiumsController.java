@@ -2,37 +2,44 @@ package controller;
 
 import model.venue.City;
 import model.venue.Stadium;
+import viewmodel.CityRow;
+import viewmodel.StadiumRow;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class StadiumsController {
 
-    private final TournamentSession session;
+    private final VenueCatalog catalog = new VenueCatalog();
 
-    public StadiumsController(TournamentSession session) {
-        this.session = Objects.requireNonNull(session, "The tournament session is required");
+    public List<StadiumRow> getRegisteredStadiums() throws SQLException {
+        List<StadiumRow> rows = new ArrayList<>();
+        for (Stadium stadium : catalog.getStadiums()) {
+            rows.add(new StadiumRow(stadium.getId(), stadium.getName(), stadium.getCity().getId(),
+                    stadium.getCity().getName(), stadium.getCapacity()));
+        }
+        return rows;
     }
 
-    public List<Stadium> getRegisteredStadiums() throws SQLException {
-        return session.getRegisteredStadiums();
+    public List<CityRow> getRegisteredCities() throws SQLException {
+        List<CityRow> rows = new ArrayList<>();
+        for (City city : catalog.getCities()) {
+            rows.add(new CityRow(city.getId(), city.getName(), city.getCountry().getCountryName()));
+        }
+        return rows;
     }
 
-    public List<City> getRegisteredCities() throws SQLException {
-        return session.getRegisteredCities();
+    public void addStadium(long id, String name, long cityId, int capacity) throws SQLException {
+        catalog.addStadium(id, name, cityId, capacity);
     }
 
-    public void addStadium(long id, String name, City city, int capacity) throws SQLException {
-        session.addStadium(id, name, city, capacity);
-    }
-
-    public void updateStadium(long originalId, long newId, String name, City city, int capacity)
+    public void updateStadium(long originalId, long newId, String name, long cityId, int capacity)
             throws SQLException {
-        session.updateStadium(originalId, newId, name, city, capacity);
+        catalog.updateStadium(originalId, newId, name, cityId, capacity);
     }
 
-    public void deleteStadium(Stadium stadium) throws SQLException {
-        session.deleteStadium(stadium);
+    public void deleteStadium(long id) throws SQLException {
+        catalog.deleteStadium(id);
     }
 }

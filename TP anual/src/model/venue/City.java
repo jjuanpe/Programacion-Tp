@@ -1,7 +1,7 @@
 package model.venue;
 
 import java.io.Serializable;
-import model.team.Country;
+import model.common.Country;
 
 import java.util.ArrayList;
 import java.util.List;
