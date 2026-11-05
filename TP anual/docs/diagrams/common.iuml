@@ -1,0 +1,11 @@
+hide empty members
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam roundCorner 8
+skinparam defaultFontName "Segoe UI"
+skinparam ArrowColor #444444
+skinparam ClassBorderColor #444444
+skinparam ClassBackgroundColor #FFFFFF
+skinparam PackageBorderColor #888888
+skinparam packageStyle rectangle
+skinparam dpi 110

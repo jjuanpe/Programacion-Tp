@@ -1,0 +1,76 @@
+@startuml
+title Competition and simulation (Strategy pattern and threads)
+!include common.iuml
+
+package model.competition {
+  class Championship
+  class Zone
+  class DrawService
+  class FixtureService
+  class StandingsService
+  class StandingEntry
+  class KnockoutBracketService
+  class StadiumDrawService
+}
+
+package model.simulation {
+  interface "MatchSimulationStrategy<T extends Match>" as Strategy {
+    + simulate(match, suspended, random) : MatchSimulationResult
+  }
+  class GroupMatchSimulationService
+  class TeamStrengthCalculator
+  class FormationService
+  class PenaltyShootoutSimulator
+  class RefereeAssignmentService
+
+  class GroupStageSimulator {
+    + simulate(zones, referees, seed)
+  }
+  class GroupMatchSimulationTask <<Runnable>>
+  class KnockoutStageSimulator
+  class KnockoutTieTask <<Callable>>
+  class KnockoutStageContext
+
+  class MatchSimulationResult
+  class MatchSimulationReport
+  class KnockoutTieReport
+  class FinalMatchReport
+  class KnockoutStageResult
+}
+
+GroupMatchSimulationService ..|> Strategy
+GroupMatchSimulationService --> TeamStrengthCalculator
+GroupMatchSimulationService --> FormationService
+
+GroupStageSimulator --> Strategy
+GroupStageSimulator --> StandingsService
+GroupStageSimulator --> RefereeAssignmentService
+GroupStageSimulator ..> GroupMatchSimulationTask : pool of 8 threads
+GroupMatchSimulationTask --> Strategy
+GroupStageSimulator ..> MatchSimulationReport
+
+KnockoutStageSimulator --> Strategy
+KnockoutStageSimulator --> KnockoutBracketService
+KnockoutStageSimulator --> PenaltyShootoutSimulator
+KnockoutStageSimulator --> RefereeAssignmentService
+KnockoutStageSimulator --> KnockoutStageContext
+KnockoutStageContext --> StadiumDrawService
+KnockoutStageSimulator ..> KnockoutTieTask : one thread per tie
+KnockoutTieTask --> Strategy
+KnockoutTieTask ..> KnockoutTieReport
+KnockoutStageSimulator ..> FinalMatchReport
+KnockoutStageResult o-- KnockoutTieReport
+KnockoutStageResult o-- FinalMatchReport
+
+Strategy ..> MatchSimulationResult
+Championship o-- Zone
+Zone o-- "*" StandingEntry
+DrawService ..> Zone
+FixtureService ..> Zone
+StandingsService ..> StandingEntry
+
+note bottom of GroupMatchSimulationService
+  Used for group and knockout matches alike,
+  so every stage generates all the incidences.
+end note
+@enduml

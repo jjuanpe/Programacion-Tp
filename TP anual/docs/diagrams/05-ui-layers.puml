@@ -1,0 +1,50 @@
+@startuml
+title Layers of the interface (example: Knockout Stage page)
+!include common.iuml
+
+package ui.fx {
+  class AppWindow
+  class KnockoutView
+}
+package viewmodel {
+  class KnockoutViewModel {
+    + getQuarterFinals() : ObservableList<BracketTie>
+    + getSemiFinals() : ObservableList<BracketTie>
+    + championProperty()
+  }
+  class BracketTie
+  class QualifiedRow
+}
+package controller {
+  class KnockoutController {
+    + refresh()
+  }
+  class TournamentController
+  class TournamentSession {
+    + playQuarterFinals() / playSemiFinals() / playFinal()
+  }
+}
+package model {
+  class "Championship, Match,\nKnockoutTieReport ..." as Domain
+}
+
+AppWindow --> KnockoutView : creates
+AppWindow --> KnockoutController : creates
+AppWindow --> KnockoutViewModel : creates
+KnockoutView --> KnockoutViewModel : reads and listens
+KnockoutViewModel o-- BracketTie
+KnockoutViewModel o-- QualifiedRow
+TournamentController --> TournamentSession : plays a stage\n(in a JavaFX Task)
+KnockoutController --> TournamentSession : reads
+KnockoutController --> KnockoutViewModel : fills on refresh()
+TournamentSession --> Domain
+
+note right of KnockoutView
+  The view never imports model.
+  It only draws what is in the view model.
+end note
+note bottom of KnockoutController
+  Converts model objects into rows
+  (BracketTie, QualifiedRow).
+end note
+@enduml

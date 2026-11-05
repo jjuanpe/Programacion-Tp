@@ -1,0 +1,51 @@
+@startuml
+title Polymorphism: the incidences of a match
+!include common.iuml
+
+package model.event {
+  interface IncidenceContext {
+    + getHomeTeam() : Team
+    + getAwayTeam() : Team
+    + getIncidences() : List<Incidence>
+    + findFifthExpulsion(events) : Expulsion
+  }
+  abstract class Incidence {
+    - minute : int
+    + {abstract} getTypeLabel() : String
+    + {abstract} getDetail() : String
+    + getMinuteLabel() : String
+    + isShootoutKick() : boolean
+    + isScoredShootoutKickBy(team) : boolean
+  }
+  class Goal
+  class YellowCard
+  class Expulsion
+  class Change
+  class PenaltyExecuted
+  class PlayEvent
+  Incidence <|-- Goal
+  Incidence <|-- YellowCard
+  Incidence <|-- Expulsion
+  Incidence <|-- Change
+  Incidence <|-- PenaltyExecuted
+  Incidence <|-- PlayEvent
+  Incidence --> IncidenceContext : belongs to
+}
+
+package model.match {
+  abstract class Match
+}
+
+Match ..|> IncidenceContext
+Match "1" *-- "*" Incidence
+
+note bottom of Incidence
+  The UI lists incidences calling getTypeLabel() and getDetail():
+  no instanceof, no chain of ifs.
+  PenaltyExecuted overrides isShootoutKick() and getMinuteLabel().
+end note
+note bottom of IncidenceContext
+  Dependency inversion: event declares what it needs,
+  Match implements it, so model.event never imports model.match.
+end note
+@enduml

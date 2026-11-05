@@ -269,11 +269,20 @@ This is a deliberate decision: the course data has no images.
 
 ---
 
-## 5. Class diagram
+## 5. Diagrams
 
-The updated class diagram is in `docs/class-diagram.png`. The source is
-`docs/class-diagram.puml` (PlantUML): if the model changes, edit that file and export the
-image again (for example with IntelliJ's *PlantUML Integration* plugin).
+The diagrams are in `docs/diagrams/` (PNG next to its PlantUML source):
+
+| File | Shows |
+|---|---|
+| `01-packages` | Package dependencies |
+| `02-domain` | People, teams, venues and the match hierarchy |
+| `03-incidences` | The incidence hierarchy and `IncidenceContext` (polymorphism) |
+| `04-simulation` | Competition services, Strategy pattern and the simulation threads |
+| `05-ui-layers` | View, view model, controller and session, with the Knockout page as an example |
+
+If the code changes, edit the `.puml` file and export it again (IntelliJ's *PlantUML
+Integration* plugin, or `java -jar plantuml.jar -tpng docs/diagrams/*.puml`).
 
 ---
 
