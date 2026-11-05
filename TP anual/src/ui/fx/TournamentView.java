@@ -2,6 +2,7 @@ package ui.fx;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -35,7 +36,30 @@ public class TournamentView extends VBox {
         getChildren().addAll(
                 title,
                 buildStatusPanel(viewModel),
-                buildActions(viewModel, onDraw, onAdvance, onSave));
+                buildActions(viewModel, onDraw, onAdvance, onSave),
+                buildWarningsPanel(viewModel));
+    }
+
+    private VBox buildWarningsPanel(TournamentViewModel viewModel) {
+        Label heading = new Label("Data warnings");
+        heading.getStyleClass().add("section-title");
+        VBox messages = new VBox();
+        VBox panel = new VBox(heading, messages);
+        panel.getStyleClass().add("panel");
+        Runnable render = () -> {
+            messages.getChildren().clear();
+            for (String warning : viewModel.getWarningMessages()) {
+                Label line = new Label(warning);
+                line.setWrapText(true);
+                line.getStyleClass().add("action-hint");
+                messages.getChildren().add(line);
+            }
+        };
+        viewModel.getWarningMessages().addListener((ListChangeListener<String>) change -> render.run());
+        render.run();
+        panel.visibleProperty().bind(Bindings.isNotEmpty(viewModel.getWarningMessages()));
+        panel.managedProperty().bind(panel.visibleProperty());
+        return panel;
     }
 
     private VBox buildStatusPanel(TournamentViewModel viewModel) {

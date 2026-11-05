@@ -78,6 +78,7 @@ public class TournamentController {
         viewModel.setTotalMatches(matches.size());
         viewModel.setMatchesPlayed(session.countPlayedMatches());
         viewModel.setWarnings(session.getWarnings().size());
+        viewModel.setWarningMessages(session.getWarnings());
         viewModel.setAdvanceLabel(advanceLabelFor(state));
 
         updateAvailableActions(state);

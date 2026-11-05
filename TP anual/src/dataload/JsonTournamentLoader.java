@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.Random;
 import java.time.format.DateTimeFormatter;
 
 public class JsonTournamentLoader {
@@ -27,6 +28,7 @@ public class JsonTournamentLoader {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private final String path;
+    private final Random random = new Random();
 
     public JsonTournamentLoader(String path) {
         this.path = path;
@@ -78,6 +80,8 @@ public class JsonTournamentLoader {
             }
         }
 
+        removeSurplusPlayers(team, data);
+
         try {
             team.validateSquad();
         } catch (RuntimeException e) {
@@ -85,6 +89,21 @@ public class JsonTournamentLoader {
         }
 
         return team;
+    }
+
+    private void removeSurplusPlayers(Team team, TournamentData data) {
+        for (Position position : Position.values()) {
+            int required = position.getRequiredPerSquad();
+            int found = team.countByPosition(position);
+            while (team.countByPosition(position) > required) {
+                Player removed = team.removeRandomPlayer(position, random);
+                data.addWarning(new StringBuilder(team.getName())
+                        .append(": had ").append(found).append(' ')
+                        .append(position.getLabel().toLowerCase()).append("s instead of ").append(required)
+                        .append("; \"").append(removed.getName())
+                        .append("\" was removed at random to complete the squad.").toString());
+            }
+        }
     }
 
     private Player readPlayer(JsonObject node) {

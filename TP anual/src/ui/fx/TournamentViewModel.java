@@ -6,6 +6,10 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
+import java.util.List;
 
 public class TournamentViewModel {
 
@@ -21,6 +25,7 @@ public class TournamentViewModel {
     private final IntegerProperty totalMatches = new SimpleIntegerProperty(this, "totalMatches");
     private final IntegerProperty warnings = new SimpleIntegerProperty(this, "warnings");
 
+    private final ObservableList<String> warningMessages = FXCollections.observableArrayList();
     private final BooleanProperty busy = new SimpleBooleanProperty(this, "busy");
     private final BooleanProperty canImport = new SimpleBooleanProperty(this, "canImport", true);
     private final BooleanProperty canDraw = new SimpleBooleanProperty(this, "canDraw");
@@ -62,6 +67,10 @@ public class TournamentViewModel {
     public IntegerProperty warningsProperty() { return warnings; }
 
     public void setWarnings(int value) { warnings.set(value); }
+
+    public ObservableList<String> getWarningMessages() { return FXCollections.unmodifiableObservableList(warningMessages); }
+
+    public void setWarningMessages(List<String> messages) { warningMessages.setAll(messages); }
 
     public boolean isBusy() { return busy.get(); }
 

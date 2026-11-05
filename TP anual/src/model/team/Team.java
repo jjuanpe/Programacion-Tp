@@ -9,6 +9,7 @@ import model.venue.Stadium;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 public class Team implements Serializable {
     private final String name;
@@ -70,6 +71,23 @@ public class Team implements Serializable {
             throw new IllegalArgumentException("A player cannot be added twice to a team");
         }
         players.add(player);
+    }
+
+    public Player removeRandomPlayer(Position position, Random random) {
+        Objects.requireNonNull(position, "The position is required");
+        Objects.requireNonNull(random, "The random source is required");
+        List<Player> candidates = new ArrayList<>();
+        for (Player player : players) {
+            if (player.getPosition() == position) {
+                candidates.add(player);
+            }
+        }
+        if (candidates.isEmpty()) {
+            throw new IllegalStateException("The team has no players in that position");
+        }
+        Player removed = candidates.get(random.nextInt(candidates.size()));
+        players.remove(removed);
+        return removed;
     }
 
     public int countByPosition(Position position) {
