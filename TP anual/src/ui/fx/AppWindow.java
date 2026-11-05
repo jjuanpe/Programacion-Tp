@@ -264,6 +264,7 @@ public class AppWindow extends Application {
         VBox body = new VBox(
                 buildSummaryRow(),
                 new TournamentProgress(dashboardViewModel.currentStageProperty()),
+                new ZoneLeaders(groupStageViewModel.getZones(), () -> sidebar.select(NavItem.GROUP_STAGE)),
                 lower);
         body.getStyleClass().add("dashboard-body");
         return body;

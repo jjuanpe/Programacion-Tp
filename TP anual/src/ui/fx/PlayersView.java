@@ -7,6 +7,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -55,6 +56,21 @@ public class PlayersView extends VBox {
         return row;
     }
 
+    // A colored edge on each row tells the position at a glance.
+    private TableRow<PlayerStatsRow> buildPositionRow() {
+        return new TableRow<>() {
+            @Override
+            protected void updateItem(PlayerStatsRow item, boolean empty) {
+                super.updateItem(item, empty);
+                getStyleClass().removeAll("pos-goalkeeper", "pos-defender", "pos-midfielder", "pos-forward");
+                if (!empty && item != null) {
+                    getStyleClass().add(new StringBuilder("pos-")
+                            .append(item.getPosition().toLowerCase()).toString());
+                }
+            }
+        };
+    }
+
     private Predicate<PlayerStatsRow> matchOfPosition(String selected) {
         return player -> ALL_POSITIONS.equals(selected) || player.getPosition().equals(selected);
     }
@@ -71,6 +87,7 @@ public class PlayersView extends VBox {
         placeholder.textProperty().bind(emptyMessage);
         table.setPlaceholder(placeholder);
 
+        table.setRowFactory(ignored -> buildPositionRow());
         table.getColumns().add(TableColumns.text("Player", PlayerStatsRow::getName));
         table.getColumns().add(TableColumns.text("Position", PlayerStatsRow::getPosition));
         table.getColumns().add(TableColumns.text("Team", PlayerStatsRow::getTeam));

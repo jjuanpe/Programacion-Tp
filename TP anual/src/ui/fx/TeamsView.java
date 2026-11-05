@@ -6,9 +6,9 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import java.util.List;
@@ -75,6 +75,8 @@ public class TeamsView extends VBox {
             ObservableValue<String> emptyMessage) {
         ListView<TeamDetail> teamList = new ListView<>(teams);
         teamList.getStyleClass().add("team-list");
+        teamList.setPrefHeight(900);
+        teamList.setMaxHeight(Double.MAX_VALUE);
         teamList.setPlaceholder(buildPlaceholder(emptyMessage));
         teamList.getSelectionModel().selectedItemProperty()
                 .addListener((observable, previous, selected) -> showDetail(selected));
@@ -106,6 +108,7 @@ public class TeamsView extends VBox {
         squadTable.getStyleClass().add("data-table");
         squadTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         squadTable.setPlaceholder(buildPlaceholder(null));
+        squadTable.setPrefHeight(670);
         squadTable.getColumns().add(TableColumns.text("Player", PlayerRow::getName));
         squadTable.getColumns().add(TableColumns.text("Position", PlayerRow::getPosition));
         squadTable.getColumns().add(TableColumns.numeric("Age",
@@ -113,30 +116,30 @@ public class TeamsView extends VBox {
         squadTable.getColumns().add(TableColumns.numeric("Rating",
                 row -> String.valueOf(row.getRating())));
 
+        FlowPane chips = new FlowPane(10, 10,
+                buildChip("COUNTRY", countryValue),
+                buildChip("RANKING", rankingValue),
+                buildChip("HEAD COACH", coachValue),
+                buildChip("COACH AGE", coachAgeValue),
+                buildChip("COACH NATIONALITY", coachCountryValue));
+
         VBox panel = new VBox(
                 detailName,
-                buildDetailRow("Country", countryValue),
-                buildDetailRow("Ranking", rankingValue),
-                buildDetailRow("Head coach", coachValue),
-                buildDetailRow("Coach age", coachAgeValue),
-                buildDetailRow("Coach nationality", coachCountryValue),
+                chips,
                 squadStatus,
                 squadTable);
         panel.getStyleClass().addAll("panel", "team-detail");
         return panel;
     }
 
-    private HBox buildDetailRow(String label, Label value) {
+    private VBox buildChip(String label, Label value) {
         Label name = new Label(label);
-        name.getStyleClass().add("status-row-label");
-        value.getStyleClass().add("status-row-value");
+        name.getStyleClass().add("card-kicker");
+        value.getStyleClass().add("chip-value");
 
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-
-        HBox row = new HBox(name, spacer, value);
-        row.getStyleClass().add("status-row");
-        return row;
+        VBox chip = new VBox(name, value);
+        chip.getStyleClass().add("stat-chip");
+        return chip;
     }
 
     private void showDetail(TeamDetail detail) {
