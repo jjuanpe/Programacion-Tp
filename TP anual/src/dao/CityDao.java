@@ -57,6 +57,7 @@ public class CityDao {
             try {
 
                 try (Statement lock = cn.createStatement()) {
+                    // Lock so nobody adds a stadium to this city between the check and the delete.
                     lock.execute("LOCK TABLE estadios IN SHARE MODE");
                 }
                 String cityName;

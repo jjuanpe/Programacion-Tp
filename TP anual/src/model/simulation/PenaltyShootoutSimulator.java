@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
+// 5 rounds each, then sudden death: one more round at a time until a round is not level.
 public class PenaltyShootoutSimulator {
 
     private static final int MINIMUM_ROUNDS = 5;

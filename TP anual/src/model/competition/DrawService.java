@@ -34,6 +34,7 @@ public class DrawService {
             zones.add(new Zone(name));
         }
 
+        // Teams sorted by ranking, cut in 4 pots. One team of each pot per zone keeps zones fair.
         for (int pot = 0; pot < ZONE_COUNT; pot++) {
             List<Team> teamsInPot = new ArrayList<>(
                     sortedTeams.subList(pot * TEAMS_PER_ZONE, pot * TEAMS_PER_ZONE + TEAMS_PER_ZONE));

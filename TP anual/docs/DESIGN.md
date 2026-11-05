@@ -107,8 +107,9 @@ knockout matches alike (so all incidences are generated in every stage):
 1. A formation is chosen for each team and suspended players are left out.
 2. `TeamStrengthCalculator` combines the starters' average, the team ranking and the head
    coach's titles.
-3. Goals are distributed according to each team's strength, a small home advantage and a
-   random "surprise" factor.
+3. Goals are distributed according to each team's strength (raised to a power of 3, so the
+   stronger team wins more often), a small home advantage and a random "surprise" factor.
+   A match averages about 2.7 goals.
 4. Yellow cards, expulsions, substitutions, penalties and own goals are generated with
    fixed probabilities and limits (at most 3 substitutions per team).
 5. Each player's minutes played are computed from the substitutions and expulsions.

@@ -8,6 +8,7 @@ import model.team.Team;
 
 import java.util.Objects;
 
+// Every event is a subclass, so the UI can list them without asking what type each one is.
 public abstract class Incidence implements Serializable {
     private static final long serialVersionUID = 1L;
     private final int minute;

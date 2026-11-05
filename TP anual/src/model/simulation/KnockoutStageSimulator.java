@@ -171,6 +171,7 @@ public class KnockoutStageSimulator {
                 pairings, phase, firstLegDate, secondLegDate, stadiumDrawService, refereePool, seedGenerator,
                 suspendedPlayers);
 
+        // One thread per tie. Both legs of a tie run in order inside the same thread.
         ExecutorService executor = Executors.newFixedThreadPool(tasks.size(), new KnockoutThreadFactory());
         List<Future<KnockoutTieReport>> futures = new ArrayList<>();
         List<KnockoutTieReport> reports;

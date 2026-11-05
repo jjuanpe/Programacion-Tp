@@ -59,6 +59,7 @@ public abstract class Match implements Serializable {
         this.referee = referee;
     }
 
+    // synchronized because the match is filled by a worker thread and read by the UI.
     public synchronized void completeMatch(
             int homeGoals,
             int awayGoals,
@@ -94,6 +95,7 @@ public abstract class Match implements Serializable {
         if (!validIncidences) {
             throw new IllegalArgumentException("Every incidence must belong to this match");
         }
+        // Forfeit rule from the assignment: whoever gets 5 reds loses 0-3.
         Expulsion fifthRed = findFifthExpulsion(incidences);
         if (fifthRed != null) {
             boolean homeLost = homeTeam.getPlayers().contains(fifthRed.getPlayer());

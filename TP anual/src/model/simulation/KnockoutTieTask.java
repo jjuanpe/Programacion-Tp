@@ -63,6 +63,7 @@ public class KnockoutTieTask implements Callable<KnockoutTieReport> {
     @Override
     public KnockoutTieReport call() {
         String workerThreadName = Thread.currentThread().getName();
+        // Own Random per task, so threads never fight over the same one.
         Random random = new Random(seed);
 
         FirstLegMatch firstLeg = new FirstLegMatch(

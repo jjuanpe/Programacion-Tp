@@ -44,6 +44,7 @@ public class Referee extends Person {
                 && away.getCountry() != null;
         boolean canOfficiate = false;
         if (hasRequiredData) {
+            // A referee can't work a game of his own country, unless both teams are from the same country.
             boolean sameCountryTeams = home.getCountry().equals(away.getCountry());
             canOfficiate = sameCountryTeams || (!country.equals(home.getCountry()) && !country.equals(away.getCountry()));
         }

@@ -37,12 +37,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
+// Only door the UI uses to reach the domain. Saving this object saves the whole tournament.
 public class TournamentSession implements Serializable {
     private static final LocalDate GROUP_STAGE_START_DATE = LocalDate.of(2026, 9, 1);
     private static final LocalDate KNOCKOUT_STAGE_START_DATE = LocalDate.of(2026, 11, 1);
     private static final int DAYS_BETWEEN_ROUNDS = 7;
     private static final int DAYS_BETWEEN_KNOCKOUT_STAGES = 14;
     private static final String DEFAULT_SAVE_PATH = "torneo.save";
+    // Change this number if a saved class changes, so old saves fail clean.
     private static final long serialVersionUID = 1L;
 
     private final Random seedGenerator = new Random();
@@ -122,6 +124,7 @@ public class TournamentSession implements Serializable {
             team.validateSquad();
         }
         List<Stadium> stadiums = new StadiumDAO().getAllStadiums();
+        // 4 quarters x2 + 2 semis x2 + final = 13 different stadiums.
         if (stadiums.size() < 13) {
             throw new IllegalStateException(new StringBuilder(
                     "At least 13 stadiums are required for the knockout stage; found ")
@@ -161,6 +164,7 @@ public class TournamentSession implements Serializable {
         this.knockoutResult = null;
     }
 
+    // synchronized: buttons are pressed on the UI thread but the work runs in a Task.
     public synchronized void playGroupStage() throws InterruptedException {
         requireState(TournamentState.GROUPS_DRAWN, "the group stage");
 

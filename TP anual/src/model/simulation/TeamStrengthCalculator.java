@@ -25,11 +25,13 @@ public class TeamStrengthCalculator {
         double playerAverage = totalPlayerAverage / (double) formation.getStarters().size();
 
         int ranking = Math.min(team.getRanking(), MAX_RANKING);
+        // Ranking 1 is the best, so we flip it to make a bigger number mean a stronger team.
         double rankingValue = TOURNAMENT_TEAM_COUNT * (MAX_RANKING - ranking) / (double) (MAX_RANKING - 1);
 
         HeadCoach headCoach = team.getHeadCoach();
         int titlesWon = headCoach == null ? 0 : Math.max(0, headCoach.getTitlesWon());
 
+        // Players alone are too close between teams, so ranking and coach titles break the tie.
         return playerAverage * PLAYER_AVERAGE_WEIGHT
                 + rankingValue * RANKING_WEIGHT
                 + titlesWon * COACH_TITLE_WEIGHT;

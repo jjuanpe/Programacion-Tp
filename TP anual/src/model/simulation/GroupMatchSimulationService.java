@@ -23,11 +23,14 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Matc
     private static final double EXPULSION_PROBABILITY = 0.10;
     private static final double PENALTY_GOAL_PROBABILITY = 0.15;
     private static final double OWN_GOAL_PROBABILITY = 0.05;
+    // Numbers below were tuned by playing lots of fake tournaments, not taken from any formula.
     private static final double HOME_ADVANTAGE = 0.05;
     private static final double SURPRISE_VARIATION = 0.30;
     private static final double MINIMUM_GOAL_SHARE = 0.20;
     private static final double MAXIMUM_GOAL_SHARE = 0.80;
-    private static final double ANOTHER_GOAL_PROBABILITY = 0.65;
+    private static final double ANOTHER_GOAL_PROBABILITY = 0.73;
+    // Raising strength to a power makes the better team win more often. 1 = almost a coin flip.
+    private static final double STRENGTH_EXPONENT = 3.0;
     private static final int MAXIMUM_EXPULSION_ATTEMPTS = 5;
     private static final int EARLIEST_EXPULSION_MINUTE = 25;
     private static final int EXPULSION_MINUTE_RANGE = 64;
@@ -83,6 +86,7 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Matc
         double homeStrength = strengthCalculator.calculate(match.getHomeTeam(), homeFormation);
         double awayStrength = strengthCalculator.calculate(match.getAwayTeam(), awayFormation);
         int totalGoals = 0;
+        // Keep adding goals while the dice say so. Gives about 2.7 goals a match.
         while (random.nextDouble() < ANOTHER_GOAL_PROBABILITY) {
             totalGoals++;
         }
@@ -118,6 +122,7 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Matc
         addPlayEvents(match, homePlan, random, incidences);
         addPlayEvents(match, awayPlan, random, incidences);
         incidences.sort(Comparator.comparingInt(Incidence::getMinute));
+        // Five reds in one team ends the match right there (see Match, it is scored 0-3).
         Expulsion fifthRed = match.findFifthExpulsion(incidences);
         int endMinute = MATCH_MINUTES;
         if (fifthRed != null) {
@@ -174,12 +179,14 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Matc
     }
 
     private double calculateHomeGoalShare(double homeStrength, double awayStrength, Random random) {
-        double totalStrength = homeStrength + awayStrength;
+        double homePower = Math.pow(homeStrength, STRENGTH_EXPONENT);
+        double awayPower = Math.pow(awayStrength, STRENGTH_EXPONENT);
+        double totalPower = homePower + awayPower;
         double strengthShare;
-        if (totalStrength == 0) {
+        if (totalPower == 0) {
             strengthShare = 0.50;
         } else {
-            strengthShare = homeStrength / totalStrength;
+            strengthShare = homePower / totalPower;
         }
         double surprise = random.nextDouble() * SURPRISE_VARIATION - SURPRISE_VARIATION / 2.0;
         double result = strengthShare + HOME_ADVANTAGE + surprise;

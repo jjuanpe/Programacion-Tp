@@ -17,6 +17,7 @@ public class StadiumDrawService implements Serializable {
         this.remainingStadiums = new ArrayList<>(stadiums);
     }
 
+    // Each stadium is used once in the knockout, that is why we need 13 at least.
     public synchronized Stadium draw(Random random) {
         Objects.requireNonNull(random, "The random generator is required");
         if (remainingStadiums.isEmpty()) {

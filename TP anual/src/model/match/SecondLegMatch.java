@@ -62,6 +62,7 @@ public class SecondLegMatch extends Match {
         return points;
     }
 
+    // Order by the rules: points first, then goal difference (away goals x2), then penalties.
     public TieCriterion getDecidingCriterion() {
         TieCriterion criterion = TieCriterion.PENALTY_SHOOTOUT;
         if (getPointsForSecondLegHomeTeam() != getPointsForSecondLegAwayTeam()) {

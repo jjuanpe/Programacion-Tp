@@ -57,6 +57,7 @@ public class Championship implements Serializable {
         return stadiums;
     }
 
+    // Only removes from memory. The database is never touched by the simulation.
     public void consumeStadium(Stadium stadium) {
         City city = Objects.requireNonNull(stadium, "The stadium is required").getCity();
         if (!city.remove(stadium)) {

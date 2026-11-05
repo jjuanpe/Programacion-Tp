@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.util.Random;
 import java.time.format.DateTimeFormatter;
 
+// Reads the course JSON. Extra players are cut at random and a warning is saved for the UI.
 public class JsonTournamentLoader {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");

@@ -2,6 +2,7 @@ package model.match;
 
 import model.people.Position;
 
+// Fixed list of schemes. Each team picks one at random for every match.
 public enum FormationScheme {
 
     F_4_4_2(4, 4, 2),

@@ -44,9 +44,11 @@ public class GroupStageSimulator {
         validateGroupStage(zones, referees);
         Map<LocalDate, List<ScheduledGroupMatch>> matchesByDate = groupMatchesByDate(zones);
         Random seedGenerator = new Random(seed);
+        // Suspensions are only known after the whole match day ends, so we wait for every match.
         Set<Player> suspendedPlayers = Set.of();
         List<MatchSimulationReport> reports = new ArrayList<>();
 
+        // 8 threads is enough to go faster, without flooding the machine.
         ExecutorService executor = Executors.newFixedThreadPool(
                 MAX_CONCURRENT_MATCHES,
                 new GroupMatchThreadFactory());

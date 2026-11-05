@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+// Squad must be exactly 18: 2 goalkeepers, 6 defenders, 5 midfielders, 5 forwards.
 public final class SquadValidation {
 
     private static final int REQUIRED_SQUAD_SIZE = 18;
