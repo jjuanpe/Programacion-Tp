@@ -118,8 +118,9 @@ public class StadiumDAO {
                     .append(" already exists or another unique value is repeated. Check the data entered.").toString(),
                     exception.getSQLState(), exception);
         } else if ("23503".equals(exception.getSQLState())) {
-            result = new SQLException("Could not save: the city no longer exists or the stadium id is "
-                    + "referenced by other records.", exception.getSQLState(), exception);
+            result = new SQLException(
+                    "Could not save: the city no longer exists or the stadium id is referenced by other records.",
+                    exception.getSQLState(), exception);
         }
         return result;
     }
@@ -142,7 +143,8 @@ public class StadiumDAO {
                 int cap = rs.getInt("capacidad");
                 City city = citiesById.get(idciudad);
                 if (city == null) {
-                    throw new SQLException("Stadium " + id + " refers to an unknown city: " + idciudad);
+                    throw new SQLException(new StringBuilder("Stadium ").append(id)
+                            .append(" refers to an unknown city: ").append(idciudad).toString());
                 }
                 Stadium stadium = new Stadium(id,name,city,cap);
                 stadiumList.add(stadium);

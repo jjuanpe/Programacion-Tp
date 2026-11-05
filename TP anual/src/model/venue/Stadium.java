@@ -2,10 +2,10 @@ package model.venue;
 
 import java.io.Serializable;
 public class Stadium implements Serializable {
-    private Long id;
-    private String name;
-    private City city;
-    private int capacity;
+    private final Long id;
+    private final String name;
+    private final City city;
+    private final int capacity;
     private static final long serialVersionUID = 1L;
 
     public Stadium(Long id, String name, City city, int capacity) {

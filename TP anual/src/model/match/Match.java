@@ -166,7 +166,7 @@ public abstract class Match implements Serializable {
         int kickIndex = 0;
         boolean validKicks = true;
         while (kickIndex < kicks.size() && validKicks) {
-            model.event.PenaltyExecuted kick = kicks.get(kickIndex);
+            PenaltyExecuted kick = kicks.get(kickIndex);
             validKicks = kick != null && kick.getMatch() == this;
             kickIndex++;
         }

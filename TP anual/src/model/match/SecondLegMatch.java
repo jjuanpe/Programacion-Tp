@@ -8,8 +8,8 @@ import java.time.LocalDate;
 
 public class SecondLegMatch extends Match {
     private static final long serialVersionUID = 1L;
-    private PhaseType phase;
-    private FirstLegMatch firstLeg;
+    private final PhaseType phase;
+    private final FirstLegMatch firstLeg;
 
     public SecondLegMatch(LocalDate date, Team homeTeam, Team awayTeam, Referee referee,
                           Stadium stadium, PhaseType phase, FirstLegMatch firstLeg) {
@@ -105,7 +105,7 @@ public class SecondLegMatch extends Match {
 
     @Override
     public String getPhaseLabel() {
-        return phase.getLabel() + " (2nd leg)";
+        return new StringBuilder(phase.getLabel()).append(" (2nd leg)").toString();
     }
 
     @Override

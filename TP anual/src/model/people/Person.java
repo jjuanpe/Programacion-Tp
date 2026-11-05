@@ -5,10 +5,10 @@ import java.time.LocalDate;
 import java.time.Period;
 
 public abstract class Person implements Serializable {
-    private String name;
-    private LocalDate birthDate;
-    private DocumentType documentType;
-    private String document;
+    private final String name;
+    private final LocalDate birthDate;
+    private final DocumentType documentType;
+    private final String document;
     private static final long serialVersionUID = 1L;
 
     public Person(String name,LocalDate birthday,DocumentType documentType,String document){

@@ -5,8 +5,8 @@ import model.team.Country;
 import java.time.LocalDate;
 
 public class HeadCoach extends Person{
-    private Country country;
-    private int titlesWon;
+    private final Country country;
+    private final int titlesWon;
     private static final long serialVersionUID = 1L;
 
     public HeadCoach(String name, LocalDate birthday, DocumentType documentType, String document, Country country, int titlesWon){
@@ -29,7 +29,8 @@ public class HeadCoach extends Person{
         return titlesWon;
     }
 
-    public String getRole(){
+    @Override
+    public String getRole() {
         return "Head coach";
     }
 }

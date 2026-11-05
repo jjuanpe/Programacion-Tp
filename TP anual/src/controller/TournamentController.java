@@ -45,7 +45,7 @@ public class TournamentController {
             session.save();
             message = "Tournament saved";
         } catch (IOException exception) {
-            message = "Could not save the tournament: " + exception.getMessage();
+            message = new StringBuilder("Could not save the tournament: ").append(exception.getMessage()).toString();
         }
         viewModel.setMessage(message);
     }
@@ -137,8 +137,7 @@ public class TournamentController {
         if (failure != null) {
             message = describe(failure);
         } else {
-            message = successMessage;
-            message = message + autoSaveSuffix();
+            message = new StringBuilder(successMessage).append(autoSaveSuffix()).toString();
         }
         refresh();
         viewModel.setMessage(message);
@@ -151,7 +150,7 @@ public class TournamentController {
             session.save();
             suffix = "";
         } catch (IOException exception) {
-            suffix = " (could not auto-save: " + exception.getMessage() + ")";
+            suffix = new StringBuilder(" (could not auto-save: ").append(exception.getMessage()).append(')').toString();
         }
         return suffix;
     }
@@ -161,6 +160,6 @@ public class TournamentController {
         if (reason == null || reason.isBlank()) {
             reason = failure.getClass().getSimpleName();
         }
-        return "Failed: " + reason;
+        return new StringBuilder("Failed: ").append(reason).toString();
     }
 }

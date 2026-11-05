@@ -162,7 +162,8 @@ public class KnockoutStageSimulator {
             Set<Player> suspendedPlayers,
             int expectedTieCount) throws InterruptedException {
         if (pairings.size() != expectedTieCount) {
-            throw new IllegalArgumentException("Expected " + expectedTieCount + " ties for phase " + phase);
+            throw new IllegalArgumentException(new StringBuilder("Expected ").append(expectedTieCount)
+                    .append(" ties for phase ").append(phase).toString());
         }
 
         LocalDate secondLegDate = firstLegDate.plusDays(DAYS_BETWEEN_LEGS);
@@ -306,7 +307,8 @@ public class KnockoutStageSimulator {
 
         @Override
         public Thread newThread(Runnable runnable) {
-            return new Thread(runnable, "knockout-tie-worker-" + threadNumber.getAndIncrement());
+            return new Thread(runnable,
+                    new StringBuilder("knockout-tie-worker-").append(threadNumber.getAndIncrement()).toString());
         }
     }
 }

@@ -66,7 +66,7 @@ public class PenaltyExecuted extends Incidence {
 
     @Override
     public String getDescription() {
-        return getMinute() + "' Penalty: " + kicker.getName()
-                + (" " + getOutcomeDescription());
+        return new StringBuilder().append(getMinute()).append("' Penalty: ").append(kicker.getName())
+                .append(' ').append(getOutcomeDescription()).toString();
     }
 }

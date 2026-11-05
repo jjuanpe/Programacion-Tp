@@ -43,8 +43,8 @@ public class KnockoutBracketService {
     private List<Team> getQualifiedTeams(Zone zone) {
         List<StandingEntry> standings = standingsService.computeStandings(zone);
         if (standings.size() < QUALIFIED_PER_ZONE) {
-            throw new IllegalStateException(
-                    "Zone " + zone.getName() + " does not have enough teams to qualify two of them");
+            throw new IllegalStateException(new StringBuilder("Zone ").append(zone.getName())
+                    .append(" does not have enough teams to qualify two of them").toString());
         }
         List<Team> qualified = new ArrayList<>();
         qualified.add(standings.get(0).getTeam());

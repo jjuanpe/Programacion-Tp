@@ -72,7 +72,8 @@ public class MatchesController {
         String score;
         String status;
         if (played) {
-            score = match.getHomeGoals() + " - " + match.getAwayGoals();
+            score = new StringBuilder().append(match.getHomeGoals()).append(" - ")
+                    .append(match.getAwayGoals()).toString();
             status = "Played";
         } else {
             score = NOT_AVAILABLE;
@@ -216,7 +217,8 @@ public class MatchesController {
         if (stadium == null) {
             name = NOT_AVAILABLE;
         } else {
-            name = stadium.getName() + " (" + stadium.getCity().getName() + ")";
+            name = new StringBuilder(stadium.getName()).append(" (")
+                    .append(stadium.getCity().getName()).append(')').toString();
         }
         return name;
     }

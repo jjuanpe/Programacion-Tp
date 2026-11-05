@@ -30,6 +30,7 @@ public class YellowCard extends Incidence {
 
     @Override
     public String getDescription() {
-        return getMinute() + "' Yellow card: " + player.getName();
+        return new StringBuilder().append(getMinute()).append("' Yellow card: ")
+                .append(player.getName()).toString();
     }
 }

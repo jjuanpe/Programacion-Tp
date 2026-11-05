@@ -56,7 +56,11 @@ public class KnockoutController {
                     buildSemiFinals(quarterFinals, semiFinals),
                     buildFinal(semiFinals, result));
         }
-        viewModel.setChampion(result == null ? "" : "Champion: " + result.getChampion().getName());
+        String champion = "";
+        if (result != null) {
+            champion = new StringBuilder("Champion: ").append(result.getChampion().getName()).toString();
+        }
+        viewModel.setChampion(champion);
         viewModel.setStatus(zones.isEmpty() ? NO_DRAW_MESSAGE : "");
     }
 
@@ -79,21 +83,21 @@ public class KnockoutController {
         List<BracketTie> ties = new ArrayList<>();
         if (!reports.isEmpty()) {
             for (int index = 0; index < reports.size(); index++) {
-                ties.add(toTie("Quarter-final " + QUARTER_FINAL_NAMES[index], reports.get(index)));
+                ties.add(toTie(quarterFinalTitle(index), reports.get(index)));
             }
         } else if (groupStagePlayed) {
             List<Team[]> pairings = bracketService.buildQuarterFinalPairings(zones);
             for (int index = 0; index < pairings.size(); index++) {
-                ties.add(BracketTie.pending("Quarter-final " + QUARTER_FINAL_NAMES[index],
+                ties.add(BracketTie.pending(quarterFinalTitle(index),
                         pairings.get(index)[0].getName(), pairings.get(index)[1].getName()));
             }
         } else {
 
             int[][] crossings = {{0, 3}, {1, 2}, {2, 0}, {3, 1}};
             for (int index = 0; index < crossings.length; index++) {
-                ties.add(BracketTie.pending("Quarter-final " + QUARTER_FINAL_NAMES[index],
-                        "1st " + zones.get(crossings[index][0]).getName(),
-                        "2nd " + zones.get(crossings[index][1]).getName()));
+                ties.add(BracketTie.pending(quarterFinalTitle(index),
+                        new StringBuilder("1st ").append(zones.get(crossings[index][0]).getName()).toString(),
+                        new StringBuilder("2nd ").append(zones.get(crossings[index][1]).getName()).toString()));
             }
         }
         return ties;
@@ -103,7 +107,7 @@ public class KnockoutController {
             List<KnockoutTieReport> quarterFinals, List<KnockoutTieReport> reports) {
         List<BracketTie> ties = new ArrayList<>();
         for (int index = 0; index < SEMI_FINAL_NAMES.length; index++) {
-            String title = "Semi-final " + SEMI_FINAL_NAMES[index];
+            String title = new StringBuilder("Semi-final ").append(SEMI_FINAL_NAMES[index]).toString();
             if (!reports.isEmpty()) {
                 ties.add(toTie(title, reports.get(index)));
             } else {
@@ -164,6 +168,16 @@ public class KnockoutController {
     }
 
     private String winnerOrPlaceholder(List<KnockoutTieReport> reports, int index, String[] names) {
-        return reports.isEmpty() ? "Winner of " + names[index] : reports.get(index).getWinner().getName();
+        String winner;
+        if (reports.isEmpty()) {
+            winner = new StringBuilder("Winner of ").append(names[index]).toString();
+        } else {
+            winner = reports.get(index).getWinner().getName();
+        }
+        return winner;
+    }
+
+    private String quarterFinalTitle(int index) {
+        return new StringBuilder("Quarter-final ").append(QUARTER_FINAL_NAMES[index]).toString();
     }
 }

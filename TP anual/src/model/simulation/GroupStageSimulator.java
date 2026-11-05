@@ -108,8 +108,8 @@ public class GroupStageSimulator {
         }
         for (Zone zone : zones) {
             if (zone.getGroupMatches().size() != EXPECTED_MATCHES_PER_ZONE) {
-                throw new IllegalArgumentException(
-                        "Zone " + zone.getName() + " must contain six matches");
+                throw new IllegalArgumentException(new StringBuilder("Zone ").append(zone.getName())
+                        .append(" must contain six matches").toString());
             }
             for (GroupMatch match : zone.getGroupMatches()) {
                 if (match.isPlayed()) {
@@ -189,7 +189,8 @@ public class GroupStageSimulator {
 
         @Override
         public Thread newThread(Runnable runnable) {
-            return new Thread(runnable, "group-match-worker-" + threadNumber.getAndIncrement());
+            return new Thread(runnable,
+                    new StringBuilder("group-match-worker-").append(threadNumber.getAndIncrement()).toString());
         }
     }
 }

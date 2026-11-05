@@ -29,10 +29,10 @@ public class Sidebar extends VBox {
     }
 
     private VBox buildHeader() {
-        Label line1 = new Label("Copa Internacional");
+        Label line1 = new Label("International");
         line1.getStyleClass().add("app-title");
 
-        Label line2 = new Label("de Clubes");
+        Label line2 = new Label("Club Cup");
         line2.getStyleClass().add("app-title");
 
         VBox header = new VBox(line1, line2);

@@ -23,13 +23,15 @@ public final class SquadValidation {
         List<String> problems = new ArrayList<>();
 
         if (players.size() != REQUIRED_SQUAD_SIZE) {
-            problems.add(players.size() + " players instead of " + REQUIRED_SQUAD_SIZE);
+            problems.add(new StringBuilder().append(players.size()).append(" players instead of ")
+                    .append(REQUIRED_SQUAD_SIZE).toString());
         }
         for (Position position : Position.values()) {
             int expected = position.getRequiredPerSquad();
             int actual = team.countByPosition(position);
             if (actual != expected) {
-                problems.add(actual + " of " + expected + " " + position.name().toLowerCase() + "s");
+                problems.add(new StringBuilder().append(actual).append(" of ").append(expected).append(' ')
+                        .append(position.name().toLowerCase()).append('s').toString());
             }
         }
         return new SquadValidation(problems);

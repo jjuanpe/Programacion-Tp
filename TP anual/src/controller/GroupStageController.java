@@ -114,7 +114,7 @@ public class GroupStageController {
             rows.add(new FixtureRow(
                     match.getDate().format(DATE_FORMAT),
                     match.getHomeTeam().getName(),
-                    played ? match.getHomeGoals() + " - " + match.getAwayGoals() : NOT_AVAILABLE,
+                    scoreOf(match, played),
                     match.getAwayTeam().getName(),
                     played ? "Played" : "Pending",
                     refereeNameOf(match.getReferee()),
@@ -138,7 +138,7 @@ public class GroupStageController {
                     index++) {
                 qualified.add(standings.get(index).getTeam().getName());
             }
-            description = "Qualified: " + String.join(", ", qualified);
+            description = new StringBuilder("Qualified: ").append(String.join(", ", qualified)).toString();
         }
         return description;
     }
@@ -152,5 +152,14 @@ public class GroupStageController {
             }
         }
         return finished;
+    }
+
+    private String scoreOf(GroupMatch match, boolean played) {
+        String score = NOT_AVAILABLE;
+        if (played) {
+            score = new StringBuilder().append(match.getHomeGoals()).append(" - ")
+                    .append(match.getAwayGoals()).toString();
+        }
+        return score;
     }
 }

@@ -27,6 +27,18 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Matc
     private static final double SURPRISE_VARIATION = 0.30;
     private static final double MINIMUM_GOAL_SHARE = 0.20;
     private static final double MAXIMUM_GOAL_SHARE = 0.80;
+    private static final double ANOTHER_GOAL_PROBABILITY = 0.65;
+    private static final int MAXIMUM_EXPULSION_ATTEMPTS = 5;
+    private static final int EARLIEST_EXPULSION_MINUTE = 25;
+    private static final int EXPULSION_MINUTE_RANGE = 64;
+    private static final int EARLIEST_CHANGE_MINUTE = 55;
+    private static final int CHANGE_MINUTE_RANGE = 31;
+    private static final int MINIMUM_FOULS = 3;
+    private static final int FOUL_VARIATION = 10;
+    private static final int MINIMUM_SHOT_ATTEMPTS = 2;
+    private static final int SHOT_ATTEMPT_VARIATION = 9;
+    private static final double WOODWORK_PROBABILITY = 0.15;
+    private static final double SHOT_SAVED_PROBABILITY_LIMIT = 0.60;
 
     private final FormationService formationService;
     private final TeamStrengthCalculator strengthCalculator;
@@ -71,7 +83,7 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Matc
         double homeStrength = strengthCalculator.calculate(match.getHomeTeam(), homeFormation);
         double awayStrength = strengthCalculator.calculate(match.getAwayTeam(), awayFormation);
         int totalGoals = 0;
-        while (random.nextDouble() < 0.65) {
+        while (random.nextDouble() < ANOTHER_GOAL_PROBABILITY) {
             totalGoals++;
         }
         double homeGoalShare = calculateHomeGoalShare(homeStrength, awayStrength, random);
@@ -138,20 +150,20 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Matc
 
     private void addPlayEvents(Match match, TeamEventPlan plan, Random random,
             List<Incidence> incidences) {
-        int fouls = 3 + random.nextInt(10);
+        int fouls = MINIMUM_FOULS + random.nextInt(FOUL_VARIATION);
         for (int index = 0; index < fouls; index++) {
             int minute = 1 + random.nextInt(MATCH_MINUTES);
             incidences.add(new PlayEvent(minute, match,
                     plan.selectActivePlayer(minute, random, true), PlayEvent.FOUL));
         }
-        int attempts = 2 + random.nextInt(9);
+        int attempts = MINIMUM_SHOT_ATTEMPTS + random.nextInt(SHOT_ATTEMPT_VARIATION);
         for (int index = 0; index < attempts; index++) {
             int minute = 1 + random.nextInt(MATCH_MINUTES);
             double outcome = random.nextDouble();
             String type;
-            if (outcome < 0.15) {
+            if (outcome < WOODWORK_PROBABILITY) {
                 type = PlayEvent.WOODWORK;
-            } else if (outcome < 0.60) {
+            } else if (outcome < SHOT_SAVED_PROBABILITY_LIMIT) {
                 type = PlayEvent.SHOT_SAVED;
             } else {
                 type = PlayEvent.SHOT_OFF_TARGET;
@@ -178,11 +190,12 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Matc
         List<Expulsion> expulsions = new ArrayList<>();
         List<Player> expulsionCandidates = getOutfieldPlayers(formation.getStarters());
         int attempt = 0;
-        while (attempt < 5 && !expulsionCandidates.isEmpty()) {
+        while (attempt < MAXIMUM_EXPULSION_ATTEMPTS && !expulsionCandidates.isEmpty()) {
             if (random.nextDouble() < EXPULSION_PROBABILITY) {
                 Player player = selectRandom(expulsionCandidates, random);
                 expulsionCandidates.remove(player);
-                expulsions.add(new Expulsion(25 + random.nextInt(64), match, player));
+                expulsions.add(new Expulsion(
+                        EARLIEST_EXPULSION_MINUTE + random.nextInt(EXPULSION_MINUTE_RANGE), match, player));
             }
             attempt++;
         }
@@ -209,7 +222,7 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Matc
             Player incomingPlayer = findSubstituteForPosition(
                     outgoingPlayer.getPosition(), substituteCandidates);
             if (incomingPlayer != null) {
-                int minute = 55 + random.nextInt(31);
+                int minute = EARLIEST_CHANGE_MINUTE + random.nextInt(CHANGE_MINUTE_RANGE);
                 changes.add(new Change(minute, match, outgoingPlayer, incomingPlayer));
                 substituteCandidates.remove(incomingPlayer);
             }

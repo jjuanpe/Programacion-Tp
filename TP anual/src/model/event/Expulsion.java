@@ -45,6 +45,7 @@ public class Expulsion extends Incidence {
 
     @Override
     public String getDescription() {
-        return getMinute() + "' Expulsion (" + reason.getDescription() + "): " + player.getName();
+        return new StringBuilder().append(getMinute()).append("' Expulsion (")
+                .append(reason.getDescription()).append("): ").append(player.getName()).toString();
     }
 }

@@ -61,7 +61,7 @@ public class Goal extends Incidence {
     public String getDescription() {
         String goalType = penalty ? " (penalty)" : ownGoal ? " (own goal)" : "";
         String goalkeeperName = goalkeeper == null ? "not recorded" : goalkeeper.getName();
-        return getMinute() + "' Goal" + goalType + ": " + scorer.getName()
-                + " | goalkeeper: " + goalkeeperName;
+        return new StringBuilder().append(getMinute()).append("' Goal").append(goalType).append(": ")
+                .append(scorer.getName()).append(" | goalkeeper: ").append(goalkeeperName).toString();
     }
 }

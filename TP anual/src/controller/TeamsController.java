@@ -64,7 +64,7 @@ public class TeamsController {
                     countryNameOf(entry.getCoachCountry()),
                     entry.getGoalsFor(),
                     entry.getGoalsAgainst(),
-                    formatDecimal(entry.getEffectiveness()) + "%"));
+                    new StringBuilder(formatDecimal(entry.getEffectiveness())).append('%').toString()));
         }
         return rows;
     }
@@ -98,7 +98,8 @@ public class TeamsController {
         if (validation.isValid()) {
             description = VALID_SQUAD;
         } else {
-            description = "Invalid squad: " + String.join("; ", validation.getProblems());
+            description = new StringBuilder("Invalid squad: ")
+                    .append(String.join("; ", validation.getProblems())).toString();
         }
         return description;
     }

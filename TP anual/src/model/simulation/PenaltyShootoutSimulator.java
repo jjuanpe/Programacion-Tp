@@ -1,5 +1,8 @@
 package model.simulation;
 
+import model.event.Change;
+import model.event.Expulsion;
+import model.event.Incidence;
 import model.event.PenaltyExecuted;
 import model.match.Formation;
 import model.match.Match;
@@ -108,13 +111,13 @@ public class PenaltyShootoutSimulator {
 
     private List<Player> buildKickerOrder(Match match, Formation formation, Random random) {
         List<Player> eligiblePlayers = new ArrayList<>(formation.getStarters());
-        for (model.event.Incidence incidence : match.getIncidences()) {
-            if (incidence instanceof model.event.Change change) {
+        for (Incidence incidence : match.getIncidences()) {
+            if (incidence instanceof Change change) {
                 eligiblePlayers.remove(change.getPlayerOut());
                 if (formation.getSubstitutes().contains(change.getPlayerIn())) {
                     eligiblePlayers.add(change.getPlayerIn());
                 }
-            } else if (incidence instanceof model.event.Expulsion expulsion) {
+            } else if (incidence instanceof Expulsion expulsion) {
                 eligiblePlayers.remove(expulsion.getPlayer());
             }
         }

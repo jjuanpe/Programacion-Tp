@@ -37,6 +37,7 @@ public class Change extends Incidence {
 
     @Override
     public String getDescription() {
-        return getMinute() + "' Change: " + playerOut.getName() + " -> " + playerIn.getName();
+        return new StringBuilder().append(getMinute()).append("' Change: ").append(playerOut.getName())
+                .append(" -> ").append(playerIn.getName()).toString();
     }
 }

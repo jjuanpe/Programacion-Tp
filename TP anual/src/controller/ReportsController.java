@@ -35,9 +35,11 @@ public class ReportsController {
         try {
             List<IdCard> cards = buildIdCards();
             idCardExporter.export(cards, output);
-            viewModel.setStatus(cards.size() + " identification cards saved to " + output.getName());
+            viewModel.setStatus(new StringBuilder().append(cards.size())
+                    .append(" identification cards saved to ").append(output.getName()).toString());
         } catch (IOException | RuntimeException exception) {
-            viewModel.setStatus("The identification cards could not be generated: " + exception.getMessage());
+            viewModel.setStatus(new StringBuilder("The identification cards could not be generated: ")
+                    .append(exception.getMessage()).toString());
         }
     }
 
@@ -50,28 +52,35 @@ public class ReportsController {
             HeadCoach coach = team.getHeadCoach();
             if (coach != null) {
                 cards.add(toCard(coach, List.of(
-                        "Team: " + team.getName(),
-                        "Nationality: " + coach.getCountry().getCountryName(),
-                        "Titles won: " + coach.getTitlesWon())));
+                        labelled("Team", team.getName()),
+                        labelled("Nationality", coach.getCountry().getCountryName()),
+                        labelled("Titles won", coach.getTitlesWon()))));
             }
             for (Player player : team.getPlayers()) {
                 cards.add(toCard(player, List.of(
-                        "Team: " + team.getName() + " (" + team.getCountry().getCountryName() + ")",
-                        "Position: " + player.getPosition().getLabel(),
-                        "Rating: " + player.getAverage())));
+                        labelled("Team", new StringBuilder(team.getName()).append(" (")
+                                .append(team.getCountry().getCountryName()).append(')')),
+                        labelled("Position", player.getPosition().getLabel()),
+                        labelled("Rating", player.getAverage()))));
             }
         }
         for (Referee referee : session.getReferees()) {
             cards.add(toCard(referee, List.of(
-                    "Nationality: " + referee.getCountry().getCountryName(),
-                    "Years refereeing: " + referee.getYears())));
+                    labelled("Nationality", referee.getCountry().getCountryName()),
+                    labelled("Years refereeing", referee.getYears()))));
         }
         return cards;
     }
 
     private IdCard toCard(Person person, List<String> details) {
-        String document = person.getDocumentType().name() + " " + person.getDocument();
-        String barcode = person.getDocumentType().name() + "-" + person.getDocument();
+        String document = new StringBuilder(person.getDocumentType().name()).append(' ')
+                .append(person.getDocument()).toString();
+        String barcode = new StringBuilder(person.getDocumentType().name()).append('-')
+                .append(person.getDocument()).toString();
         return new IdCard(person.getName(), person.getRole(), document, person.getBirthDate(), details, barcode);
+    }
+
+    private String labelled(String label, Object value) {
+        return new StringBuilder(label).append(": ").append(value).toString();
     }
 }

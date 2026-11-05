@@ -3,8 +3,8 @@ package model.people;
 import java.time.LocalDate;
 
 public class Player extends Person{
-    private Position position;
-    private int average;
+    private final Position position;
+    private final int average;
     private static final long serialVersionUID = 1L;
 
     public Player (String name, LocalDate birthday, DocumentType documentType, String document,Position position,int average){
@@ -41,7 +41,8 @@ public class Player extends Person{
         return average;
     }
 
-    public String getRole(){
+    @Override
+    public String getRole() {
         return "Player";
     }
 }

@@ -42,8 +42,8 @@ public class FormationService {
                 }
             }
             if (position == Position.GOALKEEPER && selected != required) {
-                throw new IllegalStateException(
-                        team.getName() + " does not have enough available players for position " + position);
+                throw new IllegalStateException(new StringBuilder(team.getName())
+                        .append(" does not have enough available players for position ").append(position).toString());
             }
         }
 
@@ -56,8 +56,8 @@ public class FormationService {
             playerIndex++;
         }
         if (starters.size() != STARTER_COUNT) {
-            throw new IllegalStateException(
-                    team.getName() + " does not have eleven available players for the formation");
+            throw new IllegalStateException(new StringBuilder(team.getName())
+                    .append(" does not have eleven available players for the formation").toString());
         }
 
         List<Player> substitutes = new ArrayList<>(availablePlayers);

@@ -19,7 +19,19 @@ public class CityDao {
             pst.setString(2, city.getName());
             pst.setString(3, city.getCountry().getCountryName());
             pst.executeUpdate();
+        } catch (SQLException exception) {
+            throw describeInsertError(exception, id);
         }
+    }
+
+    private SQLException describeInsertError(SQLException exception, Long id) {
+        SQLException result = exception;
+        if ("23505".equals(exception.getSQLState())) {
+            result = new SQLException(new StringBuilder("A city with id ").append(id)
+                    .append(" already exists. Choose another id.").toString(),
+                    exception.getSQLState(), exception);
+        }
+        return result;
     }
 
     public void updateCity(Long id, String name, Country country) throws SQLException {

@@ -74,9 +74,9 @@ public class JsonTournamentLoader {
             try {
                 team.addPlayer(readPlayer(player));
             } catch (RuntimeException e) {
-                data.addWarning(team.getName() + ": left out \""
-                        + player.getAsJsonObject("persona").get("nombre").getAsString()
-                        + "\" - " + e.getMessage());
+                data.addWarning(new StringBuilder(team.getName()).append(": left out \"")
+                        .append(player.getAsJsonObject("persona").get("nombre").getAsString())
+                        .append("\" - ").append(e.getMessage()).toString());
             }
         }
 

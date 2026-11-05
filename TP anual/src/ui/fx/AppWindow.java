@@ -102,7 +102,7 @@ public class AppWindow extends Application {
         Scene scene = new Scene(root, 1120, 720);
         scene.getStylesheets().add(loadStylesheet());
 
-        stage.setTitle("Copa Internacional de Clubes");
+        stage.setTitle("International Club Cup");
         stage.setMinWidth(900);
         stage.setMinHeight(600);
         stage.setScene(scene);
@@ -126,7 +126,7 @@ public class AppWindow extends Application {
 
     private boolean userWantsToContinue() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Copa Internacional de Clubes");
+        alert.setTitle("International Club Cup");
         alert.setHeaderText("A previous tournament was found.");
         alert.setContentText("Do you want to continue it, or start a new one?");
 
@@ -151,7 +151,7 @@ public class AppWindow extends Application {
 
     private void showLoadError(Exception exception) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Copa Internacional de Clubes");
+        alert.setTitle("International Club Cup");
         alert.setHeaderText("The saved tournament could not be loaded.");
         alert.setContentText(new StringBuilder("A new tournament will start. Reason: ")
                 .append(exception.getMessage()).toString());

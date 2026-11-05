@@ -28,7 +28,7 @@ public class DashboardHeader extends HBox {
     }
 
     private VBox buildTitles() {
-        Label title = new Label("Copa Internacional de Clubes");
+        Label title = new Label("International Club Cup");
         title.getStyleClass().add("dashboard-title");
 
         VBox titles = new VBox(title, subtitle);

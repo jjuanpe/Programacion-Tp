@@ -103,7 +103,8 @@ public class Team implements Serializable {
     public void validateSquad() {
         SquadValidation validation = SquadValidation.of(this);
         if (!validation.isValid()) {
-            throw new IllegalStateException(name + ": " + String.join("; ", validation.getProblems()));
+            throw new IllegalStateException(new StringBuilder(name).append(": ")
+                    .append(String.join("; ", validation.getProblems())).toString());
         }
     }
 }

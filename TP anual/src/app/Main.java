@@ -40,7 +40,8 @@ public class Main {
             Thread.currentThread().interrupt();
             System.err.println("The tournament simulation was interrupted.");
         } catch (IOException | SQLException | IllegalArgumentException | IllegalStateException exception) {
-            System.err.println("The tournament could not be completed: " + exception.getMessage());
+            System.err.println(new StringBuilder("The tournament could not be completed: ")
+                    .append(exception.getMessage()).toString());
         }
     }
 
@@ -86,9 +87,9 @@ public class Main {
     }
 
     private static void printSeeds(long drawSeed, long groupStageSeed, long knockoutSeed) {
-        System.out.println("Draw seed: " + drawSeed);
-        System.out.println("Group stage seed: " + groupStageSeed);
-        System.out.println("Knockout stage seed: " + knockoutSeed);
+        System.out.println(new StringBuilder("Draw seed: ").append(drawSeed).toString());
+        System.out.println(new StringBuilder("Group stage seed: ").append(groupStageSeed).toString());
+        System.out.println(new StringBuilder("Knockout stage seed: ").append(knockoutSeed).toString());
     }
 
     private static void printLoadedData(TournamentData tournamentData) {
@@ -96,15 +97,16 @@ public class Main {
         System.out.println("========================================================");
         System.out.println(" TOURNAMENT DATA");
         System.out.println("========================================================");
-        System.out.println("Teams: " + tournamentData.getTeams().size());
+        System.out.println(new StringBuilder("Teams: ").append(tournamentData.getTeams().size()).toString());
         for (Team team : tournamentData.getTeams()) {
-            System.out.println(" - " + team.getName() + " (" + team.getCountry().getCountryName()
-                    + ") players: " + team.getPlayers().size());
+            System.out.println(new StringBuilder(" - ").append(team.getName()).append(" (")
+                    .append(team.getCountry().getCountryName()).append(") players: ")
+                    .append(team.getPlayers().size()).toString());
         }
-        System.out.println("Referees: " + tournamentData.getReferees().size());
-        System.out.println("Warnings: " + tournamentData.getWarnings().size());
+        System.out.println(new StringBuilder("Referees: ").append(tournamentData.getReferees().size()).toString());
+        System.out.println(new StringBuilder("Warnings: ").append(tournamentData.getWarnings().size()).toString());
         for (String warning : tournamentData.getWarnings()) {
-            System.out.println(" ! " + warning);
+            System.out.println(new StringBuilder(" ! ").append(warning).toString());
         }
     }
 
@@ -175,7 +177,8 @@ public class Main {
 
         System.out.println();
         System.out.println("========================================================");
-        System.out.println(" CHAMPION: " + knockoutResult.getChampion().getName());
+        System.out.println(new StringBuilder(" CHAMPION: ")
+                .append(knockoutResult.getChampion().getName()).toString());
         System.out.println("========================================================");
     }
 }

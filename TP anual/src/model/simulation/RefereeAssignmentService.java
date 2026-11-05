@@ -27,8 +27,8 @@ public class RefereeAssignmentService {
             }
         }
         if (eligibleReferees.isEmpty()) {
-            throw new IllegalStateException(
-                    "There is no eligible referee for " + homeTeam.getName() + " vs " + awayTeam.getName());
+            throw new IllegalStateException(new StringBuilder("There is no eligible referee for ")
+                    .append(homeTeam.getName()).append(" vs ").append(awayTeam.getName()).toString());
         }
         return eligibleReferees.get(random.nextInt(eligibleReferees.size()));
     }

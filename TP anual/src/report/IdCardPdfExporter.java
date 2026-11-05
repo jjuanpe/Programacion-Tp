@@ -98,7 +98,7 @@ public class IdCardPdfExporter {
         content.setNonStrokingColor(ACCENT);
         content.addRect(x, headerY, CARD_WIDTH, HEADER_HEIGHT);
         content.fill();
-        writeText(content, BOLD, 7.5f, Color.WHITE, x + PADDING, headerY + 8, "COPA INTERNACIONAL DE CLUBES");
+        writeText(content, BOLD, 7.5f, Color.WHITE, x + PADDING, headerY + 8, "INTERNATIONAL CLUB CUP");
         String role = card.getRole().toUpperCase(Locale.ROOT);
         float roleWidth = textWidth(BOLD, 7.5f, role);
         writeText(content, BOLD, 7.5f, Color.WHITE, x + CARD_WIDTH - PADDING - roleWidth, headerY + 8, role);
@@ -112,9 +112,9 @@ public class IdCardPdfExporter {
         float lineY = headerY - PADDING - 9;
         writeText(content, BOLD, 9.5f, TEXT, textX, lineY, fit(BOLD, 9.5f, card.getFullName(), maxTextWidth));
         lineY -= 12;
-        writeText(content, REGULAR, 7.5f, TEXT, textX, lineY, "Document: " + card.getDocument());
+        writeText(content, REGULAR, 7.5f, TEXT, textX, lineY, new StringBuilder("Document: ").append(card.getDocument()).toString());
         lineY -= 10;
-        writeText(content, REGULAR, 7.5f, TEXT, textX, lineY, "Born: " + card.getBirthDate().format(DATE));
+        writeText(content, REGULAR, 7.5f, TEXT, textX, lineY, new StringBuilder("Born: ").append(card.getBirthDate().format(DATE)).toString());
         for (String detail : card.getDetails()) {
             lineY -= 10;
             writeText(content, REGULAR, 7.5f, MUTED, textX, lineY, fit(REGULAR, 7.5f, detail, maxTextWidth));
@@ -186,7 +186,7 @@ public class IdCardPdfExporter {
     private String fit(PDFont font, float size, String text, float maxWidth) throws IOException {
         String fitted = text;
         while (fitted.length() > 4 && textWidth(font, size, fitted) > maxWidth) {
-            fitted = fitted.substring(0, fitted.length() - 4) + "...";
+            fitted = new StringBuilder(fitted.substring(0, fitted.length() - 4)).append("...").toString();
         }
         return fitted;
     }

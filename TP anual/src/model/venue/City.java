@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class City implements Serializable {
-    private Long id;
-    private String name;
-    private Country country;
-    private List<Stadium> stadiums = new ArrayList<>();
+    private final Long id;
+    private final String name;
+    private final Country country;
+    private final List<Stadium> stadiums = new ArrayList<>();
     private static final long serialVersionUID = 1L;
 
     public City(Long id, String name, Country country) {

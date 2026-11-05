@@ -37,7 +37,8 @@ public enum Position {
             positionIndex++;
         }
         if (selectedPosition == null) {
-            throw new IllegalArgumentException("Unknown position value: " + fileValue);
+            throw new IllegalArgumentException(
+                    new StringBuilder("Unknown position value: ").append(fileValue).toString());
         }
         return selectedPosition;
     }

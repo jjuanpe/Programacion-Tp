@@ -1,6 +1,7 @@
 package controller;
 
 import dataload.JsonTournamentLoader;
+import dao.CityDao;
 import dao.StadiumDAO;
 import dataload.TournamentData;
 import java.io.Serializable;
@@ -17,7 +18,9 @@ import model.simulation.KnockoutStageResult;
 import model.simulation.KnockoutStageSimulator;
 import model.simulation.KnockoutTieReport;
 import model.simulation.MatchSimulationReport;
+import model.team.Country;
 import model.team.Team;
+import model.venue.City;
 import model.venue.Stadium;
 
 import java.io.File;
@@ -81,28 +84,28 @@ public class TournamentSession implements Serializable {
         return new StadiumDAO().getAllStadiums();
     }
 
-    public List<model.venue.City> getRegisteredCities() throws SQLException {
-        return new dao.CityDao().getAllCities();
+    public List<City> getRegisteredCities() throws SQLException {
+        return new CityDao().getAllCities();
     }
 
     public void addCity(long id, String name, String countryName) throws SQLException {
-        new dao.CityDao().insertCity(id, name, new model.team.Country(countryName));
+        new CityDao().insertCity(id, name, new Country(countryName));
     }
 
     public void updateCity(long id, String name, String countryName) throws SQLException {
-        new dao.CityDao().updateCity(id, name, new model.team.Country(countryName));
+        new CityDao().updateCity(id, name, new Country(countryName));
     }
 
-    public void deleteCity(model.venue.City city) throws SQLException {
+    public void deleteCity(City city) throws SQLException {
         Objects.requireNonNull(city, "Select a city to delete");
-        new dao.CityDao().deleteCity(city.getId());
+        new CityDao().deleteCity(city.getId());
     }
 
-    public void addStadium(long id, String name, model.venue.City city, int capacity) throws SQLException {
+    public void addStadium(long id, String name, City city, int capacity) throws SQLException {
         new StadiumDAO().insertStadium(id, name, city, capacity);
     }
 
-    public void updateStadium(long originalId, long newId, String name, model.venue.City city, int capacity)
+    public void updateStadium(long originalId, long newId, String name, City city, int capacity)
             throws SQLException {
         new StadiumDAO().updateStadium(originalId, newId, name, city, capacity);
     }
@@ -115,10 +118,14 @@ public class TournamentSession implements Serializable {
     public synchronized void drawGroups() throws SQLException {
         requireState(TournamentState.DATA_LOADED, "the group draw");
 
+        for (Team team : tournamentData.getTeams()) {
+            team.validateSquad();
+        }
         List<Stadium> stadiums = new StadiumDAO().getAllStadiums();
         if (stadiums.size() < 13) {
-            throw new IllegalStateException("At least 13 stadiums are required for the knockout stage; found "
-                    + stadiums.size());
+            throw new IllegalStateException(new StringBuilder(
+                    "At least 13 stadiums are required for the knockout stage; found ")
+                    .append(stadiums.size()).toString());
         }
         assignHomeStadiums(tournamentData.getTeams(), stadiums, new Random(seedGenerator.nextLong()));
 
@@ -205,8 +212,8 @@ public class TournamentSession implements Serializable {
     private void requireState(TournamentState expected, String action) {
         TournamentState current = getState();
         if (current != expected) {
-            throw new IllegalStateException(
-                    "Cannot run " + action + " while the tournament is: " + current.getLabel());
+            throw new IllegalStateException(new StringBuilder("Cannot run ").append(action)
+                    .append(" while the tournament is: ").append(current.getLabel()).toString());
         }
     }
 

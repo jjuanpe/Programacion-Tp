@@ -38,6 +38,7 @@ public final class PlayEvent extends Incidence {
 
     @Override
     public String getDescription() {
-        return getMinute() + "' " + type + ": " + player.getName();
+        return new StringBuilder().append(getMinute()).append("' ").append(type).append(": ")
+                .append(player.getName()).toString();
     }
 }
