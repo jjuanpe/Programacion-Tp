@@ -1,6 +1,5 @@
 package model.event;
 
-import model.match.Match;
 import model.people.Player;
 import model.team.Team;
 
@@ -12,11 +11,11 @@ public class PenaltyExecuted extends Incidence {
     private final Player kicker;
     private final boolean scored;
 
-    public PenaltyExecuted(int minute, Match match, Player kicker, boolean scored) {
+    public PenaltyExecuted(int minute, IncidenceContext match, Player kicker, boolean scored) {
         this(minute, match, kicker, scored, false);
     }
 
-    public PenaltyExecuted(int minute, Match match, Player kicker, boolean scored, boolean saved) {
+    public PenaltyExecuted(int minute, IncidenceContext match, Player kicker, boolean scored, boolean saved) {
         super(minute, match);
         if (scored && saved) {
             throw new IllegalArgumentException("A scored penalty cannot be saved");

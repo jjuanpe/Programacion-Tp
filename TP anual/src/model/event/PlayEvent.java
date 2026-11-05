@@ -1,6 +1,5 @@
 package model.event;
 
-import model.match.Match;
 import model.people.Player;
 import java.util.Objects;
 
@@ -13,7 +12,7 @@ public final class PlayEvent extends Incidence {
     private final Player player;
     private final String type;
 
-    public PlayEvent(int minute, Match match, Player player, String type) {
+    public PlayEvent(int minute, IncidenceContext match, Player player, String type) {
         super(minute, match);
         this.player = Objects.requireNonNull(player, "The player is required");
         if (!FOUL.equals(type) && !WOODWORK.equals(type)

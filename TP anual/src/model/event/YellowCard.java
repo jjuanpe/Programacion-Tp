@@ -1,6 +1,5 @@
 package model.event;
 
-import model.match.Match;
 import model.people.Player;
 
 import java.util.Objects;
@@ -9,7 +8,7 @@ public class YellowCard extends Incidence {
     private static final long serialVersionUID = 1L;
     private final Player player;
 
-    public YellowCard(int minute, Match match, Player player) {
+    public YellowCard(int minute, IncidenceContext match, Player player) {
         super(minute, match);
         this.player = Objects.requireNonNull(player, "The cautioned player is required");
     }

@@ -1,6 +1,5 @@
 package model.event;
 
-import model.match.Match;
 import model.people.Goalkeeper;
 import model.people.Player;
 
@@ -13,7 +12,7 @@ public class Goal extends Incidence {
     private final boolean penalty;
     private final boolean ownGoal;
 
-    public Goal(int minute, Match match, Player scorer, Goalkeeper goalkeeper, boolean penalty, boolean ownGoal) {
+    public Goal(int minute, IncidenceContext match, Player scorer, Goalkeeper goalkeeper, boolean penalty, boolean ownGoal) {
         super(minute, match);
         this.scorer = Objects.requireNonNull(scorer, "The goal scorer is required");
         this.goalkeeper = Objects.requireNonNull(goalkeeper, "The goalkeeper is required");

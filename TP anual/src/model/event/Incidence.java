@@ -1,7 +1,6 @@
 package model.event;
 
 import java.io.Serializable;
-import model.match.Match;
 
 import model.people.Player;
 import model.team.Team;
@@ -12,9 +11,9 @@ import java.util.Objects;
 public abstract class Incidence implements Serializable {
     private static final long serialVersionUID = 1L;
     private final int minute;
-    private final Match match;
+    private final IncidenceContext match;
 
-    public Incidence(int minute, Match match) {
+    public Incidence(int minute, IncidenceContext match) {
         if (minute <= 0) {
             throw new IllegalArgumentException("The incidence minute must be positive");
         }
@@ -26,7 +25,7 @@ public abstract class Incidence implements Serializable {
         return minute;
     }
 
-    public Match getMatch() {
+    public IncidenceContext getContext() {
         return match;
     }
 

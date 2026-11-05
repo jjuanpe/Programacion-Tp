@@ -3,6 +3,7 @@ package model.match;
 import java.io.Serializable;
 
 import model.event.Expulsion;
+import model.event.IncidenceContext;
 import model.event.Incidence;
 import model.event.Goal;
 import model.event.PenaltyExecuted;
@@ -14,7 +15,7 @@ import model.venue.Stadium;
 import java.time.LocalDate;
 import java.util.*;
 
-public abstract class Match implements Serializable {
+public abstract class Match implements Serializable, IncidenceContext {
     private final LocalDate date;
     private final Team homeTeam;
     private final Team awayTeam;
@@ -85,7 +86,7 @@ public abstract class Match implements Serializable {
         int recordedGoals = 0;
         while (incidenceIndex < incidences.size() && validIncidences) {
             Incidence incidence = incidences.get(incidenceIndex);
-            if (incidence == null || incidence.getMatch() != this) {
+            if (incidence == null || incidence.getContext() != this) {
                 validIncidences = false;
             } else if (incidence instanceof Goal) {
                 recordedGoals++;
@@ -126,6 +127,7 @@ public abstract class Match implements Serializable {
         this.played = true;
     }
 
+    @Override
     public Expulsion findFifthExpulsion(List<Incidence> events) {
         List<Incidence> ordered = new ArrayList<>(events);
         ordered.sort(Comparator.comparingInt(Incidence::getMinute));
@@ -169,7 +171,7 @@ public abstract class Match implements Serializable {
         boolean validKicks = true;
         while (kickIndex < kicks.size() && validKicks) {
             PenaltyExecuted kick = kicks.get(kickIndex);
-            validKicks = kick != null && kick.getMatch() == this;
+            validKicks = kick != null && kick.getContext() == this;
             kickIndex++;
         }
         if (!validKicks) {
@@ -196,10 +198,12 @@ public abstract class Match implements Serializable {
         return date;
     }
 
+    @Override
     public Team getHomeTeam() {
         return homeTeam;
     }
 
+    @Override
     public Team getAwayTeam() {
         return awayTeam;
     }
@@ -232,6 +236,7 @@ public abstract class Match implements Serializable {
         return List.copyOf(participations);
     }
 
+    @Override
     public synchronized List<Incidence> getIncidences() {
         return List.copyOf(incidences);
     }

@@ -1,6 +1,5 @@
 package model.event;
 
-import model.match.Match;
 import model.people.Player;
 
 import java.util.Objects;
@@ -10,11 +9,11 @@ public class Expulsion extends Incidence {
     private final Player player;
     private final ExpulsionReason reason;
 
-    public Expulsion(int minute, Match match, Player player) {
+    public Expulsion(int minute, IncidenceContext match, Player player) {
         this(minute, match, player, ExpulsionReason.DIRECT_RED_CARD);
     }
 
-    public Expulsion(int minute, Match match, Player player, ExpulsionReason reason) {
+    public Expulsion(int minute, IncidenceContext match, Player player, ExpulsionReason reason) {
         super(minute, match);
         this.player = Objects.requireNonNull(player, "The expelled player is required");
         this.reason = Objects.requireNonNull(reason, "The expulsion reason is required");
@@ -37,7 +36,7 @@ public class Expulsion extends Incidence {
     public String getDetail() {
         StringBuilder detail = new StringBuilder(describeWithTeam(player));
         detail.append(" (").append(reason.getDescription()).append(')');
-        if (getMatch().findFifthExpulsion(getMatch().getIncidences()) == this) {
+        if (getContext().findFifthExpulsion(getContext().getIncidences()) == this) {
             detail.append(" - Fifth red card: match abandoned, team loses 0-3");
         }
         return detail.toString();

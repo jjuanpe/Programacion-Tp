@@ -63,6 +63,30 @@ The code is organised in layers. Each layer depends only on the ones below it.
 
 ---
 
+### 2.2 Package dependencies
+
+Every arrow points one way; there is no cycle between packages, not even inside `model`:
+
+| Package | Depends on |
+|---|---|
+| `app` | `ui.fx` |
+| `ui.fx` | `controller`, `viewmodel` |
+| `controller` | `viewmodel`, `model`, `dao`, `dataload`, `report` |
+| `viewmodel`, `report` | nothing of the project |
+| `dao`, `dataload` | `model` |
+| `model.simulation` | `model.competition`, `model.match`, `model.event`, `model.team`, `model.people`, `model.venue` |
+| `model.competition` | `model.match`, `model.event`, `model.team`, `model.people`, `model.venue`, `model.common` |
+| `model.match` | `model.event`, `model.team`, `model.people`, `model.venue` |
+| `model.team` | `model.people`, `model.venue`, `model.common` |
+| `model.event` | `model.team`, `model.people` |
+| `model.people`, `model.venue` | `model.common` |
+
+The two-way link between a match and its incidences is solved with dependency inversion:
+`model.event` declares the small interface `IncidenceContext` (what an incidence needs to
+know about its match) and `Match` implements it, so `event` never imports `match`.
+
+---
+
 ## 3. Design decisions
 
 ### 3.1 Player hierarchy
