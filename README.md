@@ -1,17 +1,23 @@
 # Programacion-Tp
 
-Proyecto Java 21 con Maven, JavaFX, Gson y PostgreSQL.
+Java 21 project with Maven, JavaFX, Gson and PostgreSQL.
 
-## Ejecutar
+## Running the project
 
-1. Abrir `TP anual` como proyecto Maven en IntelliJ (JDK 21 o superior).
-2. En pgAdmin, crear la base `tpprogra` en `localhost:5432` y ejecutar el script `TP anual/docs/database.sql`. El script crea las tablas `ciudades` (`idciudad`, `nombre`, `pais`) y `estadios` (`idestadio`, `idciudad`, `nombre`, `capacidad`, con clave foránea a `ciudades`) y carga 16 ciudades y 16 estadios de ejemplo. Se necesitan al menos 13 estadios para las eliminatorias. El script borra y vuelve a crear las tablas, así que también sirve para dejar la base limpia.
-3. Si las credenciales difieren de las originales del proyecto, configurar `TP_DB_URL`, `TP_DB_USER` y `TP_DB_PASSWORD` en el entorno.
-4. Desde `TP anual`, ejecutar `mvn clean package` para compilar y `mvn javafx:run` para abrir la interfaz.
-5. En Tournament, importar `docs/torneo.json` y ejecutar el sorteo. Alli se leen las ciudades y los estadios desde PostgreSQL.
+1. Open `TP anual` as a Maven project in IntelliJ (JDK 21 or later).
+2. In pgAdmin, create the `tpprogra` database on `localhost:5432` and run the script `TP anual/docs/database.sql`. The script creates the tables `ciudades` (`idciudad`, `nombre`, `pais`) and `estadios` (`idestadio`, `idciudad`, `nombre`, `capacidad`, with a foreign key to `ciudades`) and loads 16 sample cities and 16 sample stadiums. At least 13 stadiums are needed for the knockout stage. The script drops and recreates the tables, so it can also be used to reset the database.
+3. If the credentials differ from the project's original ones, set `TP_DB_URL`, `TP_DB_USER` and `TP_DB_PASSWORD` in the environment.
+4. From `TP anual`, run `mvn clean package` to build and `mvn javafx:run` to open the interface.
+5. In Tournament, import `docs/torneo.json` and run the draw. The cities and stadiums are read from PostgreSQL at that point.
 
-Los partidos de grupos muestran su estadio y pueden reutilizar sedes. Cada partido de eliminatorias usa un estadio distinto. Cuando termina la fase eliminatoria, los estadios utilizados se quitan de las listas de sus ciudades en memoria; una ciudad sale de la lista de ciudades disponibles cuando ya no tiene estadios. Los registros de PostgreSQL no se borran durante la simulacion.
+Group matches show their stadium and may reuse venues. Every knockout match uses a different stadium. When the knockout stage ends, the stadiums used are removed from their cities' in-memory lists; a city leaves the list of available cities once it has no stadiums left. PostgreSQL records are never deleted during the simulation.
 
-No se puede eliminar una ciudad que tenga estadios asociados.
+A city that still has stadiums assigned cannot be deleted.
 
-Las fotos de los carnets se buscan en la carpeta `photos/` (directorio de trabajo), con el valor del código de barras del jugador como nombre de archivo (`.jpg`, `.jpeg` o `.png`). Si no hay foto, el carnet muestra las iniciales del jugador.
+## Squad validation
+
+Every team must have exactly 18 players (2 goalkeepers, 6 defenders, 5 midfielders, 5 forwards). If the JSON file contains a team with a surplus of players in some position, the loader removes random players from that position until the squad is valid, and the Tournament page shows a warning panel naming the team and the removed players.
+
+## ID card photos
+
+The JSON file contains no photos. Decision: ID cards look for a photo in the `photos/` folder (working directory), using the player's barcode value as the file name (`.jpg`, `.jpeg` or `.png`). If no photo is found, the ID card shows the player's initials, so the PDF is always complete.

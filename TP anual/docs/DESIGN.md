@@ -1,240 +1,251 @@
-# Documento de Diseño — Copa Internacional de Clubes
-## Programación B — UFASTA — Entrega final
+# Design Document — International Club Cup
+## Programación B — UFASTA — Final delivery
 
 ---
 
-## 1. Alcance
+## 1. Scope
 
-La aplicación cubre el campeonato completo:
+The application covers the whole championship:
 
-- Carga de equipos, jugadores, directores técnicos y árbitros desde un archivo JSON (`docs/torneo.json`).
-- Ciudades y estadios guardados en PostgreSQL, con alta, baja y modificación desde la interfaz
-  (páginas *Ciudades* y *Stadiums*).
-- Sorteo equilibrado de 16 equipos en 4 zonas, fixture todos contra todos y simulación de la fase de grupos.
-- Eliminación directa: cuartos y semifinales a ida y vuelta, y final a partido único.
-- Suspensiones que se arrastran entre fechas y entre fases.
-- Interfaz de escritorio en JavaFX y ocho reportes, incluidos los carnets de los jugadores en PDF.
-- Guardado y retome del torneo (`torneo.save`).
+- Loading of teams, players, head coaches and referees from a JSON file (`docs/torneo.json`).
+- Cities and stadiums stored in PostgreSQL, with create, update and delete operations from the
+  interface (*Cities* and *Stadiums* pages).
+- Balanced draw of 16 teams into 4 zones, round-robin fixture and simulation of the group stage.
+- Knockout stage: quarter-finals and semi-finals over two legs, and a single-match final.
+- Suspensions carried over between match days and between stages.
+- JavaFX desktop interface and eight reports, including the players' ID cards as PDF.
+- Saving and resuming the tournament (`torneo.save`).
 
 ---
 
-## 2. Arquitectura
+## 2. Architecture
 
-El código está organizado en capas. Cada capa depende solamente de las que están debajo.
+The code is organised in layers. Each layer depends only on the ones below it.
 
 ```
- ui.fx   (vistas JavaFX + view models)
+ ui.fx   (JavaFX views + view models)
    │
- controller   (TournamentSession + un controlador por página)
+ controller   (TournamentSession + one controller per page)
    │
- model ── dataload (JSON → modelo)      dao (PostgreSQL → modelo)      report (PDF)
+ model ── dataload (JSON → model)      dao (PostgreSQL → model)      report (PDF)
 ```
 
-| Paquete | Responsabilidad |
+| Package | Responsibility |
 |---|---|
-| `model.people` | `Person` (abstracta), `Player`, `Goalkeeper`, `FieldPlayer`, `HeadCoach`, `Referee` |
-| `model.team` | `Team`, `Country`, validación del plantel |
-| `model.venue` | `City`, `Stadium` |
-| `model.match` | `Match` (abstracta) y `GroupMatch`, `FirstLegMatch`, `SecondLegMatch`, `FinalMatch`; enum `TieCriterion` |
-| `model.event` | `Incidence` (abstracta) y `Goal`, `YellowCard`, `Expulsion`, `Change`, `PenaltyExecuted`, `PlayEvent` |
-| `model.competition` | `Championship`, `Zone`, sorteo, fixture, tabla de posiciones, fair play y servicios de reportes |
-| `model.simulation` | Estrategia de simulación de partidos, simuladores de grupos y eliminatorias, penales |
+| `model.people` | `Person` (abstract), `Player`, `Goalkeeper`, `FieldPlayer`, `HeadCoach`, `Referee` |
+| `model.team` | `Team`, `Country`, squad validation |
+| `model.venue` | `City`, `Stadium`, `CityInUseException` |
+| `model.match` | `Match` (abstract) and `GroupMatch`, `FirstLegMatch`, `SecondLegMatch`, `FinalMatch`; `TieCriterion` enum |
+| `model.event` | `Incidence` (abstract) and `Goal`, `YellowCard`, `Expulsion`, `Change`, `PenaltyExecuted`, `PlayEvent` |
+| `model.competition` | `Championship`, `Zone`, draw, fixture, standings, fair play and report services |
+| `model.simulation` | Match simulation strategy, group and knockout simulators, penalty shoot-outs |
 | `dataload` | `JsonTournamentLoader` (Gson) |
 | `dao` | `DBManager`, `CityDao`, `StadiumDAO` (JDBC) |
-| `report` | `IdCard`, `IdCardPdfExporter` (PDFBox + código de barras con ZXing) |
-| `controller` | `TournamentSession` (punto de entrada único al dominio) y controladores de cada página |
-| `ui.fx` | Vistas, view models y filas de las tablas |
+| `report` | `IdCard`, `IdCardPdfExporter` (PDFBox + ZXing barcode) |
+| `controller` | `TournamentSession` (single entry point to the domain) and one controller per page |
+| `ui.fx` | Views, view models and table rows |
 
-### 2.1 Bajo acoplamiento entre interfaz y dominio
+### 2.1 Low coupling between interface and domain
 
-- Las vistas no importan clases de `model`. Cada página tiene un **view model** con
-  propiedades de JavaFX y objetos fila simples (`StandingRow`, `FixtureRow`, `ScorerRow`, …).
-- Los **controladores** leen el dominio a través de `TournamentSession` y completan el
-  view model. La vista sólo sabe dibujarse y avisar las acciones del usuario.
-- Toda la apariencia vive en `styles.css`; el código Java sólo asigna clases de estilo.
+- The views do not import `model` classes, with one exception: the city and stadium
+  management views (`CitiesView`, `StadiumsView`) import `model.venue` because they edit
+  those entities directly. Every other page has a **view model** with JavaFX properties and
+  simple row objects (`StandingRow`, `FixtureRow`, `ScorerRow`, …).
+- The **controllers** read the domain through `TournamentSession` and fill the view model.
+  The view only knows how to draw itself and report the user's actions.
+- All the styling lives in `styles.css`; the Java code only assigns style classes.
 
 ---
 
-## 3. Decisiones de diseño
+## 3. Design decisions
 
-### 3.1 Jerarquía de jugadores
+### 3.1 Player hierarchy
 
-El archivo JSON trae atributos totalmente distintos para arqueros y jugadores de campo,
-por eso `Player` (que guarda la `Position`) tiene dos subclases, `Goalkeeper` y
-`FieldPlayer`, cada una con sus propias características y estadísticas.
-La valoración del jugador que usa la simulación se calcula de forma polimórfica,
-sin cadenas de `if` sobre la posición.
+The JSON file provides completely different attributes for goalkeepers and field players,
+so `Player` (which stores the `Position`) has two subclasses, `Goalkeeper` and
+`FieldPlayer`, each with its own characteristics and statistics.
+The player rating used by the simulation is computed polymorphically, with no `if` chains
+on the position.
 
-### 3.2 Nombre de persona en un único campo
+### 3.2 Person name in a single field
 
-El archivo de datos trae apellido y nombre juntos en un solo campo (por ejemplo
-`"Lobos Vallejos Valentín"`). Se guarda como un único atributo `name` en `Person`,
-porque separar por palabras fallaría con los apellidos compuestos.
+The data file provides surname and first name together in one field (for example
+`"Lobos Vallejos Valentín"`). It is stored as a single `name` attribute in `Person`,
+because splitting by words would fail with compound surnames.
 
-### 3.3 Jerarquía de partidos
+### 3.3 Match hierarchy
 
-`Match` es abstracta. Cada fase es una subclase que responde sus propias preguntas:
-etiqueta de la fase, categoría y si admite definición por penales
-(`allowsPenaltyShootout()` es falso en partidos de grupo y de ida).
+`Match` is abstract. Each stage is a subclass that answers its own questions:
+stage label, category, and whether it allows a penalty shoot-out
+(`allowsPenaltyShootout()` is false for group matches and first legs).
 
-### 3.4 Incidencias — polimorfismo
+### 3.4 Incidences — polymorphism
 
-Cada evento de un partido es una subclase de `Incidence` (`Goal`, `YellowCard`,
-`Expulsion`, `Change`, `PenaltyExecuted`, `PlayEvent`). La clase abstracta define:
+Every event in a match is a subclass of `Incidence` (`Goal`, `YellowCard`,
+`Expulsion`, `Change`, `PenaltyExecuted`, `PlayEvent`). The abstract class defines:
 
-| Método | Tipo | Para qué |
+| Method | Kind | Purpose |
 |---|---|---|
-| `getTypeLabel()` | abstracto | Etiqueta del tipo ("Goal", "Own goal", "Goal (penalty)", …) |
-| `getDetail()` | abstracto | Detalle del evento (jugador, equipo, arquero, etc.) |
-| `getMinuteLabel()` | concreto | Minuto con formato (`45'`) |
-| `isShootoutKick()` | concreto, por defecto `false` | Si el evento es un penal de la tanda |
-| `isScoredShootoutKickBy(team)` | concreto, por defecto `false` | Si es un penal de la tanda convertido por ese equipo |
+| `getTypeLabel()` | abstract | Type label ("Goal", "Own goal", "Goal (penalty)", …) |
+| `getDetail()` | abstract | Event detail (player, team, goalkeeper, etc.) |
+| `getMinuteLabel()` | concrete | Formatted minute (`45'`) |
+| `isShootoutKick()` | concrete, `false` by default | Whether the event is a shoot-out kick |
+| `isScoredShootoutKickBy(team)` | concrete, `false` by default | Whether it is a shoot-out kick scored by that team |
 
-`PenaltyExecuted` sobrescribe los dos últimos. De esta forma `Match` cuenta los penales
-de la tanda (`hasPenaltyShootout()`, `getShootoutGoals(team)`) y la interfaz lista las
-incidencias **sin usar `instanceof`** ni conocer el tipo concreto de cada evento.
-Gracias a esto, `MatchesController` dejó de tener una cadena de condicionales por tipo.
+`PenaltyExecuted` overrides the last two (and `getMinuteLabel()`, which shows "Kick n").
+This lets `Match` count the shoot-out kicks (`hasPenaltyShootout()`,
+`getShootoutGoals(team)`) and lets the interface list the incidences **without
+`instanceof`** and without knowing the concrete type of each event.
+Thanks to this, `MatchesController` no longer has a chain of conditionals per type.
 
-### 3.5 Simulación de partidos — patrón Strategy
+### 3.5 Match simulation — Strategy pattern
 
-`MatchSimulationStrategy<T extends Match>` define cómo se simula un partido.
-La implementación usada es `GroupMatchSimulationService`:
+`MatchSimulationStrategy<T extends Match>` defines how a match is simulated.
+The implementation used is `GroupMatchSimulationService`, for group matches and for
+knockout matches alike (so all incidences are generated in every stage):
 
-1. Se elige una formación para cada equipo y se dejan afuera los suspendidos.
-2. `TeamStrengthCalculator` combina el promedio de los titulares, el ranking del equipo
-   y los títulos del director técnico.
-3. Los goles se reparten según la fuerza de cada equipo, una pequeña ventaja de local
-   y un factor de "sorpresa" aleatorio.
-4. Amarillas, expulsiones, cambios, penales y goles en contra se generan con
-   probabilidades y límites fijos (máximo 3 cambios por equipo).
-5. Los minutos jugados de cada jugador se calculan a partir de los cambios y expulsiones.
+1. A formation is chosen for each team and suspended players are left out.
+2. `TeamStrengthCalculator` combines the starters' average, the team ranking and the head
+   coach's titles.
+3. Goals are distributed according to each team's strength, a small home advantage and a
+   random "surprise" factor.
+4. Yellow cards, expulsions, substitutions, penalties and own goals are generated with
+   fixed probabilities and limits (at most 3 substitutions per team).
+5. Each player's minutes played are computed from the substitutions and expulsions.
 
-### 3.6 Concurrencia
+### 3.6 Concurrency
 
-- **Fase de grupos:** los partidos de cada fecha se simulan en paralelo con un
-  `ExecutorService`. El simulador espera a que termine la fecha completa antes de
-  calcular las suspensiones para la siguiente.
-- **Eliminación directa:** cada llave (ida y vuelta) es un `KnockoutTieTask` que corre en
-  su propio hilo; la fase espera a todas las llaves antes de armar la ronda siguiente.
-- Cada tarea recibe su propia semilla de `Random`, así los hilos no comparten estado mutable.
+- **Group stage:** the matches of each match day are simulated in parallel with an
+  `ExecutorService` (pool of 8 threads). The simulator waits for the whole match day to
+  finish before computing the suspensions for the next one.
+- **Knockout stage:** each tie (two legs) is a `KnockoutTieTask` running in its own
+  thread; the stage waits for all the ties before building the next round.
+- Each task receives its own `Random` seed, so threads share no mutable state.
 
-### 3.7 Tabla de posiciones y clasificación
+### 3.7 Standings and qualification
 
-`StandingsService` ordena cada zona por puntos, diferencia de gol y goles a favor.
-Si sigue el empate, deciden el puntaje de fair play (amarilla = 1, doble amarilla = +1,
-roja directa = 4) y, por último, el ranking del equipo.
-Clasifican los dos primeros de cada zona. Los cuartos cruzan zonas:
+`StandingsService` sorts each zone by points, goal difference and goals scored.
+If still tied, the fair-play score decides (yellow = 1, second yellow = +1,
+straight red = 4) and, last, the team ranking.
+The top two of each zone qualify. The quarter-finals cross zones:
 A1–D2, B1–C2, C1–A2, D1–B2.
 
-**Tabla antes y después de cada partido:** `MatchSimulationReport` guarda dos listas de
-`StandingEntry` (`standingsBefore` y `standingsAfter`) por cada partido de zona.
-`TournamentSession` conserva esos reportes (`getGroupStageReports()`) y la página
-*Matches* los muestra lado a lado en el detalle del partido. Como `MatchSimulationReport`
-y `StandingEntry` implementan `Serializable`, las tablas se guardan en `torneo.save` y
-siguen disponibles al retomar el torneo.
+**Table before and after each match:** `MatchSimulationReport` stores two lists of
+`StandingEntry` (`standingsBefore` and `standingsAfter`) for each group match.
+`TournamentSession` keeps those reports (`getGroupStageReports()`) and the *Matches* page
+shows them side by side in the match detail. Since `MatchSimulationReport` and
+`StandingEntry` implement `Serializable`, the tables are saved in `torneo.save` and remain
+available when the tournament is resumed.
 
-### 3.8 Desempate en eliminación directa
+### 3.8 Knockout tie-break
 
-Las llaves de ida y vuelta se resuelven en `SecondLegMatch`, que conoce su partido de
-ida. Se definen, en este orden, por:
+Two-leg ties are resolved in `SecondLegMatch`, which knows its first leg. They are decided,
+in this order, by:
 
-1. **Puntos** obtenidos en los dos partidos (3 por victoria, 1 por empate).
-2. **Diferencia de gol**, con los goles de visitante valiendo doble.
-3. **Definición por penales.**
+1. **Points** obtained in the two matches (3 per win, 1 per draw).
+2. **Goal difference**, with away goals counting double.
+3. **Penalty shoot-out.**
 
-`getDecidingCriterion()` devuelve cuál de los tres decidió la llave, como un valor del
-enum `TieCriterion` (`POINTS`, `GOAL_DIFFERENCE`, `PENALTY_SHOOTOUT`), cada uno con su
-etiqueta para la interfaz. `KnockoutTieTask` guarda esa etiqueta en el
-`KnockoutTieReport` de cada llave, y la página *Knockout Stage* la muestra junto al
-ganador. El detalle del partido de vuelta en *Matches* muestra además el global
-(`describeAggregate()`, por ejemplo "Aggregate: 3 - 2") y, si hubo, el resultado de la
-tanda de penales. `Match.describeAggregate()` devuelve vacío por defecto y sólo
-`SecondLegMatch` lo sobrescribe.
+`getDecidingCriterion()` returns which of the three decided the tie, as a value of the
+`TieCriterion` enum (`POINTS`, `GOAL_DIFFERENCE`, `PENALTY_SHOOTOUT`), each with its
+interface label. `KnockoutTieTask` stores that label in each tie's `KnockoutTieReport`,
+and the *Knockout Stage* page shows it next to the winner. The second-leg detail in
+*Matches* also shows the aggregate (`describeAggregate()`, for example "Aggregate: 3 - 2")
+and, if there was one, the penalty shoot-out result. `Match.describeAggregate()` returns an
+empty string by default and only `SecondLegMatch` overrides it.
 
-La final es a partido único; si termina empatada se define por penales.
+The final is a single match; if it ends in a draw it is decided by penalties.
 
-### 3.9 Estadios
+### 3.9 Stadiums
 
-- Para la fase de grupos, a cada equipo se le asigna un estadio local al azar.
-- Cada partido de eliminatorias se juega en un estadio distinto, por eso hacen falta
-  al menos 13 (4 cuartos × 2 + 2 semifinales × 2 + 1 final).
-- Al terminar las eliminatorias, los estadios usados se quitan de su ciudad sólo en
-  memoria. La simulación nunca modifica la base de datos.
+- For the group stage, each team is assigned a home stadium at random.
+- Each knockout match is played in a different stadium, so at least 13 are needed
+  (4 quarter-finals × 2 + 2 semi-finals × 2 + 1 final).
+- When the knockout stage ends, the stadiums used are removed from their city in memory
+  only. The simulation never modifies the database.
 
-### 3.10 Persistencia
+### 3.10 Persistence
 
-| Datos | Dónde | Por qué |
+| Data | Where | Why |
 |---|---|---|
-| Ciudades y estadios | PostgreSQL (`ciudades`, `estadios`) | Datos maestros que pide la consigna, editables desde la interfaz |
-| Estado del torneo | `torneo.save` (serialización de `TournamentSession`) | Permite cerrar la aplicación y retomar donde quedó |
-| Equipos y personas | `docs/torneo.json` | Archivo de entrada provisto por la cátedra |
+| Cities and stadiums | PostgreSQL (`ciudades`, `estadios`) | Master data required by the assignment, editable from the interface |
+| Tournament state | `torneo.save` (serialization of `TournamentSession`) | Lets the user close the application and resume where it was left |
+| Teams and people | `docs/torneo.json` | Input file provided by the course |
 
-Todas las clases del dominio que se guardan en la sesión implementan `Serializable`.
-Si un `torneo.save` viejo no se puede leer (por ejemplo, porque cambió una clase), la
-aplicación avisa y ofrece empezar un torneo nuevo en lugar de cerrarse.
+All the domain classes saved in the session implement `Serializable`.
+If an old `torneo.save` cannot be read (for example because a class changed), loading can
+fail with `IOException`, `ClassNotFoundException` or `ClassCastException`; in every case the
+application shows a warning and offers to start a new tournament instead of closing.
 
-El script de la base es `docs/database.sql`. `estadios.idciudad` es clave foránea a
-`ciudades` con `ON DELETE RESTRICT`.
+The database script is `docs/database.sql`. `estadios.idciudad` is a foreign key to
+`ciudades` with `ON DELETE RESTRICT`.
 
-Si un `torneo.save` fue generado con una versión anterior de las clases, al cargarlo
-puede fallar con `IOException`, `ClassNotFoundException` o `ClassCastException`; en
-todos los casos la aplicación avisa y arranca un torneo nuevo.
+### 3.11 Cities and stadiums management
 
-### 3.11 ABM de ciudades y estadios
+- **Cities** (*Cities* page, `CitiesView`): create, update (name and country) and delete.
+- **Stadiums** (*Stadiums* page, `StadiumsView`): create, update (including the ID, the
+  city, the name and the capacity) and delete.
+- Operations go through `CitiesController` / `StadiumsController` and `TournamentSession`
+  (`addCity`, `updateCity`, `deleteCity`, `addStadium`, `updateStadium`, `deleteStadium`),
+  which delegates to `CityDao` and `StadiumDAO`.
 
-- **Ciudades** (página *Ciudades*, `CitiesView`): alta, modificación (nombre y país) y baja.
-- **Estadios** (página *Stadiums*, `StadiumsView`): alta, modificación (incluido el ID,
-  la ciudad, el nombre y la capacidad) y baja.
-- Las operaciones pasan por `TournamentSession` (`addCity`, `updateCity`, `deleteCity`,
-  `addStadium`, `updateStadium`, `deleteStadium`), que delega en `CityDao` y `StadiumDAO`.
+**Rule: a city with stadiums cannot be deleted.** `CityDao.deleteCity()` works in a
+transaction:
 
-**Regla: no se puede borrar una ciudad con estadios.** `CityDao.deleteCity()` trabaja en
-una transacción:
+1. It locks the `estadios` table (`LOCK TABLE ... IN SHARE MODE`) so nobody assigns a
+   stadium to that city while the check runs.
+2. It verifies that the city exists.
+3. If the city has stadiums, it cancels the operation and throws `CityInUseException`
+   (a domain exception in `model.venue`) whose message lists them:
+   *"The city Buenos Aires cannot be deleted because it has stadiums assigned: …"*.
+4. If it has none, it deletes the city and commits the transaction.
 
-1. Bloquea la tabla `estadios` (`LOCK TABLE ... IN SHARE MODE`) para que nadie asigne un
-   estadio a esa ciudad mientras se valida.
-2. Verifica que la ciudad exista.
-3. Si tiene estadios, cancela la operación y muestra un mensaje que los lista:
-   *"No se puede eliminar la ciudad seleccionada: Buenos Aires, debido a que contiene
-   estadios asignados: …"*.
-4. Si no tiene, la borra y confirma la transacción.
+The database foreign key is a second safeguard in case the check is bypassed.
 
-La clave foránea de la base es un segundo control por si la validación se saltea.
+`StadiumDAO` also validates, inside a transaction, that the city exists and that the ID is
+not repeated; the input is validated by the `Stadium` constructor, and PostgreSQL
+constraint errors are translated into clear messages.
 
-`StadiumDAO` también valida dentro de una transacción que la ciudad exista y que el ID no
-esté repetido, y traduce los errores de restricciones de PostgreSQL a mensajes claros.
+### 3.12 Squad validation and surplus players
 
-### 3.12 Fotos de los carnets
+A valid squad has 18 players (2 goalkeepers, 6 defenders, 5 midfielders, 5 forwards).
+If the JSON file has a surplus in some position, `JsonTournamentLoader` removes random
+players from that position (`Team.removeRandomPlayer`) before validating the squad and
+records a warning for each one. `TournamentSession.getWarnings()` exposes those warnings
+and the Tournament page shows them in a warning panel.
 
-El archivo JSON no trae fotos. El exportador busca en la carpeta `photos/` un archivo con
-el valor del código de barras del jugador como nombre (`.jpg`, `.jpeg` o `.png`). Si no lo
-encuentra, dibuja las iniciales del jugador sobre un recuadro gris, así el PDF siempre sale completo.
+### 3.13 ID card photos
+
+The JSON file contains no photos. The exporter looks in the `photos/` folder for a file
+named after the player's barcode value (`.jpg`, `.jpeg` or `.png`). If it is not found, it
+draws the player's initials on a grey box, so the PDF always comes out complete.
+This is a deliberate decision: the course data has no images.
 
 ---
 
-## 4. Reportes
+## 4. Reports
 
-| Reporte | Contenido |
+| Report | Content |
 |---|---|
-| Carnets (PDF) | Un carnet por jugador con foto, datos y código de barras |
-| Goleadores | Jugadores ordenados por goles |
-| Fair play | Equipos ordenados por puntaje disciplinario |
-| Minutos jugados | Jugadores ordenados por minutos |
-| Cuadro de cruces | Llaves de eliminación directa y resultados |
-| Equipos | Listado de equipos con director técnico y estadio |
-| Árbitros | Partidos dirigidos y tarjetas mostradas |
-| Jugadores por posición | Jugadores agrupados por posición |
+| ID cards (PDF) | One card per player with photo, data and barcode |
+| Top scorers | Players sorted by goals |
+| Fair play | Teams sorted by disciplinary score |
+| Minutes played | Players sorted by minutes |
+| Bracket | Knockout ties and results |
+| Teams | List of teams with head coach and stadium |
+| Referees | Matches officiated and cards shown |
+| Players by position | Players grouped by position |
 
 ---
 
-## 5. Diagrama de clases
+## 5. Class diagram
 
-El diagrama de clases actualizado está en `docs/class-diagram.png`. La fuente es
-`docs/class-diagram.puml` (PlantUML): si cambia el modelo, se edita ese archivo y se
-vuelve a exportar la imagen (por ejemplo con el plugin *PlantUML Integration* de IntelliJ).
+The updated class diagram is in `docs/class-diagram.png`. The source is
+`docs/class-diagram.puml` (PlantUML): if the model changes, edit that file and export the
+image again (for example with IntelliJ's *PlantUML Integration* plugin).
 
 ---
 
-## 6. Cómo ejecutar
+## 6. How to run
 
-Ver `README.md` en la raíz del repositorio.
+See `README.md` at the repository root.
