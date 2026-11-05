@@ -35,11 +35,14 @@ public class FormationService {
         for (Position position : Position.values()) {
             int required = scheme.startersAt(position);
             int selected = 0;
-            for (Player player : availablePlayers) {
-                if (player.getPosition() == position && selected < required) {
+            int candidateIndex = 0;
+            while (candidateIndex < availablePlayers.size() && selected < required) {
+                Player player = availablePlayers.get(candidateIndex);
+                if (player.getPosition() == position) {
                     starters.add(player);
                     selected++;
                 }
+                candidateIndex++;
             }
             if (position.isGoalkeeper() && selected != required) {
                 throw new IllegalStateException(new StringBuilder(team.getName())
