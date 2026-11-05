@@ -16,6 +16,10 @@ import javafx.scene.layout.VBox;
 
 public class GroupStageView extends VBox {
 
+    private static final double ROW_HEIGHT = 34;
+    // encabezado de columnas (34) + padding de la tabla (8 arriba y abajo) + bordes
+    private static final double TABLE_CHROME_HEIGHT = 52;
+
     private static final String QUALIFIED_STYLE_CLASS = "qualified-row";
 
     private final VBox zonesBox = new VBox();
@@ -94,7 +98,7 @@ public class GroupStageView extends VBox {
         table.getItems().setAll(zone.getStandings());
         table.getStyleClass().addAll("data-table", "standings-table");
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
-        table.setPrefHeight(rowsHeight(zone.getStandings().size()));
+        fitToRows(table, zone.getStandings().size());
 
         table.setRowFactory(ignored -> buildStandingRow());
 
@@ -129,7 +133,7 @@ public class GroupStageView extends VBox {
         table.getItems().setAll(zone.getFixture());
         table.getStyleClass().add("data-table");
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
-        table.setPrefHeight(rowsHeight(zone.getFixture().size()));
+        fitToRows(table, zone.getFixture().size());
 
         table.getColumns().add(TableColumns.text("Date", FixtureRow::getDate));
         table.getColumns().add(TableColumns.text("Home", FixtureRow::getHomeTeam));
@@ -141,7 +145,15 @@ public class GroupStageView extends VBox {
         return table;
     }
 
-    private double rowsHeight(int rowCount) {
-        return 34.0 * rowCount + 52.0;
+    /*
+     * La tabla mide exactamente lo que ocupan sus filas, sin filas vacias abajo.
+     * Se fijan min y max porque la hoja de estilos le da a .data-table una altura
+     * preferida fija que pisa a setPrefHeight.
+     */
+    private void fitToRows(TableView<?> table, int rowCount) {
+        table.setFixedCellSize(ROW_HEIGHT);
+        double height = ROW_HEIGHT * rowCount + TABLE_CHROME_HEIGHT;
+        table.setMinHeight(height);
+        table.setMaxHeight(height);
     }
 }
