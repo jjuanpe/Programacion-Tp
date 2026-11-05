@@ -62,8 +62,8 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Matc
         } else {
             suspended = Set.copyOf(suspendedPlayers);
         }
-        Formation homeFormation = formationService.createFormation(match.getHomeTeam(), suspended);
-        Formation awayFormation = formationService.createFormation(match.getAwayTeam(), suspended);
+        Formation homeFormation = formationService.createFormation(match.getHomeTeam(), suspended, random);
+        Formation awayFormation = formationService.createFormation(match.getAwayTeam(), suspended, random);
 
         TeamEventPlan homePlan = createEventPlan(match, homeFormation, random);
         TeamEventPlan awayPlan = createEventPlan(match, awayFormation, random);

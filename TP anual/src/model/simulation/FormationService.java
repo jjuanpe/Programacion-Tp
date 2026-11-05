@@ -1,6 +1,7 @@
 package model.simulation;
 
 import model.match.Formation;
+import model.match.FormationScheme;
 import model.people.Player;
 import model.people.Position;
 import model.team.Team;
@@ -8,21 +9,18 @@ import model.team.Team;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Set;
 
 public class FormationService {
     private static final int STARTER_COUNT = 11;
-    private static final Map<Position, Integer> STARTERS_BY_POSITION = Map.of(
-            Position.GOALKEEPER, 1,
-            Position.DEFENDER, 4,
-            Position.MIDFIELDER, 4,
-            Position.FORWARD, 2
-    );
+    private static final FormationScheme[] SCHEMES = FormationScheme.values();
 
-    public Formation createFormation(Team team, Set<Player> unavailablePlayers) {
+    public Formation createFormation(Team team, Set<Player> unavailablePlayers, Random random) {
         Objects.requireNonNull(team, "The team is required");
+        Objects.requireNonNull(random, "The random generator is required");
+        FormationScheme scheme = SCHEMES[random.nextInt(SCHEMES.length)];
         Set<Player> unavailable = unavailablePlayers == null ? Set.of() : Set.copyOf(unavailablePlayers);
 
         List<Player> availablePlayers = new ArrayList<>();
@@ -35,7 +33,7 @@ public class FormationService {
 
         List<Player> starters = new ArrayList<>();
         for (Position position : Position.values()) {
-            int required = STARTERS_BY_POSITION.get(position);
+            int required = scheme.startersAt(position);
             int selected = 0;
             for (Player player : availablePlayers) {
                 if (player.getPosition() == position && selected < required) {
