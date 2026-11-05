@@ -94,6 +94,7 @@ public class KnockoutView extends VBox {
 
     /*
      * Layout in 5 columns: quarter-finals 1-2 | semi-final 1 | final | semi-final 2 | quarter-finals 3-4.
+     * Both halves are mirrored at the same heights.
      * Each card is placed by hand and the connector lines are plain Line nodes.
      */
     private void drawBracket() {
@@ -104,9 +105,12 @@ public class KnockoutView extends VBox {
         if (quarters.size() == 4 && semis.size() == 2 && finals.size() == 1) {
             double step = CARD_HEIGHT + ROW_GAP;
             double top = LABEL_HEIGHT;
-            double[] quarterY = {top, top + step, top + 2 * step, top + 3 * step};
-            double[] semiY = {(quarterY[0] + quarterY[1]) / 2, (quarterY[2] + quarterY[3]) / 2};
-            double finalY = (semiY[0] + semiY[1]) / 2;
+            // Llave simetrica: los dos lados usan las mismas alturas, asi las semis
+            // y la final quedan en una misma linea horizontal, centradas entre los cuartos.
+            double[] quarterY = {top, top + step, top, top + step};
+            double semiCenter = (quarterY[0] + quarterY[1]) / 2;
+            double[] semiY = {semiCenter, semiCenter};
+            double finalY = semiCenter;
 
             List<Node> nodes = new ArrayList<>();
             addRoundLabel(nodes, "QUARTER-FINALS", 0);
@@ -135,7 +139,7 @@ public class KnockoutView extends VBox {
             board.getChildren().addAll(nodes);
 
             board.setMinWidth(COLUMN_COUNT * CARD_WIDTH + (COLUMN_COUNT - 1) * COLUMN_GAP + 12);
-            board.setMinHeight(top + 4 * step);
+            board.setMinHeight(top + 2 * step);
         }
     }
 
