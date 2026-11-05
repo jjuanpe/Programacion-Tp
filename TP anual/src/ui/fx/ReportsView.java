@@ -43,7 +43,7 @@ public class ReportsView extends VBox {
                 buildPageRow("VI. Teams", "Alphabetical list with ages, coach, goals and effectiveness.",
                         NavItem.TEAMS),
                 buildPageRow("VII. Referees", "Matches officiated, years refereeing and their average. "
-                        + "Statistics > Referees.", NavItem.STATISTICS),
+                        + "People > Referees.", NavItem.PEOPLE),
                 buildPageRow("VIII. Players by position", "Every player with a position filter. "
                         + "People > Players.", NavItem.PEOPLE));
         catalogue.getStyleClass().add("report-list");

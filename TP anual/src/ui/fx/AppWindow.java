@@ -253,6 +253,10 @@ public class AppWindow extends Application {
         tabs.put("Players", new PlayersView(
                 playersViewModel.getPlayers(),
                 playersViewModel.statusProperty()));
+        tabs.put("Referees", StatisticsTables.referees(
+                statisticsViewModel.getRefereeRows(),
+                statisticsViewModel.statusProperty(),
+                statisticsViewModel.refereeAverageProperty()));
         return new TabbedPage("People", Icon.PERSON, tabs);
     }
 
@@ -264,10 +268,6 @@ public class AppWindow extends Application {
                 statisticsViewModel.getFairPlayRows(), statisticsViewModel.statusProperty()));
         tabs.put("Minutes played", StatisticsTables.minutesPlayed(
                 statisticsViewModel.getMinutesRows(), statisticsViewModel.statusProperty()));
-        tabs.put("Referees", StatisticsTables.referees(
-                statisticsViewModel.getRefereeRows(),
-                statisticsViewModel.statusProperty(),
-                statisticsViewModel.refereeAverageProperty()));
         return new TabbedPage("Statistics", Icon.CHART, tabs);
     }
 
