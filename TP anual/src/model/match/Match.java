@@ -5,7 +5,6 @@ import java.io.Serializable;
 import model.event.Expulsion;
 import model.event.IncidenceContext;
 import model.event.Incidence;
-import model.event.Goal;
 import model.event.PenaltyExecuted;
 import model.people.Player;
 import model.people.Referee;
@@ -88,8 +87,8 @@ public abstract class Match implements Serializable, IncidenceContext {
             Incidence incidence = incidences.get(incidenceIndex);
             if (incidence == null || incidence.getContext() != this) {
                 validIncidences = false;
-            } else if (incidence instanceof Goal) {
-                recordedGoals++;
+            } else {
+                recordedGoals += incidence.goalsRecorded();
             }
             incidenceIndex++;
         }
@@ -136,7 +135,8 @@ public abstract class Match implements Serializable, IncidenceContext {
         Expulsion fifth = null;
         int index = 0;
         while (index < ordered.size() && fifth == null) {
-            if (ordered.get(index) instanceof Expulsion expulsion) {
+            Expulsion expulsion = ordered.get(index).getExpulsion();
+            if (expulsion != null) {
                 Set<Player> dismissed;
                 if (homeTeam.getPlayers().contains(expulsion.getPlayer())) {
                     dismissed = homeDismissed;
@@ -183,8 +183,9 @@ public abstract class Match implements Serializable, IncidenceContext {
     public synchronized Set<Player> getExpelledPlayers() {
         Set<Player> expelledPlayers = new HashSet<>();
         for (Incidence incidence : incidences) {
-            if (incidence instanceof Expulsion expulsion) {
-                expelledPlayers.add(expulsion.getPlayer());
+            Player expelled = incidence.getExpelledPlayer();
+            if (expelled != null) {
+                expelledPlayers.add(expelled);
             }
         }
         return expelledPlayers;

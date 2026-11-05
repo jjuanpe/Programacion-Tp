@@ -1,11 +1,15 @@
 package model.event;
 
+import model.competition.FairPlayEntry;
 import model.people.Player;
+import model.team.Team;
 
+import java.util.Map;
 import java.util.Objects;
 
 public class YellowCard extends Incidence {
     private static final long serialVersionUID = 1L;
+    private static final int FAIR_PLAY_POINTS = 1;
     private final Player player;
 
     public YellowCard(int minute, IncidenceContext match, Player player) {
@@ -15,6 +19,19 @@ public class YellowCard extends Incidence {
 
     public Player getPlayer() {
         return player;
+    }
+
+    @Override
+    public int fairPlayPointsFor(Team team) {
+        return team.getPlayers().contains(player) ? FAIR_PLAY_POINTS : 0;
+    }
+
+    @Override
+    public void registerCardIn(Map<Player, FairPlayEntry> entries) {
+        FairPlayEntry entry = entries.get(player);
+        if (entry != null) {
+            entry.registerYellowCard();
+        }
     }
 
     @Override

@@ -144,11 +144,13 @@ public class IdCardPdfExporter {
 
     private File findPhoto(String fileName) {
         File found = null;
-        for (String extension : PHOTO_EXTENSIONS) {
-            File candidate = new File(photosFolder, fileName + extension);
-            if (found == null && candidate.isFile()) {
+        int index = 0;
+        while (index < PHOTO_EXTENSIONS.length && found == null) {
+            File candidate = new File(photosFolder, fileName + PHOTO_EXTENSIONS[index]);
+            if (candidate.isFile()) {
                 found = candidate;
             }
+            index++;
         }
         return found;
     }
@@ -207,10 +209,13 @@ public class IdCardPdfExporter {
 
     private String initialsOf(String fullName) {
         StringBuilder initials = new StringBuilder();
-        for (String word : fullName.trim().split("\\s+")) {
-            if (!word.isEmpty() && initials.length() < 2) {
-                initials.append(Character.toUpperCase(word.charAt(0)));
+        String[] words = fullName.trim().split("\\s+");
+        int index = 0;
+        while (index < words.length && initials.length() < 2) {
+            if (!words[index].isEmpty()) {
+                initials.append(Character.toUpperCase(words[index].charAt(0)));
             }
+            index++;
         }
         return initials.toString();
     }

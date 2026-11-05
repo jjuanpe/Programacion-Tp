@@ -121,12 +121,25 @@ Every event in a match is a subclass of `Incidence` (`Goal`, `YellowCard`,
 | `getMinuteLabel()` | concrete | Formatted minute (`45'`) |
 | `isShootoutKick()` | concrete, `false` by default | Whether the event is a shoot-out kick |
 | `isScoredShootoutKickBy(team)` | concrete, `false` by default | Whether it is a shoot-out kick scored by that team |
+| `goalsRecorded()` | concrete, `0` by default | Goals the event adds to the score (`Goal` returns 1) |
+| `getExpulsion()` / `getExpelledPlayer()` | concrete, `null` by default | The expulsion and the player sent off (`Expulsion`) |
+| `getCreditedScorer()` / `isPenaltyGoal()` | concrete, `null` / `false` by default | Scorer for the scorers table, own goals excluded (`Goal`) |
+| `fairPlayPointsFor(team)` | concrete, `0` by default | Fair play points for that team (`YellowCard`, `Expulsion`) |
+| `registerCardIn(entries)` | concrete, does nothing by default | Registers the card in the fair play ranking (`YellowCard`, `Expulsion`) |
+| `updateOnPitch(onPitch, substitutes)` | concrete, does nothing by default | Updates the players on the pitch (`Change`, `Expulsion`) |
 
-`PenaltyExecuted` overrides the last two (and `getMinuteLabel()`, which shows "Kick n").
-This lets `Match` count the shoot-out kicks (`hasPenaltyShootout()`,
-`getShootoutGoals(team)`) and lets the interface list the incidences **without
+`PenaltyExecuted` overrides `isShootoutKick()` and `isScoredShootoutKickBy(team)`
+(and `getMinuteLabel()`, which shows "Kick n").
+This lets `Match` count goals, expulsions and shoot-out kicks, and lets the statistics
+services (`FairPlayCalculator`, `FairPlayRankingService`, `TopScorersService`,
+`PlayerReportService`) and `PenaltyShootoutSimulator` work with any incidence **without
 `instanceof`** and without knowing the concrete type of each event.
-Thanks to this, `MatchesController` no longer has a chain of conditionals per type.
+The fair play points of an expulsion depend on its `ExpulsionReason` (`getFairPlayPoints()`:
+4 for a direct red card, 1 extra for a second yellow).
+
+In the same way, `Player.isGoalkeeper()` / `asGoalkeeper()` (overridden by `Goalkeeper`) and
+`Position.isGoalkeeper()` replace the `instanceof Goalkeeper` checks and the comparisons with
+`Position.GOALKEEPER`.
 
 ### 3.5 Match simulation — Strategy pattern
 

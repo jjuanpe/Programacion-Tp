@@ -37,6 +37,21 @@ public class Goal extends Incidence {
     }
 
     @Override
+    public int goalsRecorded() {
+        return 1;
+    }
+
+    @Override
+    public Player getCreditedScorer() {
+        return ownGoal ? null : scorer;
+    }
+
+    @Override
+    public boolean isPenaltyGoal() {
+        return penalty;
+    }
+
+    @Override
     public String getTypeLabel() {
         String label = "Goal";
         if (ownGoal) {

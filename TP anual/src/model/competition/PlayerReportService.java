@@ -1,11 +1,9 @@
 package model.competition;
 
-import model.event.Goal;
 import model.event.Incidence;
 import model.match.Match;
 import model.match.PlayerParticipation;
 import model.people.Player;
-import model.people.Position;
 import model.team.Team;
 
 import java.util.ArrayList;
@@ -60,15 +58,16 @@ public class PlayerReportService {
                 PlayerReportEntry entry = entries.get(participation.getPlayer());
                 if (entry != null) {
                     entry.registerMatch(participation.getMinutesPlayed());
-                    if (entry.getPlayer().getPosition() == Position.GOALKEEPER) {
+                    if (entry.getPlayer().isGoalkeeper()) {
                         entry.registerConceded(concededGoals(match, entry.getTeam()));
                     }
                 }
             }
         }
         for (Incidence incidence : match.getIncidences()) {
-            if (incidence instanceof Goal goal && !goal.isOwnGoal()) {
-                PlayerReportEntry entry = entries.get(goal.getScorer());
+            Player scorer = incidence.getCreditedScorer();
+            if (scorer != null) {
+                PlayerReportEntry entry = entries.get(scorer);
                 if (entry != null) {
                     entry.registerGoal();
                 }

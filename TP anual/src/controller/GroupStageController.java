@@ -133,10 +133,10 @@ public class GroupStageController {
             description = "Qualified: still to be decided";
         } else {
             List<String> qualified = new ArrayList<>();
-            for (int index = 0;
-                    index < KnockoutBracketService.QUALIFIED_PER_ZONE && index < standings.size();
-                    index++) {
+            int index = 0;
+            while (index < KnockoutBracketService.QUALIFIED_PER_ZONE && index < standings.size()) {
                 qualified.add(standings.get(index).getTeam().getName());
+                index++;
             }
             description = new StringBuilder("Qualified: ").append(String.join(", ", qualified)).toString();
         }
@@ -146,10 +146,10 @@ public class GroupStageController {
     private boolean isZoneFinished(List<StandingEntry> standings) {
         int expectedMatchesPerTeam = standings.size() - 1;
         boolean finished = !standings.isEmpty();
-        for (StandingEntry entry : standings) {
-            if (entry.getPlayed() != expectedMatchesPerTeam) {
-                finished = false;
-            }
+        int index = 0;
+        while (index < standings.size() && finished) {
+            finished = standings.get(index).getPlayed() == expectedMatchesPerTeam;
+            index++;
         }
         return finished;
     }
