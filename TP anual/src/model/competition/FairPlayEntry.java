@@ -16,11 +16,11 @@ public class FairPlayEntry {
         this.team = Objects.requireNonNull(team, "The team is required");
     }
 
-    void registerYellowCard() {
+    public void registerYellowCard() {
         yellowCards++;
     }
 
-    void registerExpulsion() {
+    public void registerExpulsion() {
         expulsions++;
     }
 

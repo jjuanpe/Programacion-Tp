@@ -119,7 +119,7 @@ public class JsonTournamentLoader {
         Position position = Position.fromFileValue(node.get("posicion").getAsString());
 
         Player player;
-        if (position == Position.GOALKEEPER) {
+        if (position.isGoalkeeper()) {
             player = new Goalkeeper(fullName, birthDate, documentType, documentNumber,
                     attributes.get("reflejos").getAsInt(),
                     attributes.get("seguridadManos").getAsInt(),

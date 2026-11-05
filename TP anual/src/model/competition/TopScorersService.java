@@ -1,6 +1,5 @@
 package model.competition;
 
-import model.event.Goal;
 import model.event.Incidence;
 import model.match.Match;
 import model.people.Player;
@@ -55,23 +54,24 @@ public class TopScorersService {
             Map<Player, Team> teamsByPlayer,
             Map<Player, ScorerEntry> scorers) {
         for (Incidence incidence : match.getIncidences()) {
-            if (incidence instanceof Goal goal && !goal.isOwnGoal()) {
-                registerGoal(goal, teamsByPlayer, scorers);
+            Player scorer = incidence.getCreditedScorer();
+            if (scorer != null) {
+                registerGoal(scorer, incidence.isPenaltyGoal(), teamsByPlayer, scorers);
             }
         }
     }
 
     private void registerGoal(
-            Goal goal,
+            Player scorer,
+            boolean penalty,
             Map<Player, Team> teamsByPlayer,
             Map<Player, ScorerEntry> scorers) {
-        Player scorer = goal.getScorer();
         ScorerEntry entry = scorers.get(scorer);
         if (entry == null) {
             entry = new ScorerEntry(scorer, teamsByPlayer.get(scorer));
             scorers.put(scorer, entry);
         }
-        entry.registerGoal(goal.isPenalty());
+        entry.registerGoal(penalty);
     }
 
     private void assignPositions(List<ScorerEntry> ranking) {

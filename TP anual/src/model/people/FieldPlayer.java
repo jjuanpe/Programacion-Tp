@@ -18,7 +18,7 @@ public class FieldPlayer extends Player {
                         int speed, int stamina, int skill, int finishing, int shotPower, int heading, int tackling, int vision) {
         super(name, birthday, documentType, document, position,
                 computeAverage(speed, stamina, skill, finishing, shotPower, heading, tackling, vision));
-        if (position == Position.GOALKEEPER) {
+        if (position.isGoalkeeper()) {
             throw new IllegalArgumentException("A field player cannot have the goalkeeper position");
         }
         this.speed = speed;

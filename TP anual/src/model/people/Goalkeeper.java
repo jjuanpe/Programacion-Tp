@@ -24,6 +24,16 @@ public class Goalkeeper extends Player {
         this.footwork = footwork;
     }
 
+    @Override
+    public boolean isGoalkeeper() {
+        return true;
+    }
+
+    @Override
+    public Goalkeeper asGoalkeeper() {
+        return this;
+    }
+
     public int getReflexes() {
         return reflexes;
     }

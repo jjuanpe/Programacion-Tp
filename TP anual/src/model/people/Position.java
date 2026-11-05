@@ -21,6 +21,10 @@ public enum Position {
         return label;
     }
 
+    public boolean isGoalkeeper() {
+        return this == GOALKEEPER;
+    }
+
     public int getRequiredPerSquad() {
         return requiredPerSquad;
     }

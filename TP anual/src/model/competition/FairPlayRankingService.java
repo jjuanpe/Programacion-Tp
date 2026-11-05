@@ -1,8 +1,6 @@
 package model.competition;
 
-import model.event.Expulsion;
 import model.event.Incidence;
-import model.event.YellowCard;
 import model.match.Match;
 import model.people.Player;
 import model.team.Team;
@@ -65,17 +63,7 @@ public class FairPlayRankingService {
 
     private void countCards(Match match, Map<Player, FairPlayEntry> entriesByPlayer) {
         for (Incidence incidence : match.getIncidences()) {
-            if (incidence instanceof YellowCard yellowCard) {
-                FairPlayEntry entry = entriesByPlayer.get(yellowCard.getPlayer());
-                if (entry != null) {
-                    entry.registerYellowCard();
-                }
-            } else if (incidence instanceof Expulsion expulsion) {
-                FairPlayEntry entry = entriesByPlayer.get(expulsion.getPlayer());
-                if (entry != null) {
-                    entry.registerExpulsion();
-                }
-            }
+            incidence.registerCardIn(entriesByPlayer);
         }
     }
 }

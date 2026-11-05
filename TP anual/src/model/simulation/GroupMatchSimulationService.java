@@ -303,7 +303,7 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Matc
     private List<Player> getOutfieldPlayers(List<Player> players) {
         List<Player> result = new ArrayList<>();
         for (Player player : players) {
-            if (player.getPosition() != Position.GOALKEEPER) {
+            if (!player.isGoalkeeper()) {
                 result.add(player);
             }
         }
@@ -425,7 +425,7 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Matc
                 }
             }
             if (outfieldOnly) {
-                activePlayers.removeIf(player -> player.getPosition() == Position.GOALKEEPER);
+                activePlayers.removeIf(Player::isGoalkeeper);
             }
             if (activePlayers.isEmpty()) {
                 throw new IllegalStateException("There are no active players for this incidence");
@@ -438,10 +438,7 @@ public class GroupMatchSimulationService implements MatchSimulationStrategy<Matc
             int playerIndex = 0;
             List<Player> starters = formation.getStarters();
             while (playerIndex < starters.size() && selectedGoalkeeper == null) {
-                Player player = starters.get(playerIndex);
-                if (player instanceof Goalkeeper goalkeeper) {
-                    selectedGoalkeeper = goalkeeper;
-                }
+                selectedGoalkeeper = starters.get(playerIndex).asGoalkeeper();
                 playerIndex++;
             }
             if (selectedGoalkeeper == null) {

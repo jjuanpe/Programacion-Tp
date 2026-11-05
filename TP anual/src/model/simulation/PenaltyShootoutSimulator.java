@@ -1,7 +1,5 @@
 package model.simulation;
 
-import model.event.Change;
-import model.event.Expulsion;
 import model.event.Incidence;
 import model.event.PenaltyExecuted;
 import model.match.Formation;
@@ -113,14 +111,7 @@ public class PenaltyShootoutSimulator {
     private List<Player> buildKickerOrder(Match match, Formation formation, Random random) {
         List<Player> eligiblePlayers = new ArrayList<>(formation.getStarters());
         for (Incidence incidence : match.getIncidences()) {
-            if (incidence instanceof Change change) {
-                eligiblePlayers.remove(change.getPlayerOut());
-                if (formation.getSubstitutes().contains(change.getPlayerIn())) {
-                    eligiblePlayers.add(change.getPlayerIn());
-                }
-            } else if (incidence instanceof Expulsion expulsion) {
-                eligiblePlayers.remove(expulsion.getPlayer());
-            }
+            incidence.updateOnPitch(eligiblePlayers, formation.getSubstitutes());
         }
         if (eligiblePlayers.isEmpty()) {
             throw new IllegalStateException("No eligible penalty takers");

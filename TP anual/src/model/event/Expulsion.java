@@ -1,7 +1,11 @@
 package model.event;
 
+import model.competition.FairPlayEntry;
 import model.people.Player;
+import model.team.Team;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class Expulsion extends Incidence {
@@ -25,6 +29,34 @@ public class Expulsion extends Incidence {
 
     public ExpulsionReason getReason() {
         return reason;
+    }
+
+    @Override
+    public Expulsion getExpulsion() {
+        return this;
+    }
+
+    @Override
+    public Player getExpelledPlayer() {
+        return player;
+    }
+
+    @Override
+    public int fairPlayPointsFor(Team team) {
+        return team.getPlayers().contains(player) ? reason.getFairPlayPoints() : 0;
+    }
+
+    @Override
+    public void registerCardIn(Map<Player, FairPlayEntry> entries) {
+        FairPlayEntry entry = entries.get(player);
+        if (entry != null) {
+            entry.registerExpulsion();
+        }
+    }
+
+    @Override
+    public void updateOnPitch(List<Player> onPitch, List<Player> substitutes) {
+        onPitch.remove(player);
     }
 
     @Override

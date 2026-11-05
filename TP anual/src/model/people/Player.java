@@ -41,6 +41,15 @@ public class Player extends Person{
         return average;
     }
 
+    public boolean isGoalkeeper() {
+        return false;
+    }
+
+    // The player as a goalkeeper, or null if they are a field player.
+    public Goalkeeper asGoalkeeper() {
+        return null;
+    }
+
     @Override
     public String getRole() {
         return "Player";

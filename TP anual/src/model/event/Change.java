@@ -2,6 +2,7 @@ package model.event;
 
 import model.people.Player;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Change extends Incidence {
@@ -21,6 +22,14 @@ public class Change extends Incidence {
 
     public Player getPlayerIn() {
         return playerIn;
+    }
+
+    @Override
+    public void updateOnPitch(List<Player> onPitch, List<Player> substitutes) {
+        onPitch.remove(playerOut);
+        if (substitutes.contains(playerIn)) {
+            onPitch.add(playerIn);
+        }
     }
 
     @Override

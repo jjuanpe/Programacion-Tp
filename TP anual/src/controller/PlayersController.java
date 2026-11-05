@@ -3,7 +3,6 @@ package controller;
 import model.competition.PlayerReportEntry;
 import model.competition.PlayerReportService;
 import model.people.Player;
-import model.people.Position;
 import model.team.Team;
 import viewmodel.PlayerStatsRow;
 import viewmodel.PlayersViewModel;
@@ -51,7 +50,7 @@ public class PlayersController {
 
     private PlayerStatsRow toRow(PlayerReportEntry entry, LocalDate referenceDate) {
         Player player = entry.getPlayer();
-        boolean isGoalkeeper = player.getPosition() == Position.GOALKEEPER;
+        boolean isGoalkeeper = player.isGoalkeeper();
         return new PlayerStatsRow(
                 player.getName(),
                 player.getPosition().getLabel(),

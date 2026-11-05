@@ -41,7 +41,7 @@ public class FormationService {
                     selected++;
                 }
             }
-            if (position == Position.GOALKEEPER && selected != required) {
+            if (position.isGoalkeeper() && selected != required) {
                 throw new IllegalStateException(new StringBuilder(team.getName())
                         .append(" does not have enough available players for position ").append(position).toString());
             }
@@ -50,7 +50,7 @@ public class FormationService {
         int playerIndex = 0;
         while (playerIndex < availablePlayers.size() && starters.size() < STARTER_COUNT) {
             Player player = availablePlayers.get(playerIndex);
-            if (player.getPosition() != Position.GOALKEEPER && !starters.contains(player)) {
+            if (!player.isGoalkeeper() && !starters.contains(player)) {
                 starters.add(player);
             }
             playerIndex++;
