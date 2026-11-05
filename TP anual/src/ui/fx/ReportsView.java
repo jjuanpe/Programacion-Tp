@@ -23,7 +23,7 @@ public class ReportsView extends VBox {
         this.exportIdCards = exportIdCards;
         getStyleClass().add("page");
 
-        Label title = new Label("Reports");
+        Label title = Icons.titled(new Label("Reports"), Icon.DOCUMENT);
         title.getStyleClass().add("section-title");
 
         Label status = new Label();
@@ -52,7 +52,7 @@ public class ReportsView extends VBox {
     }
 
     private HBox buildPdfRow() {
-        Button export = new Button("Export PDF");
+        Button export = Icons.with(new Button("Export PDF"), Icon.DOWNLOAD);
         export.getStyleClass().addAll("action-button", "primary-button");
         export.setOnAction(event -> chooseFileAndExport());
         return buildRow("I. Identification cards",
@@ -61,7 +61,7 @@ public class ReportsView extends VBox {
     }
 
     private HBox buildPageRow(String name, String description, NavItem page) {
-        Button open = new Button("Open");
+        Button open = Icons.with(new Button("Open"), Icon.OPEN);
         open.getStyleClass().addAll("action-button", "secondary-button");
         open.setOnAction(event -> openPage.accept(page));
         return buildRow(name, description, open);

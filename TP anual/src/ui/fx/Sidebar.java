@@ -1,10 +1,14 @@
 package ui.fx;
 
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -29,13 +33,24 @@ public class Sidebar extends VBox {
     }
 
     private VBox buildHeader() {
+        Region ball = Icons.of(Icon.BALL, 30);
+        StackPane logo = new StackPane(ball);
+        logo.getStyleClass().add("sidebar-logo");
+        Animations.spin(ball, Duration.seconds(9));
+
         Label line1 = new Label("International");
-        line1.getStyleClass().add("app-title");
+        line1.getStyleClass().add("app-title-small");
 
         Label line2 = new Label("Club Cup");
         line2.getStyleClass().add("app-title");
 
-        VBox header = new VBox(line1, line2);
+        VBox names = new VBox(line1, line2);
+        names.setAlignment(Pos.CENTER_LEFT);
+
+        HBox brand = new HBox(12, logo, names);
+        brand.setAlignment(Pos.CENTER_LEFT);
+
+        VBox header = new VBox(brand);
         header.getStyleClass().add("sidebar-header");
         return header;
     }
@@ -45,8 +60,10 @@ public class Sidebar extends VBox {
         nav.getStyleClass().add("sidebar-nav");
 
         for (NavItem item : NavItem.values()) {
-            Button button = new Button(new StringBuilder(item.getIcon()).append("   ").append(item.getLabel()).toString());
+            Button button = Icons.with(new Button(item.getLabel()), item.getIcon());
+            button.setGraphicTextGap(14);
             button.getStyleClass().add("nav-button");
+            Animations.hoverNudge(button);
             button.setMaxWidth(Double.MAX_VALUE);
             button.setOnAction(event -> select(item));
 
@@ -63,7 +80,7 @@ public class Sidebar extends VBox {
     }
 
     private VBox buildFooter() {
-        Label institution = new Label("UFASTA");
+        Label institution = Icons.with(new Label("UFASTA"), Icon.FLAG);
         institution.getStyleClass().add("footer-title");
 
         Label course = new Label("Programacion B \u00B7 2026");

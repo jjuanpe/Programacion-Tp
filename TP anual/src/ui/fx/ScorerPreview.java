@@ -20,7 +20,7 @@ public class ScorerPreview extends VBox {
     public ScorerPreview(ObservableList<ScorerRow> rows, Runnable onOpen) {
         getStyleClass().add("scorer-preview");
 
-        Label heading = new Label("TOP SCORERS");
+        Label heading = Icons.with(new Label("TOP SCORERS"), Icon.BALL);
         heading.getStyleClass().add("card-kicker");
 
         rowsBox.getStyleClass().add("scorer-rows");
@@ -30,6 +30,7 @@ public class ScorerPreview extends VBox {
         getChildren().addAll(heading, rowsBox);
         getStyleClass().add("clickable");
         setOnMouseClicked(event -> onOpen.run());
+        Animations.hoverLift(this);
     }
 
     private void render(ObservableList<ScorerRow> rows) {
@@ -47,7 +48,7 @@ public class ScorerPreview extends VBox {
 
     private HBox buildRow(ScorerRow scorer) {
         Label rank = new Label(String.valueOf(scorer.getPosition()));
-        rank.getStyleClass().add("scorer-rank");
+        rank.getStyleClass().addAll("scorer-rank", Ranks.styleFor(scorer.getPosition()));
 
         Label player = new Label(scorer.getPlayer());
         player.getStyleClass().add("scorer-player");

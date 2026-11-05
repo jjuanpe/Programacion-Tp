@@ -5,25 +5,27 @@
 .root {
     -fx-font-family: "Segoe UI", "Inter", "Helvetica Neue", sans-serif;
 
-    /* Paleta: noche de estadio + dorado de trofeo */
-    -sidebar-bg:      #070B16;
-    -sidebar-text:    #8D9BC2;
-    -sidebar-strong:  #F4F6FF;
-    -accent:          #FFC83D;
-    -accent-hover:    #FFD96B;
-    -on-accent:       #1A1300;
-    -content-bg:      #0C1324;
-    -text-strong:     #F2F5FF;
-    -text-muted:      #8D9BC2;
-    -status-ok:       #35F2A0;
-    -card-bg:         #141E38;
-    -row-alt:         #182445;
-    -hover-bg:        #1E2C52;
-    -border:          #2A3A68;
+    /* Paleta: noche de estadio + celeste y blanco + dorado de trofeo */
+    -sidebar-bg:      #040A1D;
+    -sidebar-text:    #9DB4DD;
+    -sidebar-strong:  #FFFFFF;
+    -accent:          #74B9F0;
+    -accent-hover:    #A3D3FA;
+    -on-accent:       #04122E;
+    -gold:            #F7C948;
+    -on-gold:         #2A1A00;
+    -content-bg:      #071433;
+    -text-strong:     #F4F8FF;
+    -text-muted:      #9DB4DD;
+    -status-ok:       #3EE6A0;
+    -card-bg:         #0E1F47;
+    -row-alt:         #122753;
+    -hover-bg:        #19346B;
+    -border:          #23427F;
     -danger:          #FF5C74;
-    -step-pending:    #34446E;
-    -fx-base:         #141E38;
-    -fx-control-inner-background: #141E38;
+    -step-pending:    #2D4A85;
+    -fx-base:         #0E1F47;
+    -fx-control-inner-background: #0E1F47;
 }
 
 /* ---------- Contenedor principal ---------- */
@@ -271,7 +273,7 @@
     -fx-min-height: 14px;
     -fx-pref-height: 14px;
     -fx-max-height: 14px;
-    -fx-effect: dropshadow(gaussian, rgba(255, 200, 61, 0.65), 9, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(116, 185, 240, 0.65), 9, 0, 0, 0);
 }
 
 .step-label {
@@ -365,7 +367,7 @@
 }
 
 .data-table .table-row-cell:selected {
-    -fx-background-color: rgba(255, 200, 61, 0.16);
+    -fx-background-color: rgba(116, 185, 240, 0.16);
 }
 
 .data-table .table-cell {
@@ -582,7 +584,7 @@
 
 /* Puestos que clasifican a cuartos */
 .standings-table .table-row-cell.qualified-row {
-    -fx-background-color: rgba(255, 200, 61, 0.12);
+    -fx-background-color: rgba(116, 185, 240, 0.12);
 }
 
 .standings-table .table-row-cell.qualified-row .table-cell {
@@ -771,11 +773,11 @@
 }
 
 .nav-button.active, .nav-button.active:hover {
-    -fx-effect: dropshadow(gaussian, rgba(255, 200, 61, 0.45), 14, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(116, 185, 240, 0.45), 14, 0, 0, 0);
 }
 
 .primary-button {
-    -fx-effect: dropshadow(gaussian, rgba(255, 200, 61, 0.35), 10, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(116, 185, 240, 0.35), 10, 0, 0, 0);
 }
 
 /* Botones y controles nativos (Cities / Stadiums / dialogos) */
@@ -882,7 +884,7 @@
 
 .bracket-final-card {
     -fx-border-color: -accent;
-    -fx-effect: dropshadow(gaussian, rgba(255, 200, 61, 0.45), 18, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(116, 185, 240, 0.45), 18, 0, 0, 0);
 }
 
 .bracket-team {
@@ -901,7 +903,7 @@
 }
 
 .champion-banner {
-    -fx-effect: dropshadow(gaussian, rgba(255, 200, 61, 0.5), 20, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(116, 185, 240, 0.5), 20, 0, 0, 0);
     -fx-font-size: 20px;
 }
 
@@ -991,7 +993,7 @@
     -fx-font-family: "Bahnschrift", "Segoe UI Semibold", "Segoe UI", sans-serif;
     -fx-font-size: 26px;
     -fx-font-weight: bold;
-    -fx-effect: dropshadow(gaussian, rgba(255, 200, 61, 0.45), 14, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(116, 185, 240, 0.45), 14, 0, 0, 0);
 }
 
 .data-table .table-row-cell.row-goal {
@@ -999,7 +1001,7 @@
 }
 
 .data-table .table-row-cell.row-yellow {
-    -fx-background-color: rgba(255, 200, 61, 0.14);
+    -fx-background-color: rgba(116, 185, 240, 0.14);
 }
 
 .data-table .table-row-cell.row-red {
@@ -1058,7 +1060,7 @@
 /* ---------- People: posicion en el borde de la fila ---------- */
 
 .data-table .table-row-cell.pos-goalkeeper {
-    -fx-border-color: transparent transparent transparent #FFC83D;
+    -fx-border-color: transparent transparent transparent #F7C948;
     -fx-border-width: 0 0 0 4px;
 }
 
@@ -1080,7 +1082,7 @@
 /* ---------- Statistics: podio ---------- */
 
 .data-table .table-row-cell.podium-1 {
-    -fx-background-color: rgba(255, 200, 61, 0.22);
+    -fx-background-color: rgba(116, 185, 240, 0.22);
 }
 
 .data-table .table-row-cell.podium-2 {
@@ -1125,4 +1127,288 @@
     -fx-alignment: center;
     -fx-min-width: 44px;
     -fx-padding: 6px 8px;
+}
+
+/* ============================================================
+   Rediseno: celeste y blanco sobre azul noche, iconos y movimiento.
+   Colores planos. Esta seccion va al final para pisar lo anterior.
+   ============================================================ */
+
+/* ---------- Iconos ---------- */
+
+.icon {
+    -fx-background-color: -text-muted;
+}
+
+.icon-bubble {
+    -fx-background-color: -accent;
+    -fx-background-radius: 8px;
+    -fx-min-width: 28px;
+    -fx-min-height: 28px;
+    -fx-max-width: 28px;
+    -fx-max-height: 28px;
+}
+
+.icon-bubble .icon {
+    -fx-background-color: -on-accent;
+}
+
+/* ---------- Sidebar ---------- */
+
+.sidebar {
+    -fx-border-color: transparent -border transparent transparent;
+    -fx-border-width: 0 1px 0 0;
+}
+
+.sidebar-logo {
+    -fx-background-color: white;
+    -fx-background-radius: 25px;
+    -fx-min-width: 46px;
+    -fx-min-height: 46px;
+    -fx-max-width: 46px;
+    -fx-max-height: 46px;
+}
+
+.sidebar-logo .icon {
+    -fx-background-color: -content-bg;
+}
+
+.app-title-small {
+    -fx-text-fill: -sidebar-text;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.app-title {
+    -fx-text-fill: white;
+}
+
+.nav-button {
+    -fx-font-size: 14.5px;
+    -fx-padding: 10px 14px;
+}
+
+.nav-button .icon {
+    -fx-background-color: #6A82B3;
+}
+
+.nav-button:hover .icon,
+.nav-button:focused .icon {
+    -fx-background-color: -accent;
+}
+
+.nav-button.active,
+.nav-button.active:hover {
+    -fx-effect: null;
+}
+
+.nav-button.active .icon {
+    -fx-background-color: -on-accent;
+}
+
+.footer-title .icon {
+    -fx-background-color: -accent;
+}
+
+/* ---------- Encabezado ---------- */
+
+.dashboard-header {
+    -fx-padding: 22px 34px 18px 34px;
+    -fx-spacing: 14px;
+}
+
+.dashboard-title {
+    -fx-text-fill: white;
+}
+
+/* En el Dashboard: la foto de la pelota de fondo, alineada a la derecha */
+.home-header {
+    -fx-background-color: #050A14;
+    -fx-background-image: url("img/hero.jpg");
+    -fx-background-size: cover;
+    -fx-background-position: right center;
+    -fx-background-repeat: no-repeat;
+    -fx-min-height: 230px;
+    -fx-padding: 26px 34px;
+}
+
+.home-header .dashboard-title {
+    -fx-font-size: 34px;
+}
+
+.home-header .dashboard-subtitle {
+    -fx-text-fill: white;
+}
+
+.status-badge {
+    -fx-background-color: -card-bg;
+    -fx-background-radius: 20px;
+    -fx-border-color: -status-ok;
+    -fx-border-radius: 20px;
+    -fx-padding: 5px 12px;
+    -fx-max-height: 32px;
+}
+
+.status-label {
+    -fx-text-fill: -status-ok;
+    -fx-font-weight: bold;
+}
+
+.status-label .icon {
+    -fx-background-color: -status-ok;
+}
+
+/* ---------- Tarjetas de resumen ---------- */
+
+.summary-card-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.summary-card-icon {
+    -fx-background-radius: 12px;
+    -fx-min-width: 42px;
+    -fx-min-height: 42px;
+    -fx-max-width: 42px;
+    -fx-max-height: 42px;
+}
+
+.summary-card-icon .icon {
+    -fx-background-color: -on-accent;
+}
+
+.summary-card.tone-sky   { -fx-border-color: -accent -border -border -border; -fx-border-width: 4px 1px 1px 1px; }
+.summary-card.tone-green { -fx-border-color: -status-ok -border -border -border; -fx-border-width: 4px 1px 1px 1px; }
+.summary-card.tone-gold  { -fx-border-color: -gold -border -border -border; -fx-border-width: 4px 1px 1px 1px; }
+
+.tone-sky .summary-card-icon   { -fx-background-color: -accent; }
+.tone-green .summary-card-icon { -fx-background-color: -status-ok; }
+.tone-gold .summary-card-icon  { -fx-background-color: -gold; }
+
+.tone-sky .summary-card-value   { -fx-text-fill: -accent; }
+.tone-green .summary-card-value { -fx-text-fill: -status-ok; }
+.tone-gold .summary-card-value  { -fx-text-fill: -gold; }
+
+.card-kicker {
+    -fx-text-fill: -accent;
+}
+
+.card-kicker .icon {
+    -fx-background-color: -accent;
+}
+
+.zone-leader-card:hover, .scorer-preview.clickable:hover, .bracket-card.clickable:hover,
+.report-row:hover, .summary-card:hover {
+    -fx-border-color: -accent;
+}
+
+/* ---------- Medallas del ranking ---------- */
+
+.scorer-rank {
+    -fx-alignment: center;
+    -fx-background-radius: 13px;
+    -fx-min-width: 26px;
+    -fx-min-height: 26px;
+    -fx-max-width: 26px;
+    -fx-max-height: 26px;
+    -fx-font-size: 12.5px;
+}
+
+.rank-gold   { -fx-background-color: -gold;    -fx-text-fill: -on-gold; }
+.rank-silver { -fx-background-color: #C9D3E6; -fx-text-fill: #1A2440; }
+.rank-bronze { -fx-background-color: #C9824A; -fx-text-fill: #2A1200; }
+.rank-other  { -fx-background-color: -hover-bg; -fx-text-fill: -text-muted; }
+
+.scorer-goals {
+    -fx-text-fill: -accent;
+}
+
+/* ---------- Progreso del torneo ---------- */
+
+.step.current .step-dot {
+    -fx-background-color: white;
+    -fx-border-color: -accent;
+    -fx-border-width: 3px;
+    -fx-effect: null;
+}
+
+.step-connector {
+    -fx-min-height: 3px;
+    -fx-pref-height: 3px;
+    -fx-max-height: 3px;
+}
+
+/* ---------- Campeon ---------- */
+
+.champion-banner {
+    -fx-background-color: -gold;
+    -fx-text-fill: -on-gold;
+    -fx-effect: null;
+}
+
+.champion-banner .icon {
+    -fx-background-color: -on-gold;
+}
+
+/* ---------- Botones ---------- */
+
+.primary-button {
+    -fx-background-radius: 20px;
+    -fx-effect: null;
+}
+
+.primary-button .icon {
+    -fx-background-color: -on-accent;
+}
+
+.secondary-button {
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+}
+
+.secondary-button .icon,
+.button .icon {
+    -fx-background-color: -accent;
+}
+
+.action-button:pressed, .button:pressed {
+    -fx-scale-x: 0.96;
+    -fx-scale-y: 0.96;
+}
+
+.sub-tab-button {
+    -fx-background-radius: 20px;
+}
+
+/* ---------- Tablas ---------- */
+
+.data-table .table-row-cell:hover {
+    -fx-background-color: -hover-bg;
+}
+
+.standings-table .table-row-cell.qualified-row {
+    -fx-border-color: transparent transparent transparent -accent;
+    -fx-border-width: 0 0 0 3px;
+}
+
+.data-table .table-row-cell.podium-1 .table-cell {
+    -fx-text-fill: -gold;
+}
+
+/* ---------- Llave ---------- */
+
+.bracket-final-card {
+    -fx-border-color: -gold;
+    -fx-effect: null;
+}
+
+.bracket-final-card .bracket-team.bracket-winner {
+    -fx-background-color: -gold;
+    -fx-text-fill: -on-gold;
+}
+
+.scoreboard-score {
+    -fx-background-color: white;
+    -fx-text-fill: -content-bg;
+    -fx-effect: null;
 }

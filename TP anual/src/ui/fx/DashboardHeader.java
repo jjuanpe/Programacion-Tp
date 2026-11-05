@@ -21,7 +21,7 @@ public class DashboardHeader extends HBox {
         this.subtitle.textProperty().bind(subtitleText);
         this.subtitle.getStyleClass().add("dashboard-subtitle");
 
-        this.status = new Label("Saved");
+        this.status = Icons.with(new Label("Saved"), Icon.CHECK);
         this.status.getStyleClass().add("status-label");
 
         getChildren().addAll(buildTitles(), buildSpacer(), buildStatus());
@@ -43,14 +43,19 @@ public class DashboardHeader extends HBox {
     }
 
     private HBox buildStatus() {
-        Region dot = new Region();
-        dot.getStyleClass().add("status-dot");
-
-        HBox badge = new HBox(dot, status);
+        HBox badge = new HBox(status);
         badge.getStyleClass().add("status-badge");
         badge.setAlignment(Pos.CENTER);
         badge.setMinWidth(Region.USE_PREF_SIZE);
         return badge;
+    }
+
+    /** En el Dashboard el encabezado lleva la foto de fondo (ver .home-header en styles.css). */
+    public void showPage(NavItem item) {
+        getStyleClass().remove("home-header");
+        if (item == NavItem.DASHBOARD) {
+            getStyleClass().add("home-header");
+        }
     }
 
     public void setStatus(String text) {

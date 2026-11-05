@@ -38,7 +38,7 @@ public class KnockoutView extends VBox {
         this.onOpenMatches = onOpenMatches;
         getStyleClass().add("page");
 
-        Label title = new Label("Knockout Stage");
+        Label title = Icons.titled(new Label("Knockout Stage"), Icon.BRACKET);
         title.getStyleClass().add("section-title");
 
         Label status = new Label();
@@ -68,9 +68,10 @@ public class KnockoutView extends VBox {
     }
 
     private Label buildChampionBanner(ObservableValue<String> champion) {
-        Label banner = new Label();
+        Label banner = Icons.with(new Label(), Icon.TROPHY);
         banner.getStyleClass().add("champion-banner");
         banner.textProperty().bind(champion);
+        Animations.breathe(banner);
         banner.visibleProperty().bind(banner.textProperty().isNotEmpty());
         banner.managedProperty().bind(banner.visibleProperty());
         return banner;

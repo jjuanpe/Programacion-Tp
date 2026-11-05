@@ -19,6 +19,10 @@ public class TabbedPage extends VBox {
     private final StackPane content = new StackPane();
 
     public TabbedPage(String title, Map<String, Node> tabs) {
+        this(title, null, tabs);
+    }
+
+    public TabbedPage(String title, Icon icon, Map<String, Node> tabs) {
         if (tabs.isEmpty()) {
             throw new IllegalArgumentException("A tabbed page needs at least one tab");
         }
@@ -27,6 +31,9 @@ public class TabbedPage extends VBox {
 
         Label titleLabel = new Label(title);
         titleLabel.getStyleClass().add("section-title");
+        if (icon != null) {
+            Icons.titled(titleLabel, icon);
+        }
 
         getChildren().addAll(titleLabel, buildTabRow(), content);
         selectTab(this.tabs.keySet().iterator().next());

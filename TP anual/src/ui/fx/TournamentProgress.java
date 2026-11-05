@@ -2,6 +2,7 @@ package ui.fx;
 
 import viewmodel.TournamentStage;
 
+import javafx.animation.Animation;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -25,10 +26,13 @@ public class TournamentProgress extends VBox {
     private final Map<TournamentStage, HBox> steps = new EnumMap<>(TournamentStage.class);
     private final List<Region> connectors = new ArrayList<>();
 
+    private Animation pulse;
+    private Node pulsingDot;
+
     public TournamentProgress(ObservableValue<TournamentStage> currentStage) {
         getStyleClass().add("tournament-progress");
 
-        Label title = new Label("Tournament Progress");
+        Label title = Icons.titled(new Label("Tournament Progress"), Icon.TIMELINE);
         title.getStyleClass().add("section-title");
 
         getChildren().addAll(title, buildStepper());
@@ -82,6 +86,21 @@ public class TournamentProgress extends VBox {
         for (int index = 0; index < connectors.size(); index++) {
             boolean reached = currentStage != null && index < currentStage.ordinal();
             applyState(connectors.get(index), reached ? STATE_COMPLETED : STATE_PENDING);
+        }
+        pulseCurrent(currentStage);
+    }
+
+    /** La etapa actual "late" para que se vea de un vistazo donde esta el torneo. */
+    private void pulseCurrent(TournamentStage currentStage) {
+        if (pulse != null) {
+            pulse.stop();
+            pulsingDot.setScaleX(1);
+            pulsingDot.setScaleY(1);
+            pulse = null;
+        }
+        if (currentStage != null) {
+            pulsingDot = steps.get(currentStage).getChildren().get(0);
+            pulse = Animations.pulse(pulsingDot);
         }
     }
 

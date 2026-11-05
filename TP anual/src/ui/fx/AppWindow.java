@@ -82,6 +82,7 @@ public class AppWindow extends Application {
     private ReportsController reportsController;
 
     private final Sidebar sidebar = new Sidebar();
+    private DashboardHeader header;
 
     private final Map<NavItem, Node> pages = new EnumMap<>(NavItem.class);
     private final ScrollPane pageArea = new ScrollPane();
@@ -191,7 +192,8 @@ public class AppWindow extends Application {
 
         BorderPane content = new BorderPane();
         content.getStyleClass().add("content-area");
-        content.setTop(new DashboardHeader(dashboardViewModel.stageLabelProperty()));
+        header = new DashboardHeader(dashboardViewModel.stageLabelProperty());
+        content.setTop(header);
         content.setCenter(pageArea);
         return content;
     }
@@ -202,8 +204,17 @@ public class AppWindow extends Application {
         } else if (item == NavItem.CITIES) {
             citiesView.refresh();
         }
-        pageArea.setContent(pages.get(item));
+        Node page = pages.get(item);
+        pageArea.setContent(page);
         pageArea.setVvalue(0);
+        if (header != null) {
+            header.showPage(item);
+        }
+        if (page instanceof VBox box && item == NavItem.DASHBOARD) {
+            Animations.cascade(box);
+        } else {
+            Animations.enter(page);
+        }
     }
 
     private void buildPages() {
@@ -242,7 +253,7 @@ public class AppWindow extends Application {
         tabs.put("Players", new PlayersView(
                 playersViewModel.getPlayers(),
                 playersViewModel.statusProperty()));
-        return new TabbedPage("People", tabs);
+        return new TabbedPage("People", Icon.PERSON, tabs);
     }
 
     private TabbedPage buildStatisticsPage() {
@@ -257,7 +268,7 @@ public class AppWindow extends Application {
                 statisticsViewModel.getRefereeRows(),
                 statisticsViewModel.statusProperty(),
                 statisticsViewModel.refereeAverageProperty()));
-        return new TabbedPage("Statistics", tabs);
+        return new TabbedPage("Statistics", Icon.CHART, tabs);
     }
 
     private VBox buildDashboardPage() {
@@ -284,9 +295,12 @@ public class AppWindow extends Application {
 
     private HBox buildSummaryRow() {
         HBox row = new HBox(
-                new SummaryCard("Teams", dashboardViewModel.teamsProperty().asString()),
-                new SummaryCard("Matches Played", dashboardViewModel.matchesPlayedProperty().asString()),
-                new SummaryCard("Goals", dashboardViewModel.goalsProperty().asString()));
+                new SummaryCard("Teams", dashboardViewModel.teamsProperty().asString(),
+                        Icon.TEAMS, "tone-sky"),
+                new SummaryCard("Matches Played", dashboardViewModel.matchesPlayedProperty().asString(),
+                        Icon.BALL, "tone-green"),
+                new SummaryCard("Goals", dashboardViewModel.goalsProperty().asString(),
+                        Icon.FLAG, "tone-gold"));
         row.getStyleClass().add("summary-row");
 
         for (Node card : row.getChildren()) {

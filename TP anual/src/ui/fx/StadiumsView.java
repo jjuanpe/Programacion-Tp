@@ -19,16 +19,16 @@ import java.util.function.Consumer;
 public class StadiumsView extends VBox {
     private final Label summary = new Label();
     private final TableView<StadiumRow> table = new TableView<>();
-    private final Button add = new Button("Add stadium");
-    private final Button edit = new Button("Edit selected");
-    private final Button delete = new Button("Delete selected");
-    private final Button reload = new Button("Refresh");
+    private final Button add = Icons.with(new Button("Add stadium"), Icon.ADD);
+    private final Button edit = Icons.with(new Button("Edit selected"), Icon.EDIT);
+    private final Button delete = Icons.with(new Button("Delete selected"), Icon.DELETE);
+    private final Button reload = Icons.with(new Button("Refresh"), Icon.REFRESH);
     private StadiumsController controller;
     private boolean busy;
 
     public StadiumsView() {
         getStyleClass().add("page");
-        Label title = new Label("Stadiums");
+        Label title = Icons.titled(new Label("Stadiums"), Icon.STADIUM);
         title.getStyleClass().add("section-title");
         Label note = new Label("Database catalogue. Changes apply to future group draws; existing tournament venues are preserved.");
         note.setWrapText(true);

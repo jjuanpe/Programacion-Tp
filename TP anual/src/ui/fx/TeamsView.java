@@ -37,7 +37,7 @@ public class TeamsView extends VBox {
             ObservableValue<String> emptyMessage) {
         getStyleClass().add("page");
 
-        Label title = new Label("Teams");
+        Label title = Icons.titled(new Label("Teams"), Icon.TEAMS);
         title.getStyleClass().add("section-title");
 
         getChildren().addAll(

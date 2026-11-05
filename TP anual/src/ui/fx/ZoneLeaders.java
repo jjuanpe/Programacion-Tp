@@ -24,7 +24,7 @@ public class ZoneLeaders extends VBox {
     public ZoneLeaders(ObservableList<GroupZone> zones, Runnable onOpen) {
         getStyleClass().add("tournament-progress");
 
-        Label title = new Label("Zone Leaders");
+        Label title = Icons.titled(new Label("Zone Leaders"), Icon.STAR);
         title.getStyleClass().add("section-title");
 
         zones.addListener((ListChangeListener<GroupZone>) change -> render(zones, onOpen));
@@ -45,7 +45,7 @@ public class ZoneLeaders extends VBox {
     }
 
     private VBox buildCard(GroupZone zone, Runnable onOpen) {
-        Label name = new Label(zone.getName());
+        Label name = Icons.with(new Label(zone.getName()), Icon.FLAG);
         name.getStyleClass().add("card-kicker");
 
         VBox card = new VBox(name);
@@ -56,12 +56,13 @@ public class ZoneLeaders extends VBox {
             card.getChildren().add(buildLine(standings.get(index)));
         }
         card.setOnMouseClicked(event -> onOpen.run());
+        Animations.hoverLift(card);
         return card;
     }
 
     private HBox buildLine(StandingRow row) {
         Label position = new Label(String.valueOf(row.getPosition()));
-        position.getStyleClass().add("scorer-rank");
+        position.getStyleClass().addAll("scorer-rank", Ranks.styleFor(row.getPosition()));
         Label team = new Label(row.getTeam());
         team.getStyleClass().add("scorer-player");
         Region spacer = new Region();

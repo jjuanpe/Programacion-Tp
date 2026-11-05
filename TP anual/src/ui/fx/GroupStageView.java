@@ -25,7 +25,7 @@ public class GroupStageView extends VBox {
             ObservableValue<String> emptyMessage) {
         getStyleClass().add("page");
 
-        Label title = new Label("Group Stage");
+        Label title = Icons.titled(new Label("Group Stage"), Icon.GRID);
         title.getStyleClass().add("section-title");
 
         Label emptyLabel = new Label();

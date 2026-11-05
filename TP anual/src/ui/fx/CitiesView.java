@@ -16,16 +16,16 @@ import java.util.function.Consumer;
 public class CitiesView extends VBox {
     private final Label summary = new Label();
     private final TableView<CityRow> table = new TableView<>();
-    private final Button add = new Button("Add city");
-    private final Button edit = new Button("Edit selected");
-    private final Button delete = new Button("Delete selected");
-    private final Button reload = new Button("Refresh");
+    private final Button add = Icons.with(new Button("Add city"), Icon.ADD);
+    private final Button edit = Icons.with(new Button("Edit selected"), Icon.EDIT);
+    private final Button delete = Icons.with(new Button("Delete selected"), Icon.DELETE);
+    private final Button reload = Icons.with(new Button("Refresh"), Icon.REFRESH);
     private CitiesController controller;
     private boolean busy;
 
     public CitiesView() {
         getStyleClass().add("page");
-        Label title = new Label("Cities");
+        Label title = Icons.titled(new Label("Cities"), Icon.CITY);
         title.getStyleClass().add("section-title");
         Label note = new Label("Only cities without stadiums can be deleted. "
                 + "Catalogue changes apply to future draws.");

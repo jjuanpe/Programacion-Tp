@@ -32,7 +32,7 @@ public class TournamentView extends VBox {
         this.onImport = onImport;
         getStyleClass().add("page");
 
-        Label title = new Label("Tournament");
+        Label title = Icons.titled(new Label("Tournament"), Icon.TROPHY);
         title.getStyleClass().add("section-title");
 
         getChildren().addAll(
@@ -43,7 +43,7 @@ public class TournamentView extends VBox {
     }
 
     private VBox buildWarningsPanel(TournamentViewModel viewModel) {
-        Label heading = new Label("Data warnings");
+        Label heading = Icons.titled(new Label("Data warnings"), Icon.FLAG);
         heading.getStyleClass().add("section-title");
         VBox messages = new VBox();
         VBox panel = new VBox(heading, messages);
@@ -97,20 +97,20 @@ public class TournamentView extends VBox {
 
     private VBox buildActions(
             TournamentViewModel viewModel, Runnable onDraw, Runnable onAdvance, Runnable onSave) {
-        Button importButton = buildButton("Import data", "secondary-button");
+        Button importButton = buildButton("Import data", "secondary-button", Icon.UPLOAD);
         importButton.disableProperty().bind(viewModel.canImportProperty().not());
         importButton.setOnAction(event -> chooseDataFile());
 
-        Button drawButton = buildButton("Run group draw", "secondary-button");
+        Button drawButton = buildButton("Run group draw", "secondary-button", Icon.SHUFFLE);
         drawButton.disableProperty().bind(viewModel.canDrawProperty().not());
         drawButton.setOnAction(event -> onDraw.run());
 
-        Button advanceButton = buildButton("", "primary-button");
+        Button advanceButton = buildButton("", "primary-button", Icon.PLAY);
         advanceButton.textProperty().bind(viewModel.advanceLabelProperty());
         advanceButton.disableProperty().bind(viewModel.canAdvanceProperty().not());
         advanceButton.setOnAction(event -> onAdvance.run());
 
-        Button saveButton = buildButton("Save state", "secondary-button");
+        Button saveButton = buildButton("Save state", "secondary-button", Icon.SAVE);
         saveButton.disableProperty().bind(viewModel.canSaveProperty().not());
         saveButton.setOnAction(event -> onSave.run());
 
@@ -129,8 +129,8 @@ public class TournamentView extends VBox {
         return actions;
     }
 
-    private Button buildButton(String text, String variantStyleClass) {
-        Button button = new Button(text);
+    private Button buildButton(String text, String variantStyleClass, Icon icon) {
+        Button button = Icons.with(new Button(text), icon);
         button.getStyleClass().addAll("action-button", variantStyleClass);
         return button;
     }

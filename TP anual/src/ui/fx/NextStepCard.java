@@ -10,7 +10,7 @@ public class NextStepCard extends VBox {
     public NextStepCard(ObservableValue<String> nextStep, ObservableValue<String> champion, Runnable onGo) {
         getStyleClass().add("next-step-card");
 
-        Label heading = new Label("NEXT STEP");
+        Label heading = Icons.with(new Label("NEXT STEP"), Icon.BOLT);
         heading.getStyleClass().add("card-kicker");
 
         Label step = new Label();
@@ -18,16 +18,20 @@ public class NextStepCard extends VBox {
         step.setWrapText(true);
         step.textProperty().bind(nextStep);
 
-        Button go = new Button("Go to Tournament");
+        Button go = Icons.with(new Button("Go to Tournament"), Icon.ARROW);
+        go.setContentDisplay(javafx.scene.control.ContentDisplay.RIGHT);
         go.getStyleClass().addAll("action-button", "primary-button");
         go.setOnAction(event -> onGo.run());
 
-        Label trophy = new Label();
+        Label trophy = Icons.with(new Label(), Icon.TROPHY);
         trophy.getStyleClass().add("champion-banner");
         trophy.textProperty().bind(javafx.beans.binding.Bindings.concat("Champion: ", champion));
         trophy.visibleProperty().bind(champion.map(name -> !name.isEmpty()));
         trophy.managedProperty().bind(trophy.visibleProperty());
 
+        Animations.breathe(trophy);
+
         getChildren().addAll(heading, step, go, trophy);
+        Animations.hoverLift(this);
     }
 }

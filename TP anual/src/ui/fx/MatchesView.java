@@ -48,7 +48,7 @@ public class MatchesView extends VBox {
         getStyleClass().add("page");
         this.filteredMatches = new FilteredList<>(matches, ignored -> true);
 
-        Label title = new Label("Matches");
+        Label title = Icons.titled(new Label("Matches"), Icon.BALL);
         title.getStyleClass().add("section-title");
 
         getChildren().addAll(
