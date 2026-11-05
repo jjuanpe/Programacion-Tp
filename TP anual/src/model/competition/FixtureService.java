@@ -18,7 +18,8 @@ public class FixtureService {
                                             List<Stadium> stadiums, Random random) {
         List<Team> teams = zone.getTeams();
         if (teams.size() != 4) {
-            throw new IllegalArgumentException("La zona debe tener 4 equipos, tiene: " + teams.size());
+            throw new IllegalArgumentException(new StringBuilder("A zone must have 4 teams, it has: ")
+                    .append(teams.size()).toString());
         }
 
         Team fixedTeam = teams.get(0);

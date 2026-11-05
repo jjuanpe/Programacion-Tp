@@ -17,26 +17,26 @@ import java.util.function.Consumer;
 public class CitiesView extends VBox {
     private final Label summary = new Label();
     private final TableView<City> table = new TableView<>();
-    private final Button add = new Button("Agregar ciudad");
-    private final Button edit = new Button("Editar seleccionada");
-    private final Button delete = new Button("Eliminar seleccionada");
-    private final Button reload = new Button("Actualizar listado");
+    private final Button add = new Button("Add city");
+    private final Button edit = new Button("Edit selected");
+    private final Button delete = new Button("Delete selected");
+    private final Button reload = new Button("Refresh");
     private CitiesController controller;
     private boolean busy;
 
     public CitiesView() {
         getStyleClass().add("page");
-        Label title = new Label("Ciudades");
+        Label title = new Label("Cities");
         title.getStyleClass().add("section-title");
-        Label note = new Label("Solo se pueden eliminar ciudades sin estadios asignados. "
-                + "Los cambios del catálogo se aplican a futuros sorteos.");
+        Label note = new Label("Only cities without stadiums can be deleted. "
+                + "Catalogue changes apply to future draws.");
         note.setWrapText(true);
         table.getStyleClass().add("data-table");
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         table.getColumns().add(TableColumns.numeric("ID", city -> city.getId().toString()));
-        table.getColumns().add(TableColumns.text("Ciudad", City::getName));
-        table.getColumns().add(TableColumns.text("País", city -> city.getCountry().getCountryName()));
-        table.setPlaceholder(new Label("No hay ciudades cargadas."));
+        table.getColumns().add(TableColumns.text("City", City::getName));
+        table.getColumns().add(TableColumns.text("Country", city -> city.getCountry().getCountryName()));
+        table.setPlaceholder(new Label("No cities loaded."));
         add.setOnAction(event -> showCityDialog(null));
         edit.setOnAction(event -> showCityDialog(table.getSelectionModel().getSelectedItem()));
         delete.setOnAction(event -> deleteSelected());
@@ -55,7 +55,7 @@ public class CitiesView extends VBox {
         if (controller != null && !busy) {
             runDatabaseAction(controller::getRegisteredCities, cities -> {
                 table.getItems().setAll(cities);
-                summary.setText(new StringBuilder().append(cities.size()).append(" ciudades registradas").toString());
+                summary.setText(new StringBuilder().append(cities.size()).append(" registered cities").toString());
             });
         }
     }
@@ -64,9 +64,9 @@ public class CitiesView extends VBox {
         boolean editing = selected != null;
         Dialog<ButtonType> dialog = new Dialog<>();
         if (editing) {
-            dialog.setTitle("Editar ciudad");
+            dialog.setTitle("Edit city");
         } else {
-            dialog.setTitle("Agregar ciudad");
+            dialog.setTitle("Add city");
         }
         dialog.initOwner(getScene().getWindow());
         TextField id = new TextField();
@@ -82,22 +82,22 @@ public class CitiesView extends VBox {
         form.setHgap(10);
         form.setVgap(10);
         form.addRow(0, new Label("ID"), id);
-        form.addRow(1, new Label("Nombre"), name);
-        form.addRow(2, new Label("País"), country);
+        form.addRow(1, new Label("Name"), name);
+        form.addRow(2, new Label("Country"), country);
         dialog.getDialogPane().setContent(form);
-        ButtonType save = new ButtonType("Guardar", ButtonBar.ButtonData.OK_DONE);
-        ButtonType cancel = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType save = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
         dialog.getDialogPane().getButtonTypes().addAll(save, cancel);
         Button submit = (Button) dialog.getDialogPane().lookupButton(save);
         submit.addEventFilter(ActionEvent.ACTION, event -> {
             event.consume();
             try {
                 if (name.getText().isBlank() || country.getText().isBlank()) {
-                    throw new IllegalArgumentException("El nombre y el país son obligatorios.");
+                    throw new IllegalArgumentException("The name and the country are required.");
                 }
                 long cityId = Long.parseLong(id.getText().trim());
                 if (cityId <= 0) {
-                    throw new IllegalArgumentException("El ID debe ser un número entero positivo.");
+                    throw new IllegalArgumentException("The id must be a positive whole number.");
                 }
                 City city = new City(cityId, name.getText(), new Country(country.getText()));
                 submit.setDisable(true);
@@ -114,7 +114,7 @@ public class CitiesView extends VBox {
                     refresh();
                 }, () -> submit.setDisable(false));
             } catch (NumberFormatException exception) {
-                showError("El ID debe ser un número entero positivo.");
+                showError("The id must be a positive whole number.");
             } catch (IllegalArgumentException exception) {
                 showError(exception.getMessage());
             }
@@ -126,7 +126,7 @@ public class CitiesView extends VBox {
         City city = table.getSelectionModel().getSelectedItem();
         if (city != null) {
             Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-                    new StringBuilder("¿Eliminar la ciudad ").append(city.getName())
+                    new StringBuilder("Delete the city ").append(city.getName())
                             .append(" (ID ").append(city.getId()).append(")?").toString(),
                     ButtonType.OK, ButtonType.CANCEL);
             confirm.initOwner(getScene().getWindow());
@@ -180,12 +180,12 @@ public class CitiesView extends VBox {
     private void showError(String message) {
         String errorMessage;
         if (message == null) {
-            errorMessage = "No se pudo completar la operación en la base de datos.";
+            errorMessage = "Database operation failed.";
         } else {
             errorMessage = message;
         }
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setHeaderText("No se pudo completar la operación");
+        alert.setHeaderText("The operation could not be completed");
         TextArea details = new TextArea(errorMessage);
         details.setEditable(false);
         details.setWrapText(true);

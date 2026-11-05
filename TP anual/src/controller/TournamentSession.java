@@ -94,7 +94,7 @@ public class TournamentSession implements Serializable {
     }
 
     public void deleteCity(model.venue.City city) throws SQLException {
-        Objects.requireNonNull(city, "Seleccioná una ciudad para eliminar.");
+        Objects.requireNonNull(city, "Select a city to delete");
         new dao.CityDao().deleteCity(city.getId());
     }
 

@@ -22,9 +22,8 @@ public class DrawService {
 
     public List<Zone> draw(List<Team> teams) {
         if (teams == null || teams.size() != ZONE_COUNT * TEAMS_PER_ZONE) {
-            throw new IllegalArgumentException(
-                    "El sorteo requiere exactamente 16 equipos, llegaron: "
-                            + (teams == null ? 0 : teams.size()));
+            throw new IllegalArgumentException(new StringBuilder("The draw requires exactly 16 teams, received: ")
+                    .append(teams == null ? 0 : teams.size()).toString());
         }
 
         List<Team> sortedTeams = new ArrayList<>(teams);

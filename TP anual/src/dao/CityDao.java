@@ -2,6 +2,7 @@ package dao;
 
 import model.team.Country;
 import model.venue.City;
+import model.venue.CityInUseException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -30,14 +31,14 @@ public class CityDao {
             pst.setString(2, city.getCountry().getCountryName());
             pst.setLong(3, city.getId());
             if (pst.executeUpdate() == 0) {
-                throw new SQLException("La ciudad seleccionada ya no existe. Actualizá el listado.");
+                throw new SQLException("The selected city no longer exists. Refresh the list.");
             }
         }
     }
 
     public void deleteCity(Long id) throws SQLException {
         if (id == null || id <= 0) {
-            throw new IllegalArgumentException("El ID de la ciudad debe ser positivo.");
+            throw new IllegalArgumentException("The city id must be positive");
         }
         try (Connection cn = DBManager.getConnection()) {
             cn.setAutoCommit(false);
@@ -52,7 +53,7 @@ public class CityDao {
                     cityQuery.setLong(1, id);
                     try (ResultSet rs = cityQuery.executeQuery()) {
                         if (!rs.next()) {
-                            throw new SQLException("La ciudad seleccionada ya no existe. Actualizá el listado.");
+                            throw new SQLException("The selected city no longer exists. Refresh the list.");
                         }
                         cityName = rs.getString("nombre");
                     }
@@ -66,9 +67,7 @@ public class CityDao {
                             stadiumNames.add(rs.getString("nombre"));
                         }
                         if (!stadiumNames.isEmpty()) {
-                            throw new SQLException("No se puede eliminar la ciudad seleccionada: " + cityName
-                                    + ", debido a que contiene estadios asignados:\n\n- "
-                                    + String.join("\n- ", stadiumNames));
+                            throw new CityInUseException(cityName, stadiumNames);
                         }
                     }
                 }
@@ -77,7 +76,7 @@ public class CityDao {
                     pst.executeUpdate();
                 }
                 cn.commit();
-            } catch (SQLException exception) {
+            } catch (SQLException | RuntimeException exception) {
                 cn.rollback();
                 throw exception;
             }

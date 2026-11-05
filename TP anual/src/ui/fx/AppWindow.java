@@ -278,7 +278,7 @@ public class AppWindow extends Application {
         if (fromSources.exists()) {
             return fromSources.toURI().toString();
         }
-        throw new IllegalStateException(new StringBuilder("No se encontro la hoja de estilos: ")
+        throw new IllegalStateException(new StringBuilder("Stylesheet not found: ")
                 .append(STYLESHEET).toString());
     }
 }

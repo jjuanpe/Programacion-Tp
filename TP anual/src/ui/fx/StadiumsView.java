@@ -20,7 +20,7 @@ public class StadiumsView extends VBox {
     private final Label summary = new Label();
     private final TableView<Stadium> table = new TableView<>();
     private final Button add = new Button("Add stadium");
-    private final Button edit = new Button("Editar seleccionado");
+    private final Button edit = new Button("Edit selected");
     private final Button delete = new Button("Delete selected");
     private final Button reload = new Button("Refresh");
     private StadiumsController controller;
@@ -75,9 +75,9 @@ public class StadiumsView extends VBox {
         Dialog<ButtonType> dialog = new Dialog<>();
         boolean editing = selected != null;
         if (editing) {
-            dialog.setTitle("Editar estadio");
+            dialog.setTitle("Edit stadium");
         } else {
-            dialog.setTitle("Agregar estadio");
+            dialog.setTitle("Add stadium");
         }
         dialog.initOwner(getScene().getWindow());
         TextField id = new TextField();
@@ -143,7 +143,7 @@ public class StadiumsView extends VBox {
                     refresh();
                 }, () -> submit.setDisable(false));
             } catch (NumberFormatException exception) {
-                showError("El ID y la capacidad deben ser números enteros positivos.");
+                showError("The id and the capacity must be positive whole numbers.");
             } catch (IllegalArgumentException exception) {
                 showError(exception.getMessage());
             }
@@ -215,7 +215,7 @@ public class StadiumsView extends VBox {
             errorMessage = message;
         }
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setHeaderText("No se pudo completar la operación");
+        alert.setHeaderText("The operation could not be completed");
         TextArea details = new TextArea(errorMessage);
         details.setEditable(false);
         details.setWrapText(true);
