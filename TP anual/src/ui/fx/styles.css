@@ -5,18 +5,25 @@
 .root {
     -fx-font-family: "Segoe UI", "Inter", "Helvetica Neue", sans-serif;
 
-    /* Paleta */
-    -sidebar-bg:      #172033;
-    -sidebar-text:    #94A3B8;
-    -sidebar-strong:  #E2E8F0;
-    -accent:          #2563EB;
-    -accent-hover:    #1D4ED8;
-    -content-bg:      #F5F7FA;
-    -text-strong:     #0F172A;
-    -text-muted:      #64748B;
-    -status-ok:       #22C55E;
-    -card-bg:         #FFFFFF;
-    -step-pending:    #CBD5E1;
+    /* Paleta: noche de estadio + dorado de trofeo */
+    -sidebar-bg:      #070B16;
+    -sidebar-text:    #8D9BC2;
+    -sidebar-strong:  #F4F6FF;
+    -accent:          #FFC83D;
+    -accent-hover:    #FFD96B;
+    -on-accent:       #1A1300;
+    -content-bg:      #0C1324;
+    -text-strong:     #F2F5FF;
+    -text-muted:      #8D9BC2;
+    -status-ok:       #35F2A0;
+    -card-bg:         #141E38;
+    -row-alt:         #182445;
+    -hover-bg:        #1E2C52;
+    -border:          #2A3A68;
+    -danger:          #FF5C74;
+    -step-pending:    #34446E;
+    -fx-base:         #141E38;
+    -fx-control-inner-background: #141E38;
 }
 
 /* ---------- Contenedor principal ---------- */
@@ -98,7 +105,7 @@
     -fx-spacing: 7px;
     -fx-pref-width: 0;
     -fx-min-width: 150px;
-    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.07), 12, 0, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 12, 0, 0, 2);
 }
 
 .summary-card-title {
@@ -164,7 +171,7 @@
 .nav-button.active,
 .nav-button.active:hover {
     -fx-background-color: -accent;
-    -fx-text-fill: white;
+    -fx-text-fill: -on-accent;
     -fx-font-weight: bold;
 }
 
@@ -180,7 +187,7 @@
 
 .nav-button.active:focused {
     -fx-background-color: -accent;
-    -fx-text-fill: white;
+    -fx-text-fill: -on-accent;
 }
 
 /* ---------- Pie del sidebar ---------- */
@@ -221,7 +228,7 @@
     -fx-background-radius: 14px;
     -fx-padding: 20px 26px;
     -fx-spacing: 14px;
-    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.07), 12, 0, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 12, 0, 0, 2);
 }
 
 .step {
@@ -264,7 +271,7 @@
     -fx-min-height: 14px;
     -fx-pref-height: 14px;
     -fx-max-height: 14px;
-    -fx-effect: dropshadow(gaussian, rgba(37, 99, 235, 0.45), 9, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(255, 200, 61, 0.65), 9, 0, 0, 0);
 }
 
 .step-label {
@@ -320,7 +327,7 @@
     -fx-border-color: transparent;
     -fx-padding: 8px;
     -fx-pref-height: 320px;
-    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.07), 12, 0, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 12, 0, 0, 2);
 }
 
 /* Encabezado de la tabla: sin fondo ni lineas, solo texto gris */
@@ -354,11 +361,11 @@
 }
 
 .data-table .table-row-cell:odd {
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: -row-alt;
 }
 
 .data-table .table-row-cell:selected {
-    -fx-background-color: rgba(37, 99, 235, 0.10);
+    -fx-background-color: rgba(255, 200, 61, 0.16);
 }
 
 .data-table .table-cell {
@@ -393,13 +400,13 @@
     -fx-background-color: -card-bg;
     -fx-background-radius: 14px;
     -fx-padding: 6px 22px;
-    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.07), 12, 0, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 12, 0, 0, 2);
 }
 
 .status-row {
     -fx-padding: 13px 0;
     -fx-alignment: center-left;
-    -fx-border-color: transparent transparent rgba(15, 23, 42, 0.06) transparent;
+    -fx-border-color: transparent transparent rgba(255, 255, 255, 0.07) transparent;
     -fx-border-width: 0 0 1px 0;
 }
 
@@ -444,7 +451,7 @@
 
 .primary-button {
     -fx-background-color: -accent;
-    -fx-text-fill: white;
+    -fx-text-fill: -on-accent;
     -fx-font-weight: bold;
 }
 
@@ -455,13 +462,13 @@
 .secondary-button {
     -fx-background-color: -card-bg;
     -fx-text-fill: -text-strong;
-    -fx-border-color: #E2E8F0;
+    -fx-border-color: -border;
     -fx-border-radius: 10px;
     -fx-border-width: 1px;
 }
 
 .secondary-button:hover {
-    -fx-background-color: #F1F5F9;
+    -fx-background-color: -hover-bg;
 }
 
 .action-message {
@@ -504,7 +511,7 @@
     -fx-pref-width: 220px;
     -fx-max-width: 220px;
     -fx-pref-height: 420px;
-    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.07), 12, 0, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 12, 0, 0, 2);
 }
 
 .team-list .list-cell {
@@ -516,12 +523,12 @@
 }
 
 .team-list .list-cell:hover {
-    -fx-background-color: #F1F5F9;
+    -fx-background-color: -hover-bg;
 }
 
 .team-list .list-cell:selected {
     -fx-background-color: -accent;
-    -fx-text-fill: white;
+    -fx-text-fill: -on-accent;
     -fx-font-weight: bold;
 }
 
@@ -544,11 +551,11 @@
 }
 
 .squad-valid {
-    -fx-text-fill: #15803D;
+    -fx-text-fill: -status-ok;
 }
 
 .squad-invalid {
-    -fx-text-fill: #B91C1C;
+    -fx-text-fill: -danger;
 }
 
 .team-detail .data-table {
@@ -575,7 +582,7 @@
 
 /* Puestos que clasifican a cuartos */
 .standings-table .table-row-cell.qualified-row {
-    -fx-background-color: rgba(37, 99, 235, 0.09);
+    -fx-background-color: rgba(255, 200, 61, 0.12);
 }
 
 .standings-table .table-row-cell.qualified-row .table-cell {
@@ -622,7 +629,7 @@
 .filter-combo {
     -fx-background-color: -card-bg;
     -fx-background-radius: 10px;
-    -fx-border-color: #E2E8F0;
+    -fx-border-color: -border;
     -fx-border-radius: 10px;
     -fx-border-width: 1px;
     -fx-padding: 2px 6px;
@@ -652,14 +659,14 @@
 }
 
 .sub-tab-button:hover {
-    -fx-background-color: #F1F5F9;
+    -fx-background-color: -hover-bg;
     -fx-text-fill: -text-strong;
 }
 
 .sub-tab-button.active,
 .sub-tab-button.active:hover {
     -fx-background-color: -accent;
-    -fx-text-fill: white;
+    -fx-text-fill: -on-accent;
     -fx-font-weight: bold;
 }
 
@@ -683,7 +690,7 @@
     -fx-background-radius: 12px;
     -fx-padding: 10px 12px;
     -fx-spacing: 3px;
-    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.07), 12, 0, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 12, 0, 0, 2);
 }
 
 .bracket-card .label {
@@ -710,7 +717,7 @@
 .champion-banner {
     -fx-background-color: -accent;
     -fx-background-radius: 12px;
-    -fx-text-fill: white;
+    -fx-text-fill: -on-accent;
     -fx-font-size: 16px;
     -fx-font-weight: bold;
     -fx-padding: 12px 18px;
@@ -722,7 +729,7 @@
     -fx-spacing: 14px;
     -fx-padding: 12px 0;
     -fx-alignment: center-left;
-    -fx-border-color: transparent transparent rgba(15, 23, 42, 0.06) transparent;
+    -fx-border-color: transparent transparent rgba(255, 255, 255, 0.07) transparent;
     -fx-border-width: 0 0 1px 0;
 }
 
@@ -730,4 +737,170 @@
     -fx-text-fill: -text-strong;
     -fx-font-size: 13px;
     -fx-font-weight: bold;
+}
+
+/* ---------- Identidad de juego ---------- */
+
+.dashboard-title, .app-title, .section-title, .detail-title, .summary-card-value, .champion-banner {
+    -fx-font-family: "Bahnschrift", "Segoe UI Semibold", "Segoe UI", sans-serif;
+}
+
+.dashboard-title {
+    -fx-font-size: 30px;
+    -fx-text-fill: -accent;
+}
+
+.app-title {
+    -fx-text-fill: -accent;
+    -fx-font-size: 21px;
+}
+
+.section-title {
+    -fx-font-size: 17px;
+}
+
+.summary-card, .panel, .stepper, .data-table, .team-list, .bracket-card {
+    -fx-border-color: -border;
+    -fx-border-width: 1px;
+    -fx-border-radius: 14px;
+}
+
+.summary-card-value {
+    -fx-text-fill: -accent;
+    -fx-font-size: 34px;
+}
+
+.nav-button.active, .nav-button.active:hover {
+    -fx-effect: dropshadow(gaussian, rgba(255, 200, 61, 0.45), 14, 0, 0, 0);
+}
+
+.primary-button {
+    -fx-effect: dropshadow(gaussian, rgba(255, 200, 61, 0.35), 10, 0, 0, 0);
+}
+
+/* Botones y controles nativos (Cities / Stadiums / dialogos) */
+.button:not(.action-button):not(.nav-button):not(.sub-tab-button) {
+    -fx-background-color: -card-bg;
+    -fx-text-fill: -text-strong;
+    -fx-border-color: -border;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-padding: 8px 16px;
+    -fx-cursor: hand;
+}
+
+.button:not(.action-button):not(.nav-button):not(.sub-tab-button):hover {
+    -fx-background-color: -hover-bg;
+}
+
+.button:not(.action-button):not(.nav-button):not(.sub-tab-button):disabled {
+    -fx-opacity: 0.4;
+}
+
+.filter-combo .list-cell,
+.combo-box-popup .list-view,
+.combo-box-popup .list-cell {
+    -fx-background-color: -card-bg;
+    -fx-text-fill: -text-strong;
+}
+
+.combo-box-popup .list-cell:hover,
+.combo-box-popup .list-cell:filled:selected {
+    -fx-background-color: -hover-bg;
+    -fx-text-fill: -accent;
+}
+
+.filter-combo .arrow {
+    -fx-background-color: -text-muted;
+}
+
+.text-field, .text-area {
+    -fx-background-color: -content-bg;
+    -fx-text-fill: -text-strong;
+    -fx-border-color: -border;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+
+.dialog-pane {
+    -fx-background-color: -card-bg;
+}
+
+.dialog-pane .label {
+    -fx-text-fill: -text-strong;
+}
+
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: -border;
+    -fx-background-radius: 6px;
+}
+
+.scroll-bar .track, .scroll-bar .increment-button, .scroll-bar .decrement-button,
+.scroll-bar .increment-arrow, .scroll-bar .decrement-arrow {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.team-detail .data-table, .zone-panel .data-table, .match-detail .data-table {
+    -fx-border-color: transparent;
+}
+
+/* ---------- Llave del Knockout ---------- */
+
+.bracket-scroll, .bracket-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.bracket-scroll {
+    -fx-padding: 0;
+    -fx-border-color: transparent;
+}
+
+.bracket-board {
+    -fx-padding: 10px 6px 18px 6px;
+}
+
+.bracket-line {
+    -fx-stroke: -border;
+    -fx-stroke-width: 2px;
+}
+
+.bracket-line.winner-line {
+    -fx-stroke: -accent;
+}
+
+.bracket-round-label {
+    -fx-text-fill: -text-muted;
+    -fx-font-family: "Bahnschrift", "Segoe UI Semibold", "Segoe UI", sans-serif;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.bracket-final-card {
+    -fx-border-color: -accent;
+    -fx-effect: dropshadow(gaussian, rgba(255, 200, 61, 0.45), 18, 0, 0, 0);
+}
+
+.bracket-team {
+    -fx-text-fill: -text-strong;
+    -fx-font-size: 12.5px;
+    -fx-background-color: -hover-bg;
+    -fx-background-radius: 6px;
+    -fx-padding: 4px 8px;
+    -fx-max-width: 9999px;
+}
+
+.bracket-card .bracket-team.bracket-winner {
+    -fx-background-color: -accent;
+    -fx-text-fill: -on-accent;
+    -fx-font-weight: bold;
+}
+
+.champion-banner {
+    -fx-effect: dropshadow(gaussian, rgba(255, 200, 61, 0.5), 20, 0, 0, 0);
+    -fx-font-size: 20px;
 }
