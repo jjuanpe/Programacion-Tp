@@ -1076,3 +1076,53 @@
     -fx-border-color: transparent transparent transparent #FF5C74;
     -fx-border-width: 0 0 0 4px;
 }
+
+/* ---------- Statistics: podio ---------- */
+
+.data-table .table-row-cell.podium-1 {
+    -fx-background-color: rgba(255, 200, 61, 0.22);
+}
+
+.data-table .table-row-cell.podium-2 {
+    -fx-background-color: rgba(190, 205, 235, 0.16);
+}
+
+.data-table .table-row-cell.podium-3 {
+    -fx-background-color: rgba(205, 127, 50, 0.20);
+}
+
+.data-table .table-row-cell.podium-1 .table-cell {
+    -fx-font-weight: bold;
+    -fx-text-fill: -accent;
+}
+
+/* ---------- Reports: tarjetas ---------- */
+
+.report-list {
+    -fx-spacing: 10px;
+}
+
+.report-row {
+    -fx-background-color: -card-bg;
+    -fx-background-radius: 12px;
+    -fx-border-color: -border;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
+    -fx-padding: 14px 18px;
+    -fx-spacing: 16px;
+}
+
+.report-row:hover {
+    -fx-border-color: -accent;
+}
+
+.report-badge {
+    -fx-background-color: -accent;
+    -fx-background-radius: 20px;
+    -fx-text-fill: -on-accent;
+    -fx-font-family: "Bahnschrift", "Segoe UI Semibold", "Segoe UI", sans-serif;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-min-width: 44px;
+    -fx-padding: 6px 8px;
+}

@@ -44,7 +44,7 @@ public class ReportsView extends VBox {
                         + "Statistics > Referees.", NavItem.STATISTICS),
                 buildPageRow("VIII. Players by position", "Every player with a position filter. "
                         + "People > Players.", NavItem.PEOPLE));
-        catalogue.getStyleClass().add("panel");
+        catalogue.getStyleClass().add("report-list");
 
         getChildren().addAll(title, catalogue, status);
     }
@@ -66,7 +66,10 @@ public class ReportsView extends VBox {
     }
 
     private HBox buildRow(String name, String description, Button action) {
-        Label nameLabel = new Label(name);
+        int dot = name.indexOf(". ");
+        Label badge = new Label(name.substring(0, dot));
+        badge.getStyleClass().add("report-badge");
+        Label nameLabel = new Label(name.substring(dot + 2));
         nameLabel.getStyleClass().add("report-name");
         Label descriptionLabel = new Label(description);
         descriptionLabel.getStyleClass().add("action-hint");
@@ -76,7 +79,7 @@ public class ReportsView extends VBox {
         HBox.setHgrow(text, Priority.ALWAYS);
 
         action.setMinWidth(Region.USE_PREF_SIZE);
-        HBox row = new HBox(text, action);
+        HBox row = new HBox(badge, text, action);
         row.getStyleClass().add("report-row");
         return row;
     }

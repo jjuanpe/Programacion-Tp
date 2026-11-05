@@ -3,8 +3,11 @@ package ui.fx;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
+
+import java.util.function.ToIntFunction;
 
 public final class StatisticsTables {
 
@@ -13,8 +16,23 @@ public final class StatisticsTables {
     private StatisticsTables() {
     }
 
+    // Top 3 rows get gold / silver / bronze styling.
+    private static <T> void markPodium(TableView<T> table, ToIntFunction<T> positionOf) {
+        table.setRowFactory(ignored -> new TableRow<T>() {
+            @Override
+            protected void updateItem(T item, boolean empty) {
+                super.updateItem(item, empty);
+                getStyleClass().removeAll("podium-1", "podium-2", "podium-3");
+                if (!empty && item != null && positionOf.applyAsInt(item) >= 1 && positionOf.applyAsInt(item) <= 3) {
+                    getStyleClass().add(new StringBuilder("podium-").append(positionOf.applyAsInt(item)).toString());
+                }
+            }
+        });
+    }
+
     public static VBox topScorers(ObservableList<ScorerRow> rows, ObservableValue<String> emptyMessage) {
         TableView<ScorerRow> table = newTable(rows, emptyMessage);
+        markPodium(table, ScorerRow::getPosition);
         table.getColumns().add(TableColumns.numeric("Position", row -> String.valueOf(row.getPosition())));
         table.getColumns().add(TableColumns.text("Player", ScorerRow::getPlayer));
         table.getColumns().add(TableColumns.text("Team", ScorerRow::getTeam));
@@ -25,6 +43,7 @@ public final class StatisticsTables {
 
     public static VBox fairPlay(ObservableList<FairPlayRow> rows, ObservableValue<String> emptyMessage) {
         TableView<FairPlayRow> table = newTable(rows, emptyMessage);
+        markPodium(table, FairPlayRow::getPosition);
         table.getColumns().add(TableColumns.numeric("Position", row -> String.valueOf(row.getPosition())));
         table.getColumns().add(TableColumns.text("Team", FairPlayRow::getTeam));
         table.getColumns().add(TableColumns.numeric("Yellow cards", row -> String.valueOf(row.getYellowCards())));
