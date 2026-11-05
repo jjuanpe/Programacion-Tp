@@ -1,6 +1,6 @@
 package ui.fx;
 
-import controller.TournamentSession;
+import controller.CitiesController;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
@@ -21,7 +21,7 @@ public class CitiesView extends VBox {
     private final Button edit = new Button("Editar seleccionada");
     private final Button delete = new Button("Eliminar seleccionada");
     private final Button reload = new Button("Actualizar listado");
-    private TournamentSession session;
+    private CitiesController controller;
     private boolean busy;
 
     public CitiesView() {
@@ -46,16 +46,16 @@ public class CitiesView extends VBox {
         updateButtons();
     }
 
-    public void setSession(TournamentSession session) {
-        this.session = session;
+    public void setController(CitiesController controller) {
+        this.controller = controller;
         updateButtons();
     }
 
     public void refresh() {
-        if (session != null && !busy) {
-            runDatabaseAction(session::getRegisteredCities, cities -> {
+        if (controller != null && !busy) {
+            runDatabaseAction(controller::getRegisteredCities, cities -> {
                 table.getItems().setAll(cities);
-                summary.setText(cities.size() + " ciudades registradas");
+                summary.setText(new StringBuilder().append(cities.size()).append(" ciudades registradas").toString());
             });
         }
     }
@@ -103,9 +103,9 @@ public class CitiesView extends VBox {
                 submit.setDisable(true);
                 runDatabaseAction(() -> {
                     if (editing) {
-                        session.updateCity(city.getId(), city.getName(), city.getCountry().getCountryName());
+                        controller.updateCity(city.getId(), city.getName(), city.getCountry().getCountryName());
                     } else {
-                        session.addCity(city.getId(), city.getName(), city.getCountry().getCountryName());
+                        controller.addCity(city.getId(), city.getName(), city.getCountry().getCountryName());
                     }
                     return city;
                 }, saved -> {
@@ -126,12 +126,13 @@ public class CitiesView extends VBox {
         City city = table.getSelectionModel().getSelectedItem();
         if (city != null) {
             Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-                    "¿Eliminar la ciudad " + city.getName() + " (ID " + city.getId() + ")?",
+                    new StringBuilder("¿Eliminar la ciudad ").append(city.getName())
+                            .append(" (ID ").append(city.getId()).append(")?").toString(),
                     ButtonType.OK, ButtonType.CANCEL);
             confirm.initOwner(getScene().getWindow());
             if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
                 runDatabaseAction(() -> {
-                    session.deleteCity(city);
+                    controller.deleteCity(city);
                     return city;
                 }, removed -> refresh());
             }
@@ -170,10 +171,10 @@ public class CitiesView extends VBox {
     }
 
     private void updateButtons() {
-        add.setDisable(session == null || busy);
-        reload.setDisable(session == null || busy);
-        edit.setDisable(session == null || busy || table.getSelectionModel().getSelectedItem() == null);
-        delete.setDisable(session == null || busy || table.getSelectionModel().getSelectedItem() == null);
+        add.setDisable(controller == null || busy);
+        reload.setDisable(controller == null || busy);
+        edit.setDisable(controller == null || busy || table.getSelectionModel().getSelectedItem() == null);
+        delete.setDisable(controller == null || busy || table.getSelectionModel().getSelectedItem() == null);
     }
 
     private void showError(String message) {

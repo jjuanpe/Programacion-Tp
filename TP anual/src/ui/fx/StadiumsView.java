@@ -1,6 +1,6 @@
 package ui.fx;
 
-import controller.TournamentSession;
+import controller.StadiumsController;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
@@ -23,7 +23,7 @@ public class StadiumsView extends VBox {
     private final Button edit = new Button("Editar seleccionado");
     private final Button delete = new Button("Delete selected");
     private final Button reload = new Button("Refresh");
-    private TournamentSession session;
+    private StadiumsController controller;
     private boolean busy;
 
     public StadiumsView() {
@@ -39,11 +39,11 @@ public class StadiumsView extends VBox {
         table.getColumns().add(TableColumns.text("City", stadium -> stadium.getCity().getName()));
         table.getColumns().add(TableColumns.numeric("Capacity", stadium -> String.valueOf(stadium.getCapacity())));
         table.setPlaceholder(new Label("No stadiums loaded."));
-        add.setOnAction(event -> runDatabaseAction(session::getRegisteredCities, cities -> showStadiumDialog(cities, null)));
+        add.setOnAction(event -> runDatabaseAction(controller::getRegisteredCities, cities -> showStadiumDialog(cities, null)));
         edit.setOnAction(event -> {
             Stadium selected = table.getSelectionModel().getSelectedItem();
             if (selected != null) {
-                runDatabaseAction(session::getRegisteredCities, cities -> showStadiumDialog(cities, selected));
+                runDatabaseAction(controller::getRegisteredCities, cities -> showStadiumDialog(cities, selected));
             }
         });
         delete.setOnAction(event -> deleteSelected());
@@ -53,16 +53,16 @@ public class StadiumsView extends VBox {
         updateButtons();
     }
 
-    public void setSession(TournamentSession session) {
-        this.session = session;
+    public void setController(StadiumsController controller) {
+        this.controller = controller;
         updateButtons();
     }
 
     public void refresh() {
-        if (session != null && !busy) {
-            runDatabaseAction(session::getRegisteredStadiums, stadiums -> {
+        if (controller != null && !busy) {
+            runDatabaseAction(controller::getRegisteredStadiums, stadiums -> {
                 table.getItems().setAll(stadiums);
-                summary.setText(stadiums.size() + " registered stadiums");
+                summary.setText(new StringBuilder().append(stadiums.size()).append(" registered stadiums").toString());
             });
         }
     }
@@ -106,7 +106,7 @@ public class StadiumsView extends VBox {
                 if (value == null) {
                     description = "";
                 } else {
-                    description = value.getName() + " (ID " + value.getId() + ")";
+                    description = new StringBuilder(value.getName()).append(" (ID ").append(value.getId()).append(")").toString();
                 }
                 return description;
             }
@@ -132,9 +132,9 @@ public class StadiumsView extends VBox {
                 submit.setDisable(true);
                 runDatabaseAction(() -> {
                     if (editing) {
-                        session.updateStadium(selected.getId(), stadiumId, stadiumName, stadiumCity, stadiumCapacity);
+                        controller.updateStadium(selected.getId(), stadiumId, stadiumName, stadiumCity, stadiumCapacity);
                     } else {
-                        session.addStadium(stadiumId, stadiumName, stadiumCity, stadiumCapacity);
+                        controller.addStadium(stadiumId, stadiumName, stadiumCity, stadiumCapacity);
                     }
                     return stadiumId;
                 }, saved -> {
@@ -157,12 +157,13 @@ public class StadiumsView extends VBox {
             return;
         }
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-                "Delete " + stadium.getName() + " (ID " + stadium.getId() + ") from the database?",
+                new StringBuilder("Delete ").append(stadium.getName()).append(" (ID ").append(stadium.getId())
+                        .append(") from the database?").toString(),
                 ButtonType.OK, ButtonType.CANCEL);
         confirm.initOwner(getScene().getWindow());
         if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
             runDatabaseAction(() -> {
-                session.deleteStadium(stadium);
+                controller.deleteStadium(stadium);
                 return stadium;
             }, removed -> refresh());
         }
@@ -200,10 +201,10 @@ public class StadiumsView extends VBox {
     }
 
     private void updateButtons() {
-        add.setDisable(session == null || busy);
-        reload.setDisable(session == null || busy);
-        edit.setDisable(session == null || busy || table.getSelectionModel().getSelectedItem() == null);
-        delete.setDisable(session == null || busy || table.getSelectionModel().getSelectedItem() == null);
+        add.setDisable(controller == null || busy);
+        reload.setDisable(controller == null || busy);
+        edit.setDisable(controller == null || busy || table.getSelectionModel().getSelectedItem() == null);
+        delete.setDisable(controller == null || busy || table.getSelectionModel().getSelectedItem() == null);
     }
 
     private void showError(String message) {

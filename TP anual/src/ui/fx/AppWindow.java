@@ -9,6 +9,8 @@ import controller.TournamentController;
 import controller.TournamentSession;
 import controller.KnockoutController;
 import controller.ReportsController;
+import controller.CitiesController;
+import controller.StadiumsController;
 import controller.StatisticsController;
 import controller.TopScorersController;
 import java.util.LinkedHashMap;
@@ -77,8 +79,8 @@ public class AppWindow extends Application {
     @Override
     public void start(Stage stage) {
         session = resolveSession();
-        stadiumsView.setSession(session);
-        citiesView.setSession(session);
+        stadiumsView.setController(new StadiumsController(session));
+        citiesView.setController(new CitiesController(session));
         dashboardController = new DashboardController(session, dashboardViewModel);
         tournamentController = new TournamentController(session, tournamentViewModel);
         teamsController = new TeamsController(session, teamsViewModel);
@@ -152,7 +154,8 @@ public class AppWindow extends Application {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Copa Internacional de Clubes");
         alert.setHeaderText("The saved tournament could not be loaded.");
-        alert.setContentText("A new tournament will start. Reason: " + exception.getMessage());
+        alert.setContentText(new StringBuilder("A new tournament will start. Reason: ")
+                .append(exception.getMessage()).toString());
         alert.showAndWait();
     }
 
@@ -207,16 +210,12 @@ public class AppWindow extends Application {
                 teamsViewModel.statusProperty()));
         pages.put(NavItem.GROUP_STAGE, new GroupStageView(
                 groupStageViewModel.getZones(),
-                groupStageViewModel.statusProperty(),
-                tournamentViewModel.canDrawProperty(),
-                tournamentController::drawGroups));
+                groupStageViewModel.statusProperty()));
         pages.put(NavItem.MATCHES, new MatchesView(
                 matchesViewModel.getMatches(),
                 matchesViewModel.statusProperty()));
         pages.put(NavItem.KNOCKOUT_STAGE, new KnockoutView(knockoutViewModel));
-        pages.put(NavItem.PEOPLE, new PeopleView(new PlayersView(
-                playersViewModel.getPlayers(),
-                playersViewModel.statusProperty())));
+        pages.put(NavItem.PEOPLE, buildPeoplePage());
         pages.put(NavItem.STADIUMS, stadiumsView);
         pages.put(NavItem.CITIES, citiesView);
 
@@ -225,6 +224,14 @@ public class AppWindow extends Application {
                 reportsViewModel,
                 sidebar::select,
                 reportsController::exportIdCards));
+    }
+
+    private TabbedPage buildPeoplePage() {
+        Map<String, Node> tabs = new LinkedHashMap<>();
+        tabs.put("Players", new PlayersView(
+                playersViewModel.getPlayers(),
+                playersViewModel.statusProperty()));
+        return new TabbedPage("People", tabs);
     }
 
     private TabbedPage buildStatisticsPage() {
@@ -268,10 +275,11 @@ public class AppWindow extends Application {
         if (fromClasspath != null) {
             return fromClasspath.toExternalForm();
         }
-        File fromSources = new File("src" + STYLESHEET);
+        File fromSources = new File(new StringBuilder("src").append(STYLESHEET).toString());
         if (fromSources.exists()) {
             return fromSources.toURI().toString();
         }
-        throw new IllegalStateException("No se encontro la hoja de estilos: " + STYLESHEET);
+        throw new IllegalStateException(new StringBuilder("No se encontro la hoja de estilos: ")
+                .append(STYLESHEET).toString());
     }
 }

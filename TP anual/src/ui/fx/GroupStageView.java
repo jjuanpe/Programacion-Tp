@@ -1,11 +1,9 @@
 package ui.fx;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -20,9 +18,7 @@ public class GroupStageView extends VBox {
 
     public GroupStageView(
             ObservableList<GroupZone> zones,
-            ObservableValue<String> emptyMessage,
-            BooleanProperty canDraw,
-            Runnable onDraw) {
+            ObservableValue<String> emptyMessage) {
         getStyleClass().add("page");
 
         Label title = new Label("Group Stage");
@@ -40,19 +36,14 @@ public class GroupStageView extends VBox {
         zones.addListener((ListChangeListener<GroupZone>) change -> rebuild(zones));
         rebuild(zones);
 
-        getChildren().addAll(title, buildActions(canDraw, onDraw), emptyLabel, zonesBox);
+        getChildren().addAll(title, buildActions(), emptyLabel, zonesBox);
     }
 
-    private HBox buildActions(BooleanProperty canDraw, Runnable onDraw) {
-        Button drawButton = new Button("Run group draw");
-        drawButton.getStyleClass().addAll("action-button", "secondary-button");
-        drawButton.disableProperty().bind(canDraw.not());
-        drawButton.setOnAction(event -> onDraw.run());
-
+    private HBox buildActions() {
         Label note = new Label("Highlighted rows qualify for the quarter-finals.");
         note.getStyleClass().add("action-hint");
 
-        HBox actions = new HBox(drawButton, note);
+        HBox actions = new HBox(note);
         actions.getStyleClass().add("action-row");
         actions.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
         return actions;
@@ -69,7 +60,7 @@ public class GroupStageView extends VBox {
         Label name = new Label(zone.getName());
         name.getStyleClass().add("detail-title");
 
-        Label teams = new Label("Teams: " + zone.getTeams());
+        Label teams = new Label(new StringBuilder("Teams: ").append(zone.getTeams()).toString());
         teams.getStyleClass().add("zone-teams");
         teams.setWrapText(true);
 

@@ -92,6 +92,6 @@ public final class MatchDetail {
     public boolean hasStandings() { return !standingsBefore.isEmpty(); }
 
     public String getTitle() {
-        return homeTeam + "  " + score + "  " + awayTeam;
+        return new StringBuilder(homeTeam).append("  ").append(score).append("  ").append(awayTeam).toString();
     }
 }

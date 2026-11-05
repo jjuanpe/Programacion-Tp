@@ -53,7 +53,8 @@ public class KnockoutView extends VBox {
             cards.getChildren().clear();
             for (QualifiedRow row : rows) {
                 cards.getChildren().add(buildCard(row.getZone(),
-                        new Label("1. " + row.getFirst()), new Label("2. " + row.getSecond())));
+                        new Label(new StringBuilder("1. ").append(row.getFirst()).toString()),
+                        new Label(new StringBuilder("2. ").append(row.getSecond()).toString())));
             }
         };
         rows.addListener((ListChangeListener<QualifiedRow>) change -> render.run());
@@ -96,7 +97,7 @@ public class KnockoutView extends VBox {
 
         VBox card = buildCard(tie.getTitle(), teamA, teamB, score);
         if (tie.isPlayed()) {
-            Label criteria = new Label("Decided by: " + tie.getCriteria());
+            Label criteria = new Label(new StringBuilder("Decided by: ").append(tie.getCriteria()).toString());
             criteria.getStyleClass().add("action-hint");
             card.getChildren().add(criteria);
         }

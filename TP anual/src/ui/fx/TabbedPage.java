@@ -48,7 +48,7 @@ public class TabbedPage extends VBox {
     public void selectTab(String tabName) {
         Node selected = tabs.get(tabName);
         if (selected == null) {
-            throw new IllegalArgumentException("Unknown tab: " + tabName);
+            throw new IllegalArgumentException(new StringBuilder("Unknown tab: ").append(tabName).toString());
         }
         for (Button button : tabButtons.values()) {
             button.getStyleClass().remove(STYLE_ACTIVE);
