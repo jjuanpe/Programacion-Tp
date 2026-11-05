@@ -1232,6 +1232,11 @@
     -fx-padding: 26px 34px;
 }
 
+/* Separacion entre la foto del encabezado y las tarjetas de resumen */
+.dashboard-body {
+    -fx-padding: 24px 0 28px 0;
+}
+
 .home-header .dashboard-title {
     -fx-font-size: 34px;
 }
