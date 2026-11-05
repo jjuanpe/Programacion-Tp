@@ -296,9 +296,9 @@ public class AppWindow extends Application {
     private HBox buildSummaryRow() {
         HBox row = new HBox(
                 new SummaryCard("Teams", dashboardViewModel.teamsProperty().asString(),
-                        Icon.TEAMS, "tone-sky"),
+                        Icon.TEAMS, "tone-green"),
                 new SummaryCard("Matches Played", dashboardViewModel.matchesPlayedProperty().asString(),
-                        Icon.BALL, "tone-green"),
+                        Icon.BALL, "tone-sky"),
                 new SummaryCard("Goals", dashboardViewModel.goalsProperty().asString(),
                         Icon.FLAG, "tone-gold"));
         row.getStyleClass().add("summary-row");

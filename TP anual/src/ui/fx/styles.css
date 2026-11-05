@@ -5,27 +5,29 @@
 .root {
     -fx-font-family: "Segoe UI", "Inter", "Helvetica Neue", sans-serif;
 
-    /* Paleta: noche de estadio + celeste y blanco + dorado de trofeo */
-    -sidebar-bg:      #040A1D;
-    -sidebar-text:    #9DB4DD;
+    /* Paleta tomada de la presentacion del TP: azul noche, verde cesped y dorado */
+    -sidebar-bg:      #07101D;
+    -sidebar-text:    #9FB0C3;
     -sidebar-strong:  #FFFFFF;
-    -accent:          #74B9F0;
-    -accent-hover:    #A3D3FA;
-    -on-accent:       #04122E;
-    -gold:            #F7C948;
-    -on-gold:         #2A1A00;
-    -content-bg:      #071433;
-    -text-strong:     #F4F8FF;
-    -text-muted:      #9DB4DD;
-    -status-ok:       #3EE6A0;
-    -card-bg:         #0E1F47;
-    -row-alt:         #122753;
-    -hover-bg:        #19346B;
-    -border:          #23427F;
-    -danger:          #FF5C74;
-    -step-pending:    #2D4A85;
-    -fx-base:         #0E1F47;
-    -fx-control-inner-background: #0E1F47;
+    -accent:          #16A34A;
+    -accent-hover:    #22C55E;
+    -accent-light:    #4ADE80;
+    -on-accent:       #FFFFFF;
+    -sky:             #82AAFF;
+    -gold:            #F5B700;
+    -on-gold:         #241A00;
+    -content-bg:      #0B1626;
+    -text-strong:     #F4F7FA;
+    -text-muted:      #9FB0C3;
+    -status-ok:       #4ADE80;
+    -card-bg:         #13233A;
+    -row-alt:         #172A44;
+    -hover-bg:        #1E3A4C;
+    -border:          #22374F;
+    -danger:          #EF4444;
+    -step-pending:    #2B4058;
+    -fx-base:         #13233A;
+    -fx-control-inner-background: #13233A;
 }
 
 /* ---------- Contenedor principal ---------- */
@@ -273,7 +275,7 @@
     -fx-min-height: 14px;
     -fx-pref-height: 14px;
     -fx-max-height: 14px;
-    -fx-effect: dropshadow(gaussian, rgba(116, 185, 240, 0.65), 9, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(22, 163, 74, 0.65), 9, 0, 0, 0);
 }
 
 .step-label {
@@ -286,7 +288,7 @@
 }
 
 .step.current .step-label {
-    -fx-text-fill: -accent;
+    -fx-text-fill: -accent-light;
     -fx-font-weight: bold;
 }
 
@@ -367,7 +369,7 @@
 }
 
 .data-table .table-row-cell:selected {
-    -fx-background-color: rgba(116, 185, 240, 0.16);
+    -fx-background-color: rgba(22, 163, 74, 0.16);
 }
 
 .data-table .table-cell {
@@ -584,7 +586,7 @@
 
 /* Puestos que clasifican a cuartos */
 .standings-table .table-row-cell.qualified-row {
-    -fx-background-color: rgba(116, 185, 240, 0.12);
+    -fx-background-color: rgba(22, 163, 74, 0.12);
 }
 
 .standings-table .table-row-cell.qualified-row .table-cell {
@@ -592,7 +594,7 @@
 }
 
 .qualified-note {
-    -fx-text-fill: -accent;
+    -fx-text-fill: -accent-light;
     -fx-font-size: 12.5px;
     -fx-font-weight: bold;
     -fx-padding: 10px 0 4px 0;
@@ -707,7 +709,7 @@
 }
 
 .bracket-card .bracket-winner {
-    -fx-text-fill: -accent;
+    -fx-text-fill: -accent-light;
     -fx-font-weight: bold;
 }
 
@@ -749,11 +751,11 @@
 
 .dashboard-title {
     -fx-font-size: 30px;
-    -fx-text-fill: -accent;
+    -fx-text-fill: -accent-light;
 }
 
 .app-title {
-    -fx-text-fill: -accent;
+    -fx-text-fill: -accent-light;
     -fx-font-size: 21px;
 }
 
@@ -768,16 +770,16 @@
 }
 
 .summary-card-value {
-    -fx-text-fill: -accent;
+    -fx-text-fill: -accent-light;
     -fx-font-size: 34px;
 }
 
 .nav-button.active, .nav-button.active:hover {
-    -fx-effect: dropshadow(gaussian, rgba(116, 185, 240, 0.45), 14, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(22, 163, 74, 0.45), 14, 0, 0, 0);
 }
 
 .primary-button {
-    -fx-effect: dropshadow(gaussian, rgba(116, 185, 240, 0.35), 10, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(22, 163, 74, 0.35), 10, 0, 0, 0);
 }
 
 /* Botones y controles nativos (Cities / Stadiums / dialogos) */
@@ -809,7 +811,7 @@
 .combo-box-popup .list-cell:hover,
 .combo-box-popup .list-cell:filled:selected {
     -fx-background-color: -hover-bg;
-    -fx-text-fill: -accent;
+    -fx-text-fill: -accent-light;
 }
 
 .filter-combo .arrow {
@@ -884,7 +886,7 @@
 
 .bracket-final-card {
     -fx-border-color: -accent;
-    -fx-effect: dropshadow(gaussian, rgba(116, 185, 240, 0.45), 18, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(22, 163, 74, 0.45), 18, 0, 0, 0);
 }
 
 .bracket-team {
@@ -903,7 +905,7 @@
 }
 
 .champion-banner {
-    -fx-effect: dropshadow(gaussian, rgba(116, 185, 240, 0.5), 20, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(22, 163, 74, 0.5), 20, 0, 0, 0);
     -fx-font-size: 20px;
 }
 
@@ -946,7 +948,7 @@
 }
 
 .scorer-rank {
-    -fx-text-fill: -accent;
+    -fx-text-fill: -accent-light;
     -fx-font-weight: bold;
     -fx-font-size: 15px;
     -fx-min-width: 18px;
@@ -959,7 +961,7 @@
 }
 
 .scorer-goals {
-    -fx-text-fill: -accent;
+    -fx-text-fill: -accent-light;
     -fx-font-family: "Bahnschrift", "Segoe UI Semibold", "Segoe UI", sans-serif;
     -fx-font-size: 20px;
 }
@@ -993,7 +995,7 @@
     -fx-font-family: "Bahnschrift", "Segoe UI Semibold", "Segoe UI", sans-serif;
     -fx-font-size: 26px;
     -fx-font-weight: bold;
-    -fx-effect: dropshadow(gaussian, rgba(116, 185, 240, 0.45), 14, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(22, 163, 74, 0.45), 14, 0, 0, 0);
 }
 
 .data-table .table-row-cell.row-goal {
@@ -1001,7 +1003,7 @@
 }
 
 .data-table .table-row-cell.row-yellow {
-    -fx-background-color: rgba(116, 185, 240, 0.14);
+    -fx-background-color: rgba(22, 163, 74, 0.14);
 }
 
 .data-table .table-row-cell.row-red {
@@ -1016,7 +1018,7 @@
 }
 
 .zone-panel .detail-title {
-    -fx-text-fill: -accent;
+    -fx-text-fill: -accent-light;
     -fx-font-family: "Bahnschrift", "Segoe UI Semibold", "Segoe UI", sans-serif;
     -fx-font-size: 20px;
 }
@@ -1037,7 +1039,7 @@
 }
 
 .team-detail .detail-title {
-    -fx-text-fill: -accent;
+    -fx-text-fill: -accent-light;
     -fx-font-size: 24px;
 }
 
@@ -1082,7 +1084,7 @@
 /* ---------- Statistics: podio ---------- */
 
 .data-table .table-row-cell.podium-1 {
-    -fx-background-color: rgba(116, 185, 240, 0.22);
+    -fx-background-color: rgba(22, 163, 74, 0.22);
 }
 
 .data-table .table-row-cell.podium-2 {
@@ -1095,7 +1097,7 @@
 
 .data-table .table-row-cell.podium-1 .table-cell {
     -fx-font-weight: bold;
-    -fx-text-fill: -accent;
+    -fx-text-fill: -accent-light;
 }
 
 /* ---------- Reports: tarjetas ---------- */
@@ -1142,7 +1144,7 @@
 
 .icon-bubble {
     -fx-background-color: -accent;
-    -fx-background-radius: 8px;
+    -fx-background-radius: 14px;
     -fx-min-width: 28px;
     -fx-min-height: 28px;
     -fx-max-width: 28px;
@@ -1169,8 +1171,12 @@
     -fx-max-height: 46px;
 }
 
+.sidebar-logo {
+    -fx-background-color: -accent;
+}
+
 .sidebar-logo .icon {
-    -fx-background-color: -content-bg;
+    -fx-background-color: white;
 }
 
 .app-title-small {
@@ -1194,7 +1200,7 @@
 
 .nav-button:hover .icon,
 .nav-button:focused .icon {
-    -fx-background-color: -accent;
+    -fx-background-color: -accent-light;
 }
 
 .nav-button.active,
@@ -1207,7 +1213,7 @@
 }
 
 .footer-title .icon {
-    -fx-background-color: -accent;
+    -fx-background-color: -accent-light;
 }
 
 /* ---------- Encabezado ---------- */
@@ -1276,7 +1282,7 @@
 }
 
 .summary-card-icon {
-    -fx-background-radius: 12px;
+    -fx-background-radius: 21px;
     -fx-min-width: 42px;
     -fx-min-height: 42px;
     -fx-max-width: 42px;
@@ -1287,24 +1293,24 @@
     -fx-background-color: -on-accent;
 }
 
-.summary-card.tone-sky   { -fx-border-color: -accent -border -border -border; -fx-border-width: 4px 1px 1px 1px; }
+.summary-card.tone-sky   { -fx-border-color: -sky -border -border -border; -fx-border-width: 4px 1px 1px 1px; }
 .summary-card.tone-green { -fx-border-color: -status-ok -border -border -border; -fx-border-width: 4px 1px 1px 1px; }
 .summary-card.tone-gold  { -fx-border-color: -gold -border -border -border; -fx-border-width: 4px 1px 1px 1px; }
 
-.tone-sky .summary-card-icon   { -fx-background-color: -accent; }
-.tone-green .summary-card-icon { -fx-background-color: -status-ok; }
+.tone-sky .summary-card-icon   { -fx-background-color: -sky; }
+.tone-green .summary-card-icon { -fx-background-color: -accent; }
 .tone-gold .summary-card-icon  { -fx-background-color: -gold; }
 
-.tone-sky .summary-card-value   { -fx-text-fill: -accent; }
+.tone-sky .summary-card-value   { -fx-text-fill: -sky; }
 .tone-green .summary-card-value { -fx-text-fill: -status-ok; }
 .tone-gold .summary-card-value  { -fx-text-fill: -gold; }
 
 .card-kicker {
-    -fx-text-fill: -accent;
+    -fx-text-fill: -accent-light;
 }
 
 .card-kicker .icon {
-    -fx-background-color: -accent;
+    -fx-background-color: -accent-light;
 }
 
 .zone-leader-card:hover, .scorer-preview.clickable:hover, .bracket-card.clickable:hover,
@@ -1330,7 +1336,7 @@
 .rank-other  { -fx-background-color: -hover-bg; -fx-text-fill: -text-muted; }
 
 .scorer-goals {
-    -fx-text-fill: -accent;
+    -fx-text-fill: -accent-light;
 }
 
 /* ---------- Progreso del torneo ---------- */
@@ -1378,7 +1384,7 @@
 
 .secondary-button .icon,
 .button .icon {
-    -fx-background-color: -accent;
+    -fx-background-color: -accent-light;
 }
 
 .action-button:pressed, .button:pressed {
@@ -1421,4 +1427,10 @@
     -fx-background-color: white;
     -fx-text-fill: -content-bg;
     -fx-effect: null;
+}
+
+/* Iconos oscuros sobre las burbujas claras (celeste y dorado) */
+.tone-sky .summary-card-icon .icon,
+.tone-gold .summary-card-icon .icon {
+    -fx-background-color: -content-bg;
 }
