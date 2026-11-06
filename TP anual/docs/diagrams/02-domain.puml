@@ -1,0 +1,95 @@
+@startuml
+title Domain: people, teams, venues and matches
+!include common.iuml
+
+package model.common {
+  class Country
+}
+
+package model.people {
+  abstract class Person {
+    - name : String
+    - birthDate : LocalDate
+    + getAge(date) : int
+    + {abstract} getRole() : String
+  }
+  class Player {
+    - position : Position
+  }
+  class Goalkeeper
+  class FieldPlayer
+  class HeadCoach {
+    - titles : int
+  }
+  class Referee {
+    + canOfficiate(home : Country, away : Country) : boolean
+  }
+  enum Position
+  Person <|-- Player
+  Person <|-- HeadCoach
+  Person <|-- Referee
+  Player <|-- Goalkeeper
+  Player <|-- FieldPlayer
+}
+
+package model.venue {
+  class City
+  class Stadium {
+    - capacity : int
+  }
+  Stadium --> City
+}
+
+package model.team {
+  class Team {
+    - name : String
+    - ranking : int
+    + validateSquad()
+  }
+}
+
+package model.match {
+  abstract class Match {
+    - date : LocalDate
+    - homeGoals : int
+    - awayGoals : int
+    + {abstract} getPhaseLabel() : String
+    + {abstract} getPhaseCategory() : String
+    + {abstract} allowsPenaltyShootout() : boolean
+    + describeAggregate() : String
+  }
+  class GroupMatch
+  class FirstLegMatch
+  class SecondLegMatch {
+    + getDecidingCriterion() : TieCriterion
+    + resolveTieWinner() : Team
+  }
+  class FinalMatch
+  class Formation
+  class PlayerParticipation {
+    - starter : boolean
+    - minutesPlayed : int
+  }
+  enum TieCriterion
+  Match <|-- GroupMatch
+  Match <|-- FirstLegMatch
+  Match <|-- SecondLegMatch
+  Match <|-- FinalMatch
+  SecondLegMatch --> FirstLegMatch : firstLeg
+  SecondLegMatch ..> TieCriterion
+}
+
+Person --> Country
+City --> Country
+Team --> Country
+Team "1" o-- "18" Player
+Team --> HeadCoach
+Team --> Stadium
+Match --> "2" Team : home / away
+Match --> Referee
+Match --> Stadium
+Match --> "2" Formation
+Match "1" *-- "*" PlayerParticipation
+PlayerParticipation --> Player
+Formation --> "*" Player
+@enduml

@@ -1,0 +1,28 @@
+@startuml
+title Package dependencies (an arrow means "imports")
+!include common.iuml
+skinparam rectangle {
+  RoundCorner 10
+}
+
+rectangle "app\nMainFX" as app #E8EEF9
+rectangle "ui.fx\nJavaFX views, sidebar, styles, AppWindow" as ui #E8EEF9
+rectangle "controller\nTournamentSession, VenueCatalog,\nTournamentStorage, one controller per page" as ctrl #FFF3D6
+rectangle "viewmodel\nview models and table rows" as vm #E8EEF9
+rectangle "dao\nPostgreSQL (JDBC)" as dao #E6F4E6
+rectangle "dataload\nJSON loader (Gson)" as dl #E6F4E6
+rectangle "report\nID cards PDF" as rep #E6F4E6
+rectangle "model\ndomain, competition rules, simulation" as model #FBE3E3
+
+app --> ui
+ui --> ctrl
+ui --> vm
+ctrl --> vm
+ctrl --> model
+ctrl --> dao
+ctrl --> dl
+ctrl --> rep
+dao --> model
+dl --> model
+
+@enduml
