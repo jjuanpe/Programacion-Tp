@@ -1,20 +1,11 @@
 package controller;
 
-import model.event.Change;
-import model.event.PlayEvent;
 import model.event.Expulsion;
-import model.event.Goal;
 import model.event.Incidence;
-import model.event.PenaltyExecuted;
-import model.event.YellowCard;
-import model.match.FinalMatch;
-import model.match.FirstLegMatch;
 import model.match.Formation;
 import model.match.Match;
 import model.match.PlayerParticipation;
-import model.match.SecondLegMatch;
 import model.people.Player;
-import model.people.Position;
 import model.people.Referee;
 import model.venue.Stadium;
 import model.competition.StandingEntry;

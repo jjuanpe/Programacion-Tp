@@ -4,8 +4,6 @@ import model.competition.KnockoutBracketService;
 import model.competition.StandingEntry;
 import model.competition.StandingsService;
 import model.competition.Zone;
-import model.event.Incidence;
-import model.event.PenaltyExecuted;
 import model.match.FirstLegMatch;
 import model.match.FinalMatch;
 import model.match.Match;

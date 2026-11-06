@@ -4,7 +4,6 @@ import model.competition.TeamReportEntry;
 import model.competition.TeamReportService;
 import model.people.HeadCoach;
 import model.people.Player;
-import model.people.Position;
 import model.common.Country;
 import model.team.SquadValidation;
 import model.team.Team;
